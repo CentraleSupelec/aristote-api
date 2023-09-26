@@ -1,0 +1,8 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block side_bar_after_nav_content %}
+    <a id="logout-link" href="{{ path('admin_logout') }}">
+        <i class="fas fa-fw fa-sign-out-alt"></i>
+        Se déconnecter
+    </a>
+{% endblock %}

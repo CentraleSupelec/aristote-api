@@ -1,0 +1,55 @@
+league_oauth2_server:
+  authorization_server:
+    private_key: "%env(resolve:OAUTH_PRIVATE_KEY)%"
+    private_key_passphrase: "%env(resolve:OAUTH_PASSPHRASE)%"
+    encryption_key: "%env(resolve:OAUTH_ENCRYPTION_KEY)%"
+
+    # The type of value of 'encryption_key'
+    encryption_key_type: plain # One of "plain"; "defuse"
+
+    # How long the issued access token should be valid for.
+    # The value should be a valid interval: http://php.net/manual/en/dateinterval.construct.php#refsect1-dateinterval.construct-parameters
+    access_token_ttl: PT1H
+
+    # Whether to enable the client credentials grant
+    enable_client_credentials_grant: true
+
+    # Whether to enable the password grant
+    enable_password_grant: false
+
+    # Whether to enable the refresh token grant
+    enable_refresh_token_grant: false
+
+    # Whether to enable the authorization code grant
+    enable_auth_code_grant: false
+
+    # Whether to require code challenge for public clients for the auth code grant
+    require_code_challenge_for_public_clients: false
+
+    # Whether to enable access token saving to persistence layer (default to true)
+    persist_access_token: true
+
+  resource_server:
+    public_key: "%env(resolve:OAUTH_PUBLIC_KEY)%"
+  scopes:
+    available:
+      - scope_default
+    default: ["scope_default"]
+  # Configures different persistence methods that can be used by the bundle for saving client and token data.
+  # Only one persistence method can be configured at a time.
+  persistence:
+    doctrine:
+      # Name of the entity manager that you wish to use for managing clients and tokens.
+      entity_manager: default
+
+  # Set a custom prefix that replaces the default 'ROLE_OAUTH2_' role prefix
+  role_prefix: ROLE_OAUTH2_
+
+  client:
+    # Set a custom client class. Must be a League\Bundle\OAuth2ServerBundle\Model\Client
+    classname: App\Entity\ApiClient
+
+when@test:
+  league_oauth2_server:
+    authorization_server:
+      access_token_ttl: PT2S

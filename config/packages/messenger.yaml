@@ -1,0 +1,20 @@
+framework:
+  messenger:
+    transports:
+      # https://symfony.com/doc/current/messenger.html#transport-configuration
+      async:
+        dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
+        options:
+          table_name: "messenger_messages"
+        retry_strategy:
+          max_retries: 3
+
+    routing:
+      # Route your messages to the transports
+      'App\Message\CustomMessage': async
+
+when@test:
+  framework:
+    messenger:
+      transports:
+        async: "in-memory://"

@@ -1,0 +1,12 @@
+admin_controllers:
+  resource:
+    path: ../src/Controller/Sonata/
+    namespace: App\Controller\Sonata
+  type: attribute
+
+api_controllers:
+  resource:
+    path: ../src/Controller/Api/
+    namespace: App\Controller\Api
+  type: attribute
+  prefix: /api

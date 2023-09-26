@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+    php:
+        build:
+            dockerfile: docker/php/Dockerfile
+            context: .
+            target: php_prod
+        image: aristote-php-prod
+        user: "${UID:-0}:${GID:-0}"
+        env_file:
+            - .env.local
+        environment:
+            APP_ENV: prod
+        depends_on:
+            - postgres
+
+    workers:
+        restart: always
+        build:
+            dockerfile: ./docker/php/Dockerfile
+            context: .
+            target: php_prod
+        image: aristote-php-prod
+        entrypoint: [ '/bin/bash', '/worker-messenger-mq-entrypoint.sh' ]
+        env_file:
+            - .env.local
+        environment:
+            APP_ENV: prod
+        depends_on:
+            - php
+
+    nginx:
+        build:
+            context: .
+            dockerfile: docker/nginx/Dockerfile
+            target: nginx_prod
+            args:
+                PHP_DESTINATION: aristote-php-prod
+        image: aristote-nginx-prod
+        environment:
+            PHP_BACKEND: php
+        depends_on:
+            - php
+        ports:
+            - "8080:80"
+            - "443:443"
+
+    postgres:
+        image: postgres:15-alpine
+        restart: on-failure
+        environment:
+            POSTGRES_USER: api
+            POSTGRES_PASSWORD: aristote
+            POSTGRES_DB: aristote-db
+            POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=sl-SI"

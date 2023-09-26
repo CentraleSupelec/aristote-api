@@ -1,0 +1,60 @@
+security:
+  # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+
+  password_hashers:
+    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "bcrypt"
+    App\Entity\ApiClient: "bcrypt"
+
+  # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+  providers:
+    admin:
+      entity:
+        class: App\Entity\Administrator
+        property: email
+    api_client:
+      entity:
+        class: App\Entity\ApiClient
+        property: identifier
+
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    api_client:
+      pattern: ^/api
+      provider: api_client
+      security: true
+      stateless: true
+      oauth2: true
+    admin:
+      pattern: /admin(.*)
+      provider: admin
+      user_checker: App\Security\UserChecker
+      form_login:
+        provider: admin
+        login_path: admin_login
+        check_path: admin_login_check
+        default_target_path: /admin/dashboard
+        enable_csrf: true
+      logout:
+        path: admin_logout
+        target: admin_login
+        invalidate_session: true
+      access_denied_url: /admin/login
+
+  access_control:
+    - { path: "^/admin/login", role: PUBLIC_ACCESS }
+    - { path: "^/admin/logout", role: PUBLIC_ACCESS }
+    - { path: ^/api/token, role: PUBLIC_ACCESS }
+    - { path: ^/api/doc$, role: PUBLIC_ACCESS }
+    - { path: ^/api/doc.json, role: PUBLIC_ACCESS }
+    - { path: "^/admin", roles: ROLE_SUPER_ADMIN }
+    - { path: ^/api, role: ROLE_OAUTH2_SCOPE_DEFAULT }
+
+when@test:
+  security:
+    password_hashers:
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+        algorithm: plaintext
+      App\Entity\ApiClient:
+        algorithm: plaintext

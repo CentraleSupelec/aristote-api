@@ -1,0 +1,14 @@
+admin_area:
+  resource: "@SonataAdminBundle/Resources/config/routing/sonata_admin.xml"
+  prefix: /admin
+
+_sonata_admin:
+  resource: .
+  type: sonata_admin
+  prefix: /admin
+
+admin_logout:
+  path: /admin/logout
+
+admin_login_check:
+  path: /admin/login_check

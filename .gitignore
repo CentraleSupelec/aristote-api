@@ -1,0 +1,39 @@
+###> IDE ###
+.vscode/
+.idea/
+###< IDE ###
+
+###> symfony/framework-bundle ###
+.env.local
+.env.local.php
+.env.*.local
+public/bundles/
+var/
+vendor/
+###< symfony/framework-bundle ###
+
+###> friendsofphp/php-cs-fixer ###
+.php-cs-fixer.php
+.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.cache/
+.phpunit.result.cache
+phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> phpunit/phpunit ###
+phpunit.xml
+.phpunit.result.cache
+*coverage.cobertura.xml
+###< phpunit/phpunit ###
+
+###> league/oauth2-server-bundle ###
+config/jwt/private.key
+config/jwt/public.key
+###< league/oauth2-server-bundle ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

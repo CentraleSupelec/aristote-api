@@ -1,0 +1,24 @@
+services:
+  admin.administrator:
+    class: App\Admin\AdministratorAdmin
+    tags:
+      - name: sonata.admin
+        model_class: App\Entity\Administrator
+        manager_type: orm
+        group: Administrateurs
+        label: Administrateurs
+    calls:
+      - [setUserManager, ['@App\Service\UserManager']]
+    public: true
+
+  admin.api_client:
+    class: App\Admin\ApiClientAdmin
+    tags:
+      - name: sonata.admin
+        model_class: App\Entity\ApiClient
+        manager_type: orm
+        group: Clients API
+        label: Clients API
+    calls:
+      - [setApiClientManager, ['@App\Service\ApiClientManager']]
+    public: true

@@ -1,0 +1,21 @@
+nelmio_api_doc:
+  documentation:
+    info:
+      title: Aristote
+      description: Aristote's API documentation
+      version: 1.0.0
+    components:
+      securitySchemes:
+        oauth2:
+          type: oauth2
+          flows:
+            clientCredentials:
+              tokenUrl: /api/token
+              scopes:
+                scope_default: Default scope
+    # Send OAuth2 authentication on all routes in the documentation
+    security:
+      - oauth2: []
+  areas: # to filter documented areas
+    path_patterns:
+      - ^/api(?!/doc$|/doc.json) # Accepts routes under /api except /api/doc and /api/doc.json

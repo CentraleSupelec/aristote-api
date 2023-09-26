@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      dockerfile: docker/php/Dockerfile
+      context: .
+      target: php_dev
+    user: "${UID:-0}:${GID:-0}"
+    command:
+      - php-fpm
+      - -d xdebug.client_host=host.docker.internal
+    environment:
+      PHP_CS_FIXER_IGNORE_ENV: 1
+    depends_on:
+      - postgres
+    volumes:
+      - ".:/app:cached"
+      - "./var/cache:/app/var/cache:delegated"
+      - "./var/log:/app/var/log:delegated"
+      - "./vendor:/app/vendor:delegated"
+
+  workers:
+    restart: always
+    build:
+      dockerfile: ./docker/php/Dockerfile
+      context: .
+      target: php_dev
+    entrypoint: [ '/bin/bash', '/worker-messenger-mq-entrypoint.sh' ]
+    depends_on:
+      - php
+    volumes:
+      - ".:/app:cached"
+      - "./var/cache:/app/var/cache:delegated"
+      - "./var/log:/app/var/log:delegated"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+      target: nginx_dev
+    depends_on:
+      - php
+    environment:
+      PHP_BACKEND: php
+    volumes:
+      - "./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:cached"
+      - ".:/app:cached"
+    ports:
+      - ${FRONT_PORT:-8080}:80
+      - ${FRONT_PORT_HTTPS:-443}:443
+
+  postgres:
+    image: postgres:15-alpine
+    restart: on-failure
+    volumes:
+      - db-data:/var/lib/postgresql/data:rw
+    environment:
+      POSTGRES_USER: api
+      POSTGRES_PASSWORD: aristote
+      POSTGRES_DB: aristote-db
+      POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=sl-SI"
+    ports:
+      - ${DATABASE_PORT:-5432}:5432
+
+  postgres-test:
+    image: postgres:15-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: api
+      POSTGRES_PASSWORD: aristote
+      POSTGRES_DB: aristote-db
+      POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=sl-SI"
+    ports:
+      - "5433:5432"
+
+volumes:
+  db-data:

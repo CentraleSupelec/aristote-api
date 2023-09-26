@@ -1,0 +1,94 @@
+# Cache is shared per branch, and based on composer.lock & symfony.lock files
+cache:
+  key:
+    files:
+      - composer.lock
+      - symfony.lock
+    prefix: $CI_COMMIT_REF_SLUG
+  paths:
+    - .npm
+    - node_modules
+    - vendor
+stages:
+  - Lint
+  - Tests
+  - Build
+
+.test_template: &test_template
+  image: illuin/symfony-ready:8.2
+  tags:
+    - docker
+  before_script:
+    - echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini
+    - php /usr/bin/composer install -n
+
+php_cs_fixer:
+  <<: *test_template
+  variables:
+    PHP_CS_FIXER_IGNORE_ENV: 1
+  stage: Lint
+  script:
+    - php vendor/bin/php-cs-fixer fix -v --dry-run
+
+rector:
+  <<: *test_template
+  stage: Lint
+  script:
+    - php vendor/bin/rector process --dry-run
+
+tests:
+  <<: *test_template
+  stage: Tests
+  services:
+    - postgres:15-alpine
+  variables:
+    XDEBUG_MODE: coverage
+    POSTGRES_DB: aristote-db
+    POSTGRES_PASSWORD: aristote
+    POSTGRES_USER: api
+  script:
+    - sh tests/init-test-database.sh
+    - openssl genrsa -out config/jwt/private.key 2048
+    - openssl rsa -in config/jwt/private.key -pubout -out config/jwt/public.key
+    - php vendor/bin/phpunit --coverage-text --coverage-cobertura=coverage.cobertura.xml
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.cobertura.xml
+  
+build:
+  stage: Build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.10.0-debug
+    entrypoint: [ "" ]
+  before_script:
+    # Login to registry
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$REGISTRY_HOSTNAME\":{\"username\":\"$REGISTRY_USERNAME\",\"password\":\"$REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - >
+      /kaniko/executor \
+        --context ${CI_PROJECT_DIR} \
+        --dockerfile ${CI_PROJECT_DIR}/docker/php/Dockerfile \
+        --destination ${REGISTRY_HOSTNAME}/aristote/php:${CI_COMMIT_REF_NAME} \
+        --target php_prod \
+        --snapshotMode=redo \
+        --use-new-run=true \
+        --cache \
+        --cleanup
+    - >
+      /kaniko/executor \
+        --context ${CI_PROJECT_DIR} \
+        --dockerfile ${CI_PROJECT_DIR}/docker/nginx/Dockerfile \
+        --destination ${REGISTRY_HOSTNAME}/aristote/nginx:${CI_COMMIT_REF_NAME} \
+        --target nginx_prod \
+        --build-arg PHP_DESTINATION=${REGISTRY_HOSTNAME}/aristote/php:${CI_COMMIT_REF_NAME} \
+        --snapshotMode=redo \
+        --use-new-run=true \
+        --cache \
+        --cleanup
+  only:
+    - tags
+  tags:
+    - docker

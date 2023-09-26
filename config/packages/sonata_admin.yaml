@@ -1,0 +1,17 @@
+sonata_admin:
+  title: "Aristote Admin"
+  show_mosaic_button: false
+  search: false
+  dashboard:
+    blocks:
+      - type: sonata.admin.block.admin_list
+        position: left
+
+  templates:
+    layout: sonata/standard_layout.html.twig
+
+sonata_block:
+  blocks:
+    sonata.admin.block.admin_list:
+      contexts:
+        - admin

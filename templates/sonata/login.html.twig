@@ -1,0 +1,79 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block sonata_nav %}
+{% endblock sonata_nav %}
+
+{% block logo %}
+{% endblock logo %}
+
+{% block sonata_left_side %}
+{% endblock sonata_left_side %}
+
+{% block body_attributes %}class="sonata-bc login-page"{% endblock %}
+
+{% block sonata_wrapper %}
+    <div class="login-box">
+        {% block login_box_header %}
+            <div class="login-logo">
+                <a href="{{ path('sonata_admin_dashboard') }}">
+                    {% if sonata_config.getOption('title_mode') in ['single_image', 'both'] %}
+                        <div>
+                            <img style="width:64px;" src="{{ asset(sonata_config.titlelogo) }}" alt="{{ sonata_config.title }}">
+                        </div>
+                    {% endif %}
+                    {% if sonata_config.getOption('title_mode') in ['single_text', 'both'] %}
+                        <span>{{ sonata_config.title }}</span>
+                    {% endif %}
+                </a>
+            </div>
+        {% endblock %}
+        <div class="login-box-body">
+            {% block sonata_user_login_form %}
+                {% block sonata_user_login_error %}
+                    {% if error %}
+                        <div class="alert alert-danger alert-error">
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
+                {% endblock %}
+                <p class="login-box-msg">Veuillez vous identifier</p>
+                <form action="{{ path("admin_login_check") }}" method="post" role="form">
+                    {% if csrf_token %}
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+                    {% endif %}
+
+                    <div class="form-group has-feedback">
+                        <label for="username">Email</label>
+                        <input class="form-control"
+                               id="username"
+                               name="_username"
+                               placeholder="Email"
+                               required="required"
+                               type="email"
+                               value="{{ last_username }}"/>
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+
+                    <div class="form-group has-feedback">
+                        <label for="password">Mot de passe</label>
+                        <input class="form-control"
+                               id="password"
+                               name="_password"
+                               placeholder="Mot de passe"
+                               required="required"
+                               type="password"/>
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">
+                                Connexion
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock sonata_wrapper %}
