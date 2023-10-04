@@ -74,3 +74,6 @@ RUN chmod +x bin/console
 # php-fpm is run with www-data
 RUN mkdir -p var && chown -R www-data:www-data var/
 USER www-data
+
+# Install bundles assets
+RUN APP_ENV=prod composer run-script post-install-cmd
