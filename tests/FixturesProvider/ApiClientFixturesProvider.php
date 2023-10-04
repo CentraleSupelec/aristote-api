@@ -23,6 +23,10 @@ class ApiClientFixturesProvider
             (new ApiClient('Client without default scope', 'without-default', 'deactivated-secret'))
                 ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
                 ->setActive(true),
+            (new ApiClient('Demo Api Client', 'demo', 'password'))
+                ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
+                ->setFormExposedScopes([Constants::SCOPE_DEFAULT])
+                ->setActive(true),
         ];
 
         if (null !== $entityManager) {

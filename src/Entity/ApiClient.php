@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Constants;
 use App\Repository\ApiClientRepository;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use League\Bundle\OAuth2ServerBundle\Model\AbstractClient;
@@ -45,6 +47,15 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[Assert\Choice(callback: [Constants::class, 'getAvailableScopes'], multiple: true)]
     private array $formExposedScopes = [OAuth2Grants::CLIENT_CREDENTIALS];
 
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Enrichment::class)]
+    private Collection $ownedEnrichments;
+
+    public function __construct(string $name, string $identifier, ?string $secret)
+    {
+        parent::__construct($name, $identifier, $secret);
+        $this->ownedEnrichments = new ArrayCollection();
+    }
+
     public function __toString(): string
     {
         return $this->identifier ?? 'API Client';
@@ -55,6 +66,9 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         return self::class;
     }
 
+    /**
+     * @return string[]
+     */
     public function getRedirectUri(): array
     {
         return $this->getRedirectUris();
@@ -106,6 +120,9 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getFormExposedGrants(): array
     {
         $this->formExposedGrants = array_unique(array_map(
@@ -126,6 +143,9 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getFormExposedScopes(): array
     {
         $this->formExposedScopes = array_unique(array_map(
@@ -142,6 +162,34 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         $this->setScopes(...array_unique(array_map(
             fn (string $scope) => new Scope($scope), $formExposedScopes
         )));
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Enrichment>
+     */
+    public function getOwnedEnrichments(): Collection
+    {
+        return $this->ownedEnrichments;
+    }
+
+    public function addOwnedEnrichments(Enrichment $enrichment): static
+    {
+        if (!$this->ownedEnrichments->contains($enrichment)) {
+            $this->ownedEnrichments->add($enrichment);
+            $enrichment->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOwnedEnrichments(Enrichment $enrichment): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->ownedEnrichments->removeElement($enrichment) && $enrichment->getCreatedBy() === $this) {
+            $enrichment->setCreatedBy(null);
+        }
 
         return $this;
     }
