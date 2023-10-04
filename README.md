@@ -82,6 +82,11 @@ docker-compose exec -it php vendor/bin/php-cs-fixer fix -v --dry-run
 docker-compose exec -it php vendor/bin/rector process --dry-run
 ```
 
+ * Générer une migration :
+```
+docker-compose exec php symfony console make:migration
+```
+
 * Execute migrations:
 ```
 docker-compose exec -it php bin/console app:sync-migrate
