@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\FixturesProvider;
+namespace App\DataFixtures;
 
 use App\Entity\ApiClient;
 use App\Entity\Choice;
@@ -11,38 +11,13 @@ use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Tag;
 use App\Entity\Topic;
 use App\Entity\Transcript;
-use App\Repository\EnrichmentRepository;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EnrichmentFixturesProvider
 {
-    public function __construct(private readonly EnrichmentRepository $enrichmentRepository)
-    {
-    }
-
-    public static function getEnrichments(?EntityManagerInterface $entityManager = null): array
-    {
-        $apiClients = ApiClientFixturesProvider::getApiClients($entityManager);
-
-        $enrichments = [];
-        foreach ($apiClients as $apiClient) {
-            /** @var ApiClient $apiClient */
-            if ('demo' === $apiClient->getName()) {
-                $numberOfEnrichments = 5;
-            } else {
-                $numberOfEnrichments = 1;
-            }
-            for ($i = 0; $i < $numberOfEnrichments; ++$i) {
-                $enrichments[] = self::getEnrichment($apiClient, $entityManager);
-            }
-        }
-
-        return $enrichments;
-    }
-
-    public static function getEnrichment(ApiClient $apiClient, ?EntityManagerInterface $entityManager = null): Enrichment
+    public static function generateEnrichment(ApiClient $apiClient, ?EntityManagerInterface $entityManager = null): Enrichment
     {
         $enrichmentVersionV1 = self::getEnrichmentVersion($entityManager, true);
         $enrichmentVersionV2 = self::getEnrichmentVersion($entityManager, false);
@@ -60,12 +35,12 @@ class EnrichmentFixturesProvider
             ->setStatus(Enrichment::STATUS_PENDING)
         ;
 
-        $date = new DateTime('2023-10-03 00:00:00');
+        $dateTime = new DateTime('2023-10-03 00:00:00');
 
         foreach ($enrichmentVersions as $enrichmentVersion) {
-            $enrichmentVersion->setCreatedAt($date)->setUpdatedAt($date);
+            $enrichmentVersion->setCreatedAt($dateTime)->setUpdatedAt($dateTime);
             $enrichment->addVersion($enrichmentVersion);
-            $date->add(DateInterval::createFromDateString('1 day'));
+            $dateTime->add(DateInterval::createFromDateString('1 day'));
         }
 
         if (null !== $entityManager) {
@@ -125,11 +100,11 @@ class EnrichmentFixturesProvider
 
     public static function getTranscript(?EntityManagerInterface $entityManager = null): Transcript
     {
-        $setences = self::getSentences();
+        $sentences = self::getSentences();
         $transcript = (new Transcript())
             ->setLanguage('fr')
             ->setOriginalFilename('video.mp4')
-            ->setSentences($setences)
+            ->setSentences($sentences)
         ;
 
         if (null !== $entityManager) {
