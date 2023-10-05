@@ -35,14 +35,14 @@ class EnrichmentFixturesProvider
                 $numberOfEnrichments = 1;
             }
             for ($i = 0; $i < $numberOfEnrichments; ++$i) {
-                $enrichments[] = self::getEnrichment($entityManager, $apiClient);
+                $enrichments[] = self::getEnrichment($apiClient, $entityManager);
             }
         }
 
         return $enrichments;
     }
 
-    public static function getEnrichment(?EntityManagerInterface $entityManager = null, ApiClient $apiClient): Enrichment
+    public static function getEnrichment(ApiClient $apiClient, ?EntityManagerInterface $entityManager = null): Enrichment
     {
         $enrichmentVersionV1 = self::getEnrichmentVersion($entityManager, true);
         $enrichmentVersionV2 = self::getEnrichmentVersion($entityManager, false);
