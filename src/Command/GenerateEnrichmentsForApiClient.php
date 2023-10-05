@@ -2,9 +2,9 @@
 
 namespace App\Command;
 
+use App\DataFixtures\EnrichmentFixturesProvider;
 use App\Service\ApiClientManager;
 use App\Service\UserManager;
-use App\Tests\FixturesProvider\EnrichmentFixturesProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
@@ -56,7 +56,7 @@ class GenerateEnrichmentsForApiClient extends Command
             return Command::FAILURE;
         }
 
-        EnrichmentFixturesProvider::getEnrichment($clientEntity, $this->entityManager);
+        EnrichmentFixturesProvider::generateEnrichment($clientEntity, $this->entityManager);
 
         $symfonyStyle->success(sprintf('Created enrichment for Api Client %s', $apiClientIdentifier));
 
