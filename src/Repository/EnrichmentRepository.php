@@ -24,13 +24,13 @@ class EnrichmentRepository extends ServiceEntityRepository
 
     public function findByCreatedBy(string $client, int $page, int $size, string $sortField, string $sortDirection)
     {
-        $queryBuilder = $this->createQueryBuilder('ev')
-            ->where('ev.createdBy = :client')
+        $queryBuilder = $this->createQueryBuilder('e')
+            ->where('e.createdBy = :client')
             ->setParameters([
                 'client' => $client,
             ]);
 
-        $queryBuilder->orderBy(sprintf('ev.%s', $sortField), $sortDirection);
+        $queryBuilder->orderBy(sprintf('e.%s', $sortField), $sortDirection);
 
         return $this->paginator->paginate($queryBuilder, $page, $size);
     }

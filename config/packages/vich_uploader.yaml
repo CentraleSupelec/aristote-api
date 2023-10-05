@@ -1,0 +1,14 @@
+vich_uploader:
+    db_driver: orm
+    storage: flysystem
+
+    metadata:
+        type: attribute
+
+    mappings:
+        videos:
+            upload_destination: media.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            directory_namer:
+                service: vich_uploader.namer_directory_property
+                options: { property: 'fileDirectory'}

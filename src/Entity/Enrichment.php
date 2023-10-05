@@ -77,6 +77,10 @@ class Enrichment
     #[Groups(groups: ['enrichments'])]
     private ?string $failureCause = null;
 
+    #[ORM\OneToOne(mappedBy: 'enrichment', targetEntity: Media::class, orphanRemoval: true)]
+    #[Assert\Valid]
+    private ?Media $media = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -142,5 +146,18 @@ class Enrichment
     public function getFailureCause(): ?string
     {
         return $this->failureCause;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Video $video): static
+    {
+        $this->media = $video;
+        $video->setEnrichment($this);
+
+        return $this;
     }
 }

@@ -3,7 +3,7 @@ server {
     listen 80 default_server;
 
     root /app/public;
-    client_max_body_size 10M;
+    client_max_body_size 800M;
     server_name default;
 
     location / {
