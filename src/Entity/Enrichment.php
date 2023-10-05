@@ -52,6 +52,20 @@ class Enrichment
     private Collection $versions;
 
     #[Groups(groups: ['enrichments'])]
+    #[OA\Property(property: 'initialVersionId', description: "Enrichment's intiail version ID", type: 'string')]
+    public function getInitialVersionId(): ?Uuid
+    {
+        $initialVersion = $this->versions->findFirst(fn (int $index, EnrichmentVersion $enrichmentVersion) => $enrichmentVersion->isInitialVersion());
+
+        if ($initialVersion) {
+            /* @var EnrichmentVersion $initialVersion */
+            return $initialVersion->getId();
+        }
+
+        return null;
+    }
+
+    #[Groups(groups: ['enrichments'])]
     private ?string $failureCause = null;
 
     public function __construct()
@@ -114,18 +128,6 @@ class Enrichment
         }
 
         return $this;
-    }
-
-    public function getInitialVersionId(): ?Uuid
-    {
-        $initialVersion = $this->versions->findFirst(fn (int $index, EnrichmentVersion $enrichmentVersion) => $enrichmentVersion->isInitialVersion());
-
-        if ($initialVersion) {
-            /* @var EnrichmentVersion $initialVersion */
-            return $initialVersion->getId();
-        }
-
-        return null;
     }
 
     public function getFailureCause(): ?string
