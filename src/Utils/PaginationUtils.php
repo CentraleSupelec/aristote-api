@@ -28,7 +28,7 @@ class PaginationUtils
     {
         $errors = [];
         if (!in_array($sort, $possibleSortFields)) {
-            $errors[] = sprintf("Sort field '%s' is not supported", $sort);
+            $errors[] = sprintf("Sort field '%s' is not supported, supported fields are : [%s]", $sort, implode(', ', $possibleSortFields));
         }
 
         if (!in_array(strtolower($order), Constants::SORT_ORDER_OPTIONS)) {
