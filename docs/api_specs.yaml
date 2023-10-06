@@ -59,6 +59,13 @@ paths:
                   isLastPage:
                     type: boolean
                     example: false
+        
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: User is not authenticated
   /enrichments/transcripts/upload:
@@ -183,10 +190,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EnrichmentDetailResponse'
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: User is not authenticated
         '403':
-          description: User is not allowed to access this resource
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /enrichments/{enrichmentId}/versions:
     get:
       summary: Get pagination result of version for an enrichment
@@ -240,10 +263,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EnrichmentPaginationResponse'
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: User is not authenticated
         '403':
-          description: User is not allowed to access this resource
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       summary: Create a new version of an enrichment
       parameters:
@@ -296,11 +335,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/VersionDetailResponse'
         '400':
-          description: Data are not valid, for instance, enrichment status is not success
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: User is not authenticated
         '403':
-          description: User is not allowed to access this resource
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /versions/{versionId}:
     get:
       summary: Get the details of an enrichment version
@@ -321,10 +374,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VersionDetailResponse'
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: User is not authenticated
         '403':
-          description: User is not allowed to access this resource
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       summary: Get the details of an enrichment version
       parameters:
@@ -497,5 +566,16 @@ components:
           items: 
             type: string
           description: video type list in which the media must be indexed (course, conference, ...)
+    ErrorResponse:
+      type: object
+      properties: 
+        status: 
+          type: string
+          description: KO
+        errors: 
+          type: array
+          items: 
+            type: string
+          description: Error messages
 security:
   - bearerAuth: []
