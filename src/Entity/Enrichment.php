@@ -30,6 +30,15 @@ class Enrichment
         ];
     }
 
+    public static function getSortFields(): array
+    {
+        return [
+            'status',
+            'createdAt',
+            'updatedAt',
+        ];
+    }
+
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]

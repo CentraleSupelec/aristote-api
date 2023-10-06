@@ -21,6 +21,16 @@ class EnrichmentVersion implements Stringable
 {
     use TimestampableEntity;
 
+    public static function getSortFields(): array
+    {
+        return [
+            'text',
+            'createdAt',
+            'updatedAt',
+            'text',
+        ];
+    }
+
     // Redifined to add group
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
