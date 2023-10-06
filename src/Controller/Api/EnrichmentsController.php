@@ -575,7 +575,7 @@ class EnrichmentsController extends AbstractController
 
     private function validateObjectAccess(Enrichment|EnrichmentVersion|null $object, string $id, bool $objectIntendedToBeEnrichmentVersion = false): ?JsonResponse
     {
-        $objectName = sprintf('enrichment', $objectIntendedToBeEnrichmentVersion ? ' version' : '');
+        $objectName = sprintf('enrichment%s', $objectIntendedToBeEnrichmentVersion ? ' version' : '');
         if (null === $object) {
             return $this->json(['status' => 'KO', 'errors' => [sprintf("No %s with ID '%s' has been found", $objectName, $id)]], 404);
         }
