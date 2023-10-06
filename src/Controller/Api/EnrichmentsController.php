@@ -79,6 +79,10 @@ class EnrichmentsController extends AbstractController
             type: 'object'
         )
     )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
+    )]
     #[OA\Parameter(
         name: 'sort',
         description: 'Sort property to use',
@@ -147,6 +151,10 @@ class EnrichmentsController extends AbstractController
             ref: new Model(type: ErrorsResponse::class),
             type: 'object'
         )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
     )]
     #[OA\Response(
         response: 403,
@@ -234,6 +242,10 @@ class EnrichmentsController extends AbstractController
             ref: new Model(type: ErrorsResponse::class),
             type: 'object'
         )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
     )]
     #[OA\Response(
         response: 403,
@@ -352,6 +364,10 @@ class EnrichmentsController extends AbstractController
         )
     )]
     #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
+    )]
+    #[OA\Response(
         response: 403,
         description: 'Not allowed to access this resource',
         content: new OA\JsonContent(
@@ -423,6 +439,10 @@ class EnrichmentsController extends AbstractController
         )
     )]
     #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
+    )]
+    #[OA\Response(
         response: 403,
         description: 'Not allowed to access this resource',
         content: new OA\JsonContent(
@@ -482,6 +502,18 @@ class EnrichmentsController extends AbstractController
             )],
             type: 'object'
         )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad parameters',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
     )]
     #[OA\Response(
         response: 403,
