@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20231012094942 extends AbstractMigration
+final class Version20231012121446 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -29,7 +29,7 @@ final class Version20231012094942 extends AbstractMigration
         $this->addSql('ALTER TABLE media ADD CONSTRAINT FK_6A2CA10CD9900337 FOREIGN KEY (enrichment_id) REFERENCES enrichment (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE video ADD CONSTRAINT FK_7CC7DA2CBF396750 FOREIGN KEY (id) REFERENCES media (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE enrichment_version DROP text');
-        $this->addSql('ALTER TABLE transcript ADD text TEXT NOT NULL');
+        $this->addSql('ALTER TABLE transcript ADD text TEXT DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
