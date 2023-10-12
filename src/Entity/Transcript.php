@@ -33,7 +33,7 @@ class Transcript
     #[Groups(groups: ['enrichment_versions'])]
     private ?string $language = null;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(allowNull: true)]
     #[Groups(groups: ['enrichment_versions'])]
     private ?string $text = null;
