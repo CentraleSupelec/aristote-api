@@ -39,3 +39,21 @@ services:
 
   League\OAuth2\Server\Repositories\ClientRepositoryInterface:
     class: App\Service\ApiClientManager
+  
+  media_storage_s3:
+    class: Aws\S3\S3Client
+    factory: [ Aws\S3\S3Client, 'factory' ]
+    arguments:
+      - version: '2006-03-01'
+        region: '%env(OVH_REGION)%'
+        credentials:
+          key: '%env(OVH_ACCESS_KEY)%'
+          secret: '%env(OVH_SECRET_KEY)%'
+        endpoint: '%env(OVH_ENDPOINT_URL)%'
+
+
+  app.service.video_upload_service:
+    class: App\Service\VideoUploadService
+    arguments:
+      $baseDirectory: '%env(APP_ENV)%/videos/'
+  App\Service\VideoUploadService: '@app.service.video_upload_service'

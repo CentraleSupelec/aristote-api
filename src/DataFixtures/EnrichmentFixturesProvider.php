@@ -59,7 +59,6 @@ class EnrichmentFixturesProvider
         $multipleChoiceQuestions = self::getMultipleChoiceQuestions($entityManager);
 
         $enrichmentVersion = (new EnrichmentVersion())
-            ->setText('Enrichment v1')
             ->setInitialVersion($initialVersion)
             ->setEnrichmentVersionMetadata($enrichmentVersionMetadata)
             ->setTranscript($transcript)

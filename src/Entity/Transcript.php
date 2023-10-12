@@ -29,9 +29,14 @@ class Transcript
     private ?string $originalFilename = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(allowNull: false)]
+    #[Assert\NotBlank(allowNull: true)]
     #[Groups(groups: ['enrichment_versions'])]
     private ?string $language = null;
+
+    #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(allowNull: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?string $text = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[Assert\Json]
@@ -101,6 +106,18 @@ class Transcript
     public function setLanguage(?string $language): self
     {
         $this->language = $language;
+
+        return $this;
+    }
+
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
+    public function setText(?string $text): self
+    {
+        $this->text = $text;
 
         return $this;
     }

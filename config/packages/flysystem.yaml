@@ -1,0 +1,11 @@
+# Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+flysystem:
+    storages:
+        media.storage:
+            adapter: 'aws'
+            # visibility: public # Make the uploaded file publicly accessible in S3
+            options:
+                client: 'media_storage_s3' # The service ID of the Aws\S3\S3Client instance
+                bucket: '%env(OVH_BUCKET_NAME)%'
+                prefix: 'medias'
+                streamReads: true

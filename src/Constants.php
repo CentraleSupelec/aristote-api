@@ -9,6 +9,7 @@ final class Constants
     public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     public const SCOPE_DEFAULT = 'scope_default';
     public const SORT_ORDER_OPTIONS = ['asc', 'desc'];
+    public const TEMPORARY_STORAGE_PATH = './tmp/videos';
 
     public static function getAvailableScopes(): array
     {

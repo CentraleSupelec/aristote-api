@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[AsCommand(name: 'app:generate-enrichments', description: 'Generates enrichments for a given Api Client.')]
-class GenerateEnrichmentsForApiClient extends Command
+class GenerateEnrichmentsForApiClientCommand extends Command
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,

@@ -10,14 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use OpenApi\Attributes as OA;
-use Stringable;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnrichmentVersionRepository::class)]
-class EnrichmentVersion implements Stringable
+class EnrichmentVersion
 {
     use TimestampableEntity;
 
@@ -51,20 +49,15 @@ class EnrichmentVersion implements Stringable
     #[OA\Property(property: 'id', description: 'Enrichment version ID.', type: 'string')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(allowNull: false)]
-    #[Groups(groups: ['enrichment_versions'])]
-    private ?string $text = null;
-
-    #[ORM\OneToOne(mappedBy: 'enrichmentVersion', targetEntity: EnrichmentVersionMetadata::class, orphanRemoval: true)]
+    #[ORM\OneToOne(mappedBy: 'enrichmentVersion', targetEntity: EnrichmentVersionMetadata::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     #[Groups(groups: ['enrichment_versions'])]
     private ?EnrichmentVersionMetadata $enrichmentVersionMetadata = null;
 
-    #[ORM\OneToOne(mappedBy: 'enrichmentVersion', targetEntity: Transcript::class, orphanRemoval: true)]
+    #[ORM\OneToOne(mappedBy: 'enrichmentVersion', targetEntity: Transcript::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     #[Groups(groups: ['enrichment_versions_with_transcript'])]
     private ?Transcript $transcript = null;
 
-    #[ORM\OneToMany(mappedBy: 'enrichmentVersion', targetEntity: MultipleChoiceQuestion::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'enrichmentVersion', targetEntity: MultipleChoiceQuestion::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     #[Groups(groups: ['enrichment_versions'])]
     private Collection $multipleChoiceQuestions;
 
@@ -80,26 +73,9 @@ class EnrichmentVersion implements Stringable
         $this->multipleChoiceQuestions = new ArrayCollection();
     }
 
-    public function __toString(): string
-    {
-        return $this->text;
-    }
-
     public function getId(): ?Uuid
     {
         return $this->id;
-    }
-
-    public function getText(): ?string
-    {
-        return $this->text;
-    }
-
-    public function setText(?string $text): self
-    {
-        $this->text = $text;
-
-        return $this;
     }
 
     public function getEnrichmentVersionMetadata(): ?EnrichmentVersionMetadata
