@@ -11,16 +11,16 @@ class EnrichmentCreationVideoUploadRequestPayload extends EnrichmentCreationRequ
 {
     #[OA\Property(property: 'videoFile', description: 'A video file', type: 'file')]
     #[Assert\NotBlank]
-    private ?UploadedFile $uploadedFile = null;
+    private ?UploadedFile $videoFile = null;
 
     public function getVideoFile(): ?UploadedFile
     {
-        return $this->uploadedFile;
+        return $this->videoFile;
     }
 
-    public function setVideoFile(?UploadedFile $uploadedFile): self
+    public function setVideoFile(?UploadedFile $videoFile): self
     {
-        $this->uploadedFile = $uploadedFile;
+        $this->videoFile = $videoFile;
 
         return $this;
     }

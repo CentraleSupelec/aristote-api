@@ -16,7 +16,7 @@ class EnrichmentVersionCreationRequestPayload
 {
     #[OA\Property(property: 'transcript', type: 'file')]
     #[AppAssert\TranscriptFileConstraint]
-    private ?UploadedFile $uploadedFile = null;
+    private ?UploadedFile $transcript = null;
 
     #[OA\Property(property: 'enrichmentVersionMetadata', type: 'object', ref: new Model(type: EnrichmentVersionMetadata::class, groups: ['enrichment_versions']))]
     private ?EnrichmentVersionMetadata $enrichmentVersionMetadata = null;
@@ -31,12 +31,12 @@ class EnrichmentVersionCreationRequestPayload
 
     public function getTranscript(): ?UploadedFile
     {
-        return $this->uploadedFile;
+        return $this->transcript;
     }
 
-    public function setTranscript(?UploadedFile $uploadedFile): self
+    public function setTranscript(?UploadedFile $transcript): self
     {
-        $this->uploadedFile = $uploadedFile;
+        $this->transcript = $transcript;
 
         return $this;
     }
