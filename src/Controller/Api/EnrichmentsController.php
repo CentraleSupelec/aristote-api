@@ -198,14 +198,14 @@ class EnrichmentsController extends AbstractController
     public function getEnrichmentByID(string $id, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository): Response
     {
         $uuidValidationErrorResponse = $this->validateUuid($id);
-        if (null !== $uuidValidationErrorResponse) {
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
 
         $enrichment = $enrichmentRepository->findOneBy(['id' => $id]);
 
         $enrichmentAccessErrorResponse = $this->validateObjectAccess($enrichment, $id);
-        if (null !== $enrichmentAccessErrorResponse) {
+        if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
 
@@ -321,7 +321,7 @@ class EnrichmentsController extends AbstractController
         EnrichmentRepository $enrichmentRepository
     ): Response {
         $uuidValidationErrorResponse = $this->validateUuid($id);
-        if (null !== $uuidValidationErrorResponse) {
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
 
@@ -345,7 +345,7 @@ class EnrichmentsController extends AbstractController
         $enrichment = $enrichmentRepository->findOneBy(['id' => $id]);
 
         $enrichmentAccessErrorResponse = $this->validateObjectAccess($enrichment, $id);
-        if (null !== $enrichmentAccessErrorResponse) {
+        if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
 
@@ -434,7 +434,7 @@ class EnrichmentsController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response {
         $uuidValidationErrorResponse = $this->validateUuid($id);
-        if (null !== $uuidValidationErrorResponse) {
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
 
@@ -447,7 +447,7 @@ class EnrichmentsController extends AbstractController
         $initialVersion = 0 === $enrichment->getVersions()->count();
 
         $enrichmentAccessErrorResponse = $this->validateObjectAccess($enrichment, $id);
-        if (null !== $enrichmentAccessErrorResponse) {
+        if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
 
@@ -556,14 +556,14 @@ class EnrichmentsController extends AbstractController
     public function getLatestEnrichmentVersionByEnrichmentID(string $id, ApiClientManager $apiClientManager, EnrichmentVersionRepository $enrichmentVersionRepository, EnrichmentRepository $enrichmentRepository): Response
     {
         $uuidValidationErrorResponse = $this->validateUuid($id);
-        if (null !== $uuidValidationErrorResponse) {
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
 
         $enrichment = $enrichmentRepository->findOneBy(['id' => $id]);
 
         $enrichmentAccessErrorResponse = $this->validateObjectAccess($enrichment, $id);
-        if (null !== $enrichmentAccessErrorResponse) {
+        if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
 
@@ -631,14 +631,14 @@ class EnrichmentsController extends AbstractController
     public function getEnrichmentVersionByID(string $versionId, ApiClientManager $apiClientManager, EnrichmentVersionRepository $enrichmentVersionRepository): Response
     {
         $uuidValidationErrorResponse = $this->validateUuid($versionId);
-        if (null !== $uuidValidationErrorResponse) {
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
 
         $enrichmentVersion = $enrichmentVersionRepository->findOneBy(['id' => $versionId]);
 
         $enrichmentVersionAccessErrorResponse = $this->validateObjectAccess($enrichmentVersion, $versionId, true);
-        if (null !== $enrichmentVersionAccessErrorResponse) {
+        if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentVersionAccessErrorResponse;
         }
 
@@ -704,14 +704,14 @@ class EnrichmentsController extends AbstractController
     public function deleteEnrichmentVersion(string $versionId, EnrichmentVersionRepository $enrichmentVersionRepository, EntityManagerInterface $entityManager): Response
     {
         $uuidValidationErrorResponse = $this->validateUuid($versionId);
-        if (null !== $uuidValidationErrorResponse) {
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
 
         $enrichmentVersion = $enrichmentVersionRepository->findOneBy(['id' => $versionId]);
 
         $enrichmentVersionAccessErrorResponse = $this->validateObjectAccess($enrichmentVersion, $versionId, true);
-        if (null !== $enrichmentVersionAccessErrorResponse) {
+        if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentVersionAccessErrorResponse;
         }
 

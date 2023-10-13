@@ -22,11 +22,11 @@ class Video extends Media
         return $this->videoFile;
     }
 
-    public function setVideoFile(?File $videoFile = null): static
+    public function setVideoFile(File $videoFile = null): static
     {
         $this->videoFile = $videoFile;
 
-        if (null !== $videoFile) {
+        if ($videoFile instanceof File) {
             $this->updatedAt = new DateTimeImmutable();
         }
 

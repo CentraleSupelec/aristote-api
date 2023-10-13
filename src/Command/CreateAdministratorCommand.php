@@ -30,9 +30,6 @@ class CreateAdministratorCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this->setDescription('Create a new admin.')
@@ -42,9 +39,6 @@ class CreateAdministratorCommand extends Command
             ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
@@ -75,9 +69,6 @@ class CreateAdministratorCommand extends Command
         return Command::SUCCESS;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         $questions = [];

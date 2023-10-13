@@ -21,9 +21,6 @@ class ApiClientManager implements ClientRepositoryInterface
     ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getClientEntity($clientIdentifier): ClientEntityInterface|null
     {
         return $this->apiClientRepository->findOneBy(['identifier' => $clientIdentifier]);
@@ -48,9 +45,6 @@ class ApiClientManager implements ClientRepositoryInterface
         $apiClient->eraseCredentials();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function validateClient($clientIdentifier, $clientSecret, $grantType): bool
     {
         if ('client_credentials' !== $grantType) {

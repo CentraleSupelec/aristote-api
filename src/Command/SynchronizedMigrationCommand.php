@@ -55,7 +55,7 @@ class SynchronizedMigrationCommand extends Command
         if ($input->getOption('shard')) {
             $arguments['--shard'] = $input->getOption('shard');
         }
-        $arrayInput = new ArrayInput(array_merge($arguments));
+        $arrayInput = new ArrayInput([...$arguments]);
         $arrayInput->setInteractive(false);
 
         return $application->run($arrayInput, $output);
