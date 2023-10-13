@@ -17,7 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class EnrichmentFixturesProvider
 {
-    public static function generateEnrichment(ApiClient $apiClient, ?EntityManagerInterface $entityManager = null): Enrichment
+    public static function generateEnrichment(ApiClient $apiClient, EntityManagerInterface $entityManager = null): Enrichment
     {
         $enrichmentVersionV1 = self::getEnrichmentVersion($entityManager, true);
         $enrichmentVersionV2 = self::getEnrichmentVersion($entityManager, false);
@@ -43,7 +43,7 @@ class EnrichmentFixturesProvider
             $dateTime->add(DateInterval::createFromDateString('1 day'));
         }
 
-        if (null !== $entityManager) {
+        if ($entityManager instanceof EntityManagerInterface) {
             $entityManager->persist($enrichment);
 
             $entityManager->flush();
@@ -52,7 +52,7 @@ class EnrichmentFixturesProvider
         return $enrichment;
     }
 
-    public static function getEnrichmentVersion(?EntityManagerInterface $entityManager = null, bool $initialVersion = false): EnrichmentVersion
+    public static function getEnrichmentVersion(EntityManagerInterface $entityManager = null, bool $initialVersion = false): EnrichmentVersion
     {
         $enrichmentVersionMetadata = self::getEnrichmentVersionMetadata($entityManager);
         $transcript = self::getTranscript($entityManager);
@@ -68,7 +68,7 @@ class EnrichmentFixturesProvider
             $enrichmentVersion->addMultipleChoiceQuestion($multipleChoiceQuestion);
         }
 
-        if (null !== $entityManager) {
+        if ($entityManager instanceof EntityManagerInterface) {
             $entityManager->persist($enrichmentVersion);
 
             $entityManager->flush();
@@ -77,7 +77,7 @@ class EnrichmentFixturesProvider
         return $enrichmentVersion;
     }
 
-    public static function getEnrichmentVersionMetadata(?EntityManagerInterface $entityManager = null): EnrichmentVersionMetadata
+    public static function getEnrichmentVersionMetadata(EntityManagerInterface $entityManager = null): EnrichmentVersionMetadata
     {
         $enrichmentVersionMetadata = (new EnrichmentVersionMetadata())
             ->setDescription('Enrichment Version Metadata Description')
@@ -88,7 +88,7 @@ class EnrichmentFixturesProvider
             ->addTopic((new Topic())->setText('Dérivé'))
         ;
 
-        if (null !== $entityManager) {
+        if ($entityManager instanceof EntityManagerInterface) {
             $entityManager->persist($enrichmentVersionMetadata);
 
             $entityManager->flush();
@@ -97,7 +97,7 @@ class EnrichmentFixturesProvider
         return $enrichmentVersionMetadata;
     }
 
-    public static function getTranscript(?EntityManagerInterface $entityManager = null): Transcript
+    public static function getTranscript(EntityManagerInterface $entityManager = null): Transcript
     {
         $sentences = self::getSentences();
         $transcript = (new Transcript())
@@ -106,7 +106,7 @@ class EnrichmentFixturesProvider
             ->setSentences($sentences)
         ;
 
-        if (null !== $entityManager) {
+        if ($entityManager instanceof EntityManagerInterface) {
             $entityManager->persist($transcript);
 
             $entityManager->flush();
@@ -135,7 +135,7 @@ class EnrichmentFixturesProvider
         ]);
     }
 
-    public static function getMultipleChoiceQuestions(?EntityManagerInterface $entityManager = null): array
+    public static function getMultipleChoiceQuestions(EntityManagerInterface $entityManager = null): array
     {
         $firstMCQFirstChoice = (new Choice())
             ->setOptionText('M=Ec2')
@@ -169,7 +169,7 @@ class EnrichmentFixturesProvider
             ->addChoice($secondMCQSecondChoice)
         ;
 
-        if (null !== $entityManager) {
+        if ($entityManager instanceof EntityManagerInterface) {
             $entityManager->persist($firstMultipleChoiceQuestion);
             $entityManager->persist($secondMultipleChoiceQuestion);
 

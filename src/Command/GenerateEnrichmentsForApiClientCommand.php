@@ -29,9 +29,6 @@ class GenerateEnrichmentsForApiClientCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this->setDescription('Generates enrichments for a given Api Client.')
@@ -40,9 +37,6 @@ class GenerateEnrichmentsForApiClientCommand extends Command
             ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
@@ -63,9 +57,6 @@ class GenerateEnrichmentsForApiClientCommand extends Command
         return Command::SUCCESS;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         if (!$input->getArgument('apiClientIdentifier')) {

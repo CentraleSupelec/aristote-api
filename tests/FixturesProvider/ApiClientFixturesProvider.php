@@ -9,7 +9,7 @@ use League\Bundle\OAuth2ServerBundle\OAuth2Grants;
 
 class ApiClientFixturesProvider
 {
-    public static function getApiClients(?EntityManagerInterface $entityManager = null): array
+    public static function getApiClients(EntityManagerInterface $entityManager = null): array
     {
         $apiClients = [
             (new ApiClient('Client with default scope', 'default', 'very-secret'))
