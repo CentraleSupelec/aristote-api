@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\EnrichmentVersion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
 /**
@@ -22,16 +24,35 @@ class EnrichmentVersionRepository extends ServiceEntityRepository
         parent::__construct($managerRegistry, EnrichmentVersion::class);
     }
 
-    public function findByEnrichmentID(string $enrichmentID, int $page, int $size, string $sortField, string $sortDirection)
+    public function findByEnrichmentId(string $enrichmentId, int $page, int $size, string $sortField, string $sortDirection): PaginationInterface
     {
         $queryBuilder = $this->createQueryBuilder('ev')
-            ->where('ev.enrichment = :enrichmentID')
+            ->where('ev.enrichment = :enrichmentId')
             ->setParameters([
-                'enrichmentID' => $enrichmentID,
+                'enrichmentId' => $enrichmentId,
             ]);
 
         $queryBuilder->orderBy(sprintf('ev.%s', $sortField), $sortDirection);
 
         return $this->paginator->paginate($queryBuilder, $page, $size);
+    }
+
+    public function findLatestVersionByEnrichmentId(string $enrichmentId): ?EnrichmentVersion
+    {
+        $enrichmentVersions = new ArrayCollection($this->createQueryBuilder('ev')
+            ->where('ev.enrichment = :enrichmentId')
+            ->setParameters([
+                'enrichmentId' => $enrichmentId,
+            ])
+            ->orderBy('ev.createdAt', 'desc')
+            ->getQuery()
+            ->getResult())
+        ;
+
+        if (0 !== $enrichmentVersions->count()) {
+            return $enrichmentVersions->get(0);
+        }
+
+        return null;
     }
 }

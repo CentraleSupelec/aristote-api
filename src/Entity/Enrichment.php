@@ -17,6 +17,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Enrichment
 {
     use TimestampableEntity;
+    final public const STATUS_WAITING_MEIDA_UPLOAD = 'WAITING_MEIDA_UPLOAD';
+    final public const STATUS_UPLOADING = 'UPLOADING';
     final public const STATUS_PENDING = 'PENDING';
     final public const STATUS_SUCCESS = 'SUCCESS';
     final public const STATUS_FAILURE = 'FAILURE';
@@ -24,6 +26,8 @@ class Enrichment
     public static function getPossibleStatuses(): array
     {
         return [
+            self::STATUS_WAITING_MEIDA_UPLOAD => self::STATUS_WAITING_MEIDA_UPLOAD,
+            self::STATUS_UPLOADING => self::STATUS_UPLOADING,
             self::STATUS_PENDING => self::STATUS_PENDING,
             self::STATUS_SUCCESS => self::STATUS_SUCCESS,
             self::STATUS_FAILURE => self::STATUS_FAILURE,
@@ -73,13 +77,21 @@ class Enrichment
 
         return null;
     }
-
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(groups: ['enrichments'])]
     private ?string $failureCause = null;
 
-    #[ORM\OneToOne(mappedBy: 'enrichment', targetEntity: Media::class, orphanRemoval: true)]
+    #[ORM\OneToOne(mappedBy: 'enrichment', targetEntity: Media::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     #[Assert\Valid]
     private ?Media $media = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\Url]
+    private ?string $mediaUrl = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\Url]
+    private ?string $notificationWebhookUrl = null;
 
     public function __construct()
     {
@@ -143,20 +155,55 @@ class Enrichment
         return $this;
     }
 
-    public function getFailureCause(): ?string
-    {
-        return $this->failureCause;
-    }
-
     public function getMedia(): ?Media
     {
         return $this->media;
     }
 
-    public function setMedia(?Video $video): static
+    public function setMedia(?Media $media): static
     {
-        $this->media = $video;
-        $video->setEnrichment($this);
+        $this->media = $media;
+
+        // set the owning side of the relation if necessary
+        if ($media instanceof Media && $media->getEnrichment() !== $this) {
+            $media->setEnrichment($this);
+        }
+
+        return $this;
+    }
+
+    public function getMediaUrl(): ?string
+    {
+        return $this->mediaUrl;
+    }
+
+    public function setMediaUrl(?string $mediaUrl): self
+    {
+        $this->mediaUrl = $mediaUrl;
+
+        return $this;
+    }
+
+    public function getNotificationWebhookUrl(): ?string
+    {
+        return $this->notificationWebhookUrl;
+    }
+
+    public function setNotificationWebhookUrl(?string $notificationWebhookUrl): self
+    {
+        $this->notificationWebhookUrl = $notificationWebhookUrl;
+
+        return $this;
+    }
+
+    public function getFailureCause(): ?string
+    {
+        return $this->failureCause;
+    }
+
+    public function setFailureCause(?string $failureCause): self
+    {
+        $this->failureCause = $failureCause;
 
         return $this;
     }

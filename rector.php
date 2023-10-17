@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Core\ValueObject\PhpVersion;
+use Rector\Naming\Rector\Assign\RenameVariableToMatchMethodCallReturnTypeRector;
 use Rector\Naming\Rector\Class_\RenamePropertyToMatchTypeRector;
 use Rector\Naming\Rector\ClassMethod\RenameParamToMatchTypeRector;
 use Rector\Set\ValueObject\LevelSetList;
@@ -41,6 +42,10 @@ return static function (RectorConfig $rectorConfig): void {
         RenameParamToMatchTypeRector::class => [
             __DIR__.'/src/Admin/*',
             __DIR__.'/src/Model/*',
+        ],
+        RenameVariableToMatchMethodCallReturnTypeRector::class => [
+            __DIR__.'/src/Service/*',
+            __DIR__.'/src/Controller/Api/*',
         ],
     ]);
 };

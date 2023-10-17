@@ -10,6 +10,7 @@ final class Constants
     public const SCOPE_DEFAULT = 'scope_default';
     public const SORT_ORDER_OPTIONS = ['asc', 'desc'];
     public const TEMPORARY_STORAGE_PATH = './tmp/videos';
+    public const TEMPORARY_STORAGE_FOR_WORKER_PATH = './public/tmp/videos';
 
     public static function getAvailableScopes(): array
     {
