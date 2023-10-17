@@ -2,7 +2,6 @@
 
 namespace App\Controller\Api;
 
-use App\Constants;
 use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
@@ -12,6 +11,7 @@ use App\Entity\Tag;
 use App\Entity\Topic;
 use App\Entity\Transcript;
 use App\Entity\Video;
+use App\Message\VideoUploadFromUrlMessage;
 use App\Model\EnrichmentCreationVideoUploadRequestPayload;
 use App\Model\EnrichmentCreationVideoUrlRequestPayload;
 use App\Model\EnrichmentParameters;
@@ -24,7 +24,6 @@ use App\Service\ApiClientManager;
 use App\Service\VideoUploadService;
 use App\Utils\PaginationUtils;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -34,6 +33,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -349,7 +349,7 @@ class EnrichmentsController extends AbstractController
             return $enrichmentAccessErrorResponse;
         }
 
-        $enrichmentVersions = $enrichmentVersionRepository->findByEnrichmentID($id, $page, $size, $sort, $order);
+        $enrichmentVersions = $enrichmentVersionRepository->findByEnrichmentId($id, $page, $size, $sort, $order);
 
         $options = [
             AbstractNormalizer::GROUPS => $groups,
@@ -431,25 +431,51 @@ class EnrichmentsController extends AbstractController
         ApiClientManager $apiClientManager,
         EnrichmentVersionRepository $enrichmentVersionRepository,
         EnrichmentRepository $enrichmentRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): Response {
         $uuidValidationErrorResponse = $this->validateUuid($id);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
 
-        $inputTranscript = $request->files->get('transcript');
-        $transcriptContent = json_decode((string) $inputTranscript->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $inputEnrichmentVersionMetadata = json_decode($request->request->get('enrichmentVersionMetadata'), true, 512, JSON_THROW_ON_ERROR);
-        $inputMultipleChoiceQuestions = $this->stringJsonObjectsToArray($request->request->get('multipleChoiceQuestions'));
-
         $enrichment = $enrichmentRepository->findOneBy(['id' => $id]);
-        $initialVersion = 0 === $enrichment->getVersions()->count();
 
         $enrichmentAccessErrorResponse = $this->validateObjectAccess($enrichment, $id);
         if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
+
+        $initialVersion = 0 === $enrichment->getVersions()->count();
+
+        if ($initialVersion) {
+            return $this->json([
+                'status' => 'KO',
+                'errors' => ['No initial version found for the enrichment. Please wait for the generation of the initial version before pushing a new one'],
+            ], 403);
+        }
+
+        $inputTranscript = $request->files->get('transcript');
+
+        if (null !== $inputTranscript) {
+            $transcriptContent = json_decode((string) $inputTranscript->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            $newTranscript = (new Transcript())
+                ->setLanguage($transcriptContent['language'])
+                ->setText($transcriptContent['text'])
+                ->setOriginalFilename($inputTranscript->getClientOriginalName())
+                ->setSentences(json_encode($transcriptContent['sentences'], JSON_THROW_ON_ERROR))
+            ;
+        } else {
+            $latestVersionTranscript = $enrichmentVersionRepository->findLatestVersionByEnrichmentId($enrichment->getId())->getTranscript();
+            $newTranscript = (new Transcript())
+                ->setText($latestVersionTranscript->getText())
+                ->setLanguage($latestVersionTranscript->getLanguage())
+                ->setOriginalFilename($latestVersionTranscript->getOriginalFilename())
+                ->setSentences($latestVersionTranscript->getSentences())
+            ;
+        }
+
+        $inputEnrichmentVersionMetadata = json_decode($request->request->get('enrichmentVersionMetadata'), true, 512, JSON_THROW_ON_ERROR);
+        $inputMultipleChoiceQuestions = $this->stringJsonObjectsToArray($request->request->get('multipleChoiceQuestions'));
 
         $enrichmentVersionMetadata = (new EnrichmentVersionMetadata())
             ->setDescription($inputEnrichmentVersionMetadata['description'])
@@ -465,13 +491,8 @@ class EnrichmentsController extends AbstractController
         }
 
         $enrichmentVersion = (new EnrichmentVersion())
-            ->setInitialVersion($initialVersion)
-            ->setTranscript((new Transcript())
-                ->setLanguage($transcriptContent['language'])
-                ->setText($transcriptContent['text'])
-                ->setOriginalFilename($inputTranscript->getClientOriginalName())
-                ->setSentences(json_encode($transcriptContent['sentences'], JSON_THROW_ON_ERROR))
-            )
+            ->setInitialVersion(false)
+            ->setTranscript($newTranscript)
             ->setEnrichmentVersionMetadata($enrichmentVersionMetadata)
         ;
 
@@ -731,7 +752,6 @@ class EnrichmentsController extends AbstractController
         summary: 'Create an enrichment from a video URL (accessible without authentication)'
     )]
     #[OA\RequestBody(
-        description: 'Parameters defining the ldap accounts which we want to retrieve',
         content: new OA\JsonContent(
             type: 'object',
             ref: new Model(type: EnrichmentCreationVideoUrlRequestPayload::class),
@@ -769,10 +789,10 @@ class EnrichmentsController extends AbstractController
         description: 'User is not authenticated',
     )]
     #[Route('/enrichments/video-urls/upload', name: 'create_enrichment_from_video_url', methods: ['POST'])]
-    public function createEnrichmentFromVideoUrl(Request $request, VideoRepository $videoRepository, VideoUploadService $videoUploadService): Response
+    public function createEnrichmentFromVideoUrl(Request $request, VideoRepository $videoRepository, VideoUploadService $videoUploadService, MessageBusInterface $messageBus, ApiClientManager $apiClientManager, EntityManagerInterface $entityManager): Response
     {
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $enrichmentCreationRequestPayload = (new EnrichmentCreationVideoUrlRequestPayload())
+        $enrichmentCreationVideoUrlRequestPayload = (new EnrichmentCreationVideoUrlRequestPayload())
             ->setVideoUrl($content['videoUrl'])
             ->setNotificationWebhookUrl($content['notificationWebhookUrl'])
             ->setEnrichmentParameters((new EnrichmentParameters())
@@ -781,39 +801,29 @@ class EnrichmentsController extends AbstractController
             )
         ;
 
-        $errors = $this->validator->validate($enrichmentCreationRequestPayload);
+        $errors = $this->validator->validate($enrichmentCreationVideoUrlRequestPayload);
         if (count($errors) > 0) {
             $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
 
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
 
-        $videoUrl = $enrichmentCreationRequestPayload->getVideoUrl();
+        $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
+        $clientEntity = $apiClientManager->getClientEntity($clientId);
 
-        try {
-            $videoName = $this->getVideoFromUrl($videoUrl);
-        } catch (Exception $exception) {
-            return $this->json(['status' => 'KO', 'errors' => [$exception->getMessage()]]);
-        }
+        $enrichment = (new Enrichment())
+            ->setStatus(Enrichment::STATUS_WAITING_MEIDA_UPLOAD)
+            ->setCreatedBy($clientEntity)
+            ->setMediaUrl($enrichmentCreationVideoUrlRequestPayload->getVideoUrl())
+            ->setNotificationWebhookUrl($enrichmentCreationVideoUrlRequestPayload->getNotificationWebhookUrl())
+        ;
 
-        $temporaryVideoPath = sprintf('%s/%s', Constants::TEMPORARY_STORAGE_PATH, $videoName);
+        $entityManager->persist($enrichment);
+        $entityManager->flush();
 
-        try {
-            $uploadedFile = new UploadedFile($temporaryVideoPath, $videoUrl);
-            $videoOrErrorsArray = $videoUploadService->uploadVideo($uploadedFile);
-            unlink($temporaryVideoPath);
-            if (!$videoOrErrorsArray instanceof Video) {
-                return $this->json(['status' => 'KO', 'errors' => $videoOrErrorsArray], 400);
-            }
-        } catch (Exception $exception) {
-            if (file_exists($temporaryVideoPath)) {
-                unlink($temporaryVideoPath);
-            }
+        $messageBus->dispatch(new VideoUploadFromUrlMessage($enrichment->getId(), $clientEntity, $enrichmentCreationVideoUrlRequestPayload));
 
-            return $this->json(['status' => 'KO', 'errors' => [$exception->getMessage()]], 400);
-        }
-
-        return $this->json(['status' => 'OK', 'id' => $videoOrErrorsArray->getEnrichment()->getId()]);
+        return $this->json(['status' => 'OK', 'id' => $enrichment->getId()]);
     }
 
     #[OA\Tag(name: 'Enrichments')]
@@ -861,7 +871,7 @@ class EnrichmentsController extends AbstractController
         description: 'User is not authenticated',
     )]
     #[Route('/enrichments/videos/upload', name: 'create_enrichment_from_uploaded_video', methods: ['POST'])]
-    public function createEnrichmentFromUploadedVideo(Request $request, VideoUploadService $videoUploadService): Response
+    public function createEnrichmentFromUploadedVideo(Request $request, VideoUploadService $videoUploadService, ApiClientManager $apiClientManager, VideoRepository $videoRepository): Response
     {
         /** @var UploadedFile $videoFile */
         $videoFile = $request->files->get('videoFile');
@@ -883,13 +893,18 @@ class EnrichmentsController extends AbstractController
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
 
-        $videoOrErrorsArray = $videoUploadService->uploadVideo($videoFile);
+        $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
+        $clientEntity = $apiClientManager->getClientEntity($clientId);
+
+        $videoOrErrorsArray = $videoUploadService->uploadVideo($videoFile, $clientEntity);
 
         if (!$videoOrErrorsArray instanceof Video) {
             return $this->json(['status' => 'KO', 'errors' => $videoOrErrorsArray], 400);
-        }
+        } else {
+            $video = $videoRepository->findOneBy(['id' => $videoOrErrorsArray->getId()]);
 
-        return $this->json(['status' => 'OK', 'id' => $videoOrErrorsArray->getEnrichment()->getId()]);
+            return $this->json(['status' => 'OK', 'id' => $video->getEnrichment()->getId()]);
+        }
     }
 
     private function validateUuid(string $id): ?JsonResponse
@@ -917,20 +932,6 @@ class EnrichmentsController extends AbstractController
         }
 
         return null;
-    }
-
-    private function getVideoFromUrl(string $videoUrl): string
-    {
-        $fileName = uniqid('video_').'.mp4';
-
-        if (!is_dir(Constants::TEMPORARY_STORAGE_PATH)) {
-            mkdir(Constants::TEMPORARY_STORAGE_PATH, 0777, true);
-        }
-
-        $videoContents = file_get_contents($videoUrl);
-        file_put_contents(sprintf('%s/%s', Constants::TEMPORARY_STORAGE_PATH, $fileName), $videoContents);
-
-        return $fileName;
     }
 
     private function stringJsonObjectsToArray(string $jsonString)

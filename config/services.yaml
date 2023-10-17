@@ -51,7 +51,6 @@ services:
           secret: '%env(OVH_SECRET_KEY)%'
         endpoint: '%env(OVH_ENDPOINT_URL)%'
 
-
   app.service.video_upload_service:
     class: App\Service\VideoUploadService
     arguments:
