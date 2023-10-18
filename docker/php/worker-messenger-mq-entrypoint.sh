@@ -8,11 +8,6 @@ if [ "$INT_ENCODING_BYTES" != "8" ]; then
     exit 1
 fi
 
-until timeout 1 bash -c "cat < /dev/null > /dev/tcp/${POSTGRES_HOST:-postgres}/5432" > /dev/null 2>&1; do
-  >&2 echo "Wait for it - postgres"
-  sleep 8
-done
-
 until timeout 1 bash -c "cat < /dev/null > /dev/tcp/${PHP_HOST:-php}/9000" > /dev/null 2>&1; do
   >&2 echo "Wait for it - php"
   sleep 8
