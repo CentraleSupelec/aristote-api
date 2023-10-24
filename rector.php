@@ -36,16 +36,13 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->skip([
         RenamePropertyToMatchTypeRector::class => [
-            __DIR__.'/src/Entity/*',
-            __DIR__.'/src/Model/*',
+            __DIR__.'/src/*',
         ],
         RenameParamToMatchTypeRector::class => [
-            __DIR__.'/src/Admin/*',
-            __DIR__.'/src/Model/*',
+            __DIR__.'/src/*',
         ],
         RenameVariableToMatchMethodCallReturnTypeRector::class => [
-            __DIR__.'/src/Service/*',
-            __DIR__.'/src/Controller/Api/*',
+            __DIR__.'/src/*',
         ],
     ]);
 };

@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\EnrichmentRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use OpenApi\Attributes as OA;
@@ -18,8 +20,11 @@ class Enrichment
 {
     use TimestampableEntity;
     final public const STATUS_WAITING_MEIDA_UPLOAD = 'WAITING_MEIDA_UPLOAD';
-    final public const STATUS_UPLOADING = 'UPLOADING';
-    final public const STATUS_PENDING = 'PENDING';
+    final public const STATUS_UPLOADING_MEDIA = 'UPLOADING_MEDIA';
+    final public const STATUS_WAITING_MEDIA_TRANSCRIPTION = 'WAITING_MEDIA_TRANSCRIPTION';
+    final public const STATUS_TRANSCRBING_MEDIA = 'TRANSCRBING_MEDIA';
+    final public const STATUS_WAITING_AI_ENRICHMENT = 'WAITING_AI_ENRICHMENT';
+    final public const STATUS_AI_ENRICHING = 'AI_ENRICHING';
     final public const STATUS_SUCCESS = 'SUCCESS';
     final public const STATUS_FAILURE = 'FAILURE';
 
@@ -27,8 +32,11 @@ class Enrichment
     {
         return [
             self::STATUS_WAITING_MEIDA_UPLOAD => self::STATUS_WAITING_MEIDA_UPLOAD,
-            self::STATUS_UPLOADING => self::STATUS_UPLOADING,
-            self::STATUS_PENDING => self::STATUS_PENDING,
+            self::STATUS_UPLOADING_MEDIA => self::STATUS_UPLOADING_MEDIA,
+            self::STATUS_WAITING_MEDIA_TRANSCRIPTION => self::STATUS_TRANSCRBING_MEDIA,
+            self::STATUS_TRANSCRBING_MEDIA => self::STATUS_TRANSCRBING_MEDIA,
+            self::STATUS_WAITING_AI_ENRICHMENT => self::STATUS_WAITING_AI_ENRICHMENT,
+            self::STATUS_AI_ENRICHING => self::STATUS_AI_ENRICHING,
             self::STATUS_SUCCESS => self::STATUS_SUCCESS,
             self::STATUS_FAILURE => self::STATUS_FAILURE,
         ];
@@ -55,6 +63,14 @@ class Enrichment
     #[ORM\JoinColumn(nullable: false, referencedColumnName: 'identifier')]
     private ?ApiClient $createdBy = null;
 
+    #[ORM\ManyToOne(inversedBy: 'aiProcessedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
+    private ?ApiClient $aiProcessedBy = null;
+
+    #[ORM\ManyToOne(inversedBy: 'transcribedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
+    private ?ApiClient $transcribedBy = null;
+
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(allowNull: false)]
     #[Assert\Choice(callback: [self::class, 'getPossibleStatuses'], multiple: false)]
@@ -77,6 +93,7 @@ class Enrichment
 
         return null;
     }
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(groups: ['enrichments'])]
     private ?string $failureCause = null;
@@ -92,6 +109,30 @@ class Enrichment
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\Url]
     private ?string $notificationWebhookUrl = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    #[OA\Property(property: 'disciplines', description: 'Disciplines', type: 'array', items: new OA\Items(type: 'string'))]
+    #[Groups(groups: ['enrichments'])]
+    #[Assert\Count(min: 1, minMessage: 'At least one discipline is expected')]
+    private ?array $disciplines = [];
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    #[OA\Property(property: 'mediaTypes', description: 'Meida Types', type: 'array', items: new OA\Items(type: 'string'))]
+    #[Groups(groups: ['enrichments'])]
+    #[Assert\Count(min: 1, minMessage: 'At least one media type is expected')]
+    private ?array $mediaTypes = [];
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $aiEnrichmentStartedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $aiEnrichmentEndedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $transribingStartedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $transribingEndedAt = null;
 
     public function __construct()
     {
@@ -111,6 +152,30 @@ class Enrichment
     public function setCreatedBy(?ApiClient $apiClient): static
     {
         $this->createdBy = $apiClient;
+
+        return $this;
+    }
+
+    public function getAiProcessedBy(): ?ApiClient
+    {
+        return $this->aiProcessedBy;
+    }
+
+    public function setAiProcessedBy(?ApiClient $apiClient): static
+    {
+        $this->aiProcessedBy = $apiClient;
+
+        return $this;
+    }
+
+    public function getTranscribedBy(): ?ApiClient
+    {
+        return $this->transcribedBy;
+    }
+
+    public function setTranscribedBy(?ApiClient $apiClient): static
+    {
+        $this->transcribedBy = $apiClient;
 
         return $this;
     }
@@ -204,6 +269,78 @@ class Enrichment
     public function setFailureCause(?string $failureCause): self
     {
         $this->failureCause = $failureCause;
+
+        return $this;
+    }
+
+    public function getAiEnrichmentStartedAt(): ?DateTimeInterface
+    {
+        return $this->aiEnrichmentStartedAt;
+    }
+
+    public function setAiEnrichmentStartedAt(DateTimeInterface $aiEnrichmentStartedAt): self
+    {
+        $this->aiEnrichmentStartedAt = $aiEnrichmentStartedAt;
+
+        return $this;
+    }
+
+    public function getAiEnrichmentEndedAt(): ?DateTimeInterface
+    {
+        return $this->aiEnrichmentEndedAt;
+    }
+
+    public function setAiEnrichmentEndedAt(DateTimeInterface $aiEnrichmentEndedAt): self
+    {
+        $this->aiEnrichmentEndedAt = $aiEnrichmentEndedAt;
+
+        return $this;
+    }
+
+    public function getTransribingStartedAt(): ?DateTimeInterface
+    {
+        return $this->transribingStartedAt;
+    }
+
+    public function setTransribingStartedAt(DateTimeInterface $transribingStartedAt): self
+    {
+        $this->transribingStartedAt = $transribingStartedAt;
+
+        return $this;
+    }
+
+    public function getTransribingEndedAt(): ?DateTimeInterface
+    {
+        return $this->transribingEndedAt;
+    }
+
+    public function setTransribingEndedAt(DateTimeInterface $transribingEndedAt): self
+    {
+        $this->transribingEndedAt = $transribingEndedAt;
+
+        return $this;
+    }
+
+    public function getMediaTypes(): array
+    {
+        return $this->mediaTypes;
+    }
+
+    public function setMediaTypes(array $mediaTypes): self
+    {
+        $this->mediaTypes = $mediaTypes;
+
+        return $this;
+    }
+
+    public function getDisciplines(): array
+    {
+        return $this->disciplines;
+    }
+
+    public function setDisciplines(array $disciplines): self
+    {
+        $this->disciplines = $disciplines;
 
         return $this;
     }

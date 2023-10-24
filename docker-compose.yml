@@ -20,13 +20,47 @@ services:
       - "./var/log:/app/var/log:delegated"
       - "./vendor:/app/vendor:delegated"
 
-  workers:
+  video-upload-worker:
     restart: always
     build:
       dockerfile: ./docker/php/Dockerfile
       context: .
       target: php_dev
     entrypoint: [ '/bin/bash', '/worker-messenger-mq-entrypoint.sh' ]
+    depends_on:
+      - php
+    volumes:
+      - ".:/app:cached"
+      - "./var/cache:/app/var/cache:delegated"
+      - "./var/log:/app/var/log:delegated"
+
+  transcription-worker:
+    restart: always
+    build:
+      dockerfile: ./docker/php/Dockerfile
+      context: .
+      target: php_dev
+    command:
+      - php-fpm
+      - -d xdebug.client_host=host.docker.internal
+    entrypoint: [ '/bin/bash', '/worker-enrichment-entrypoint.sh' ]
+    depends_on:
+      - php
+    volumes:
+      - ".:/app:cached"
+      - "./var/cache:/app/var/cache:delegated"
+      - "./var/log:/app/var/log:delegated"
+
+  ai-enrichment-worker:
+    restart: always
+    build:
+      dockerfile: ./docker/php/Dockerfile
+      context: .
+      target: php_dev
+    command:
+      - php-fpm
+      - -d xdebug.client_host=host.docker.internal
+    entrypoint: [ '/bin/bash', '/worker-enrichment-entrypoint.sh' ]
     depends_on:
       - php
     volumes:

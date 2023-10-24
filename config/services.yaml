@@ -39,7 +39,7 @@ services:
 
   League\OAuth2\Server\Repositories\ClientRepositoryInterface:
     class: App\Service\ApiClientManager
-  
+
   media_storage_s3:
     class: Aws\S3\S3Client
     factory: [ Aws\S3\S3Client, 'factory' ]
@@ -51,8 +51,34 @@ services:
           secret: '%env(OVH_SECRET_KEY)%'
         endpoint: '%env(OVH_ENDPOINT_URL)%'
 
+  Aws\S3\S3Client: '@media_storage_s3'
+
   app.service.video_upload_service:
     class: App\Service\VideoUploadService
     arguments:
       $baseDirectory: '%env(APP_ENV)%/videos/'
+      $bucketName: '%env(OVH_BUCKET_NAME)%'
+
   App\Service\VideoUploadService: '@app.service.video_upload_service'
+
+  app.transcription_worker:
+    class: App\Service\EnrichmentWorkerService
+    arguments:
+      $clientId: "%env(TRANSCRIPTION_WORKER_CLIENT_ID)%"
+      $clientSecret: "%env(TRANSCRIPTION_WORKER_SECRET)%"
+      $uriPrefix: "%env(URI_PREFIX)%"
+
+  app.ai_enrichment_worker:
+    class: App\Service\EnrichmentWorkerService
+    arguments:
+      $clientId: "%env(AI_ENRICHMENT_WORKER_CLIENT_ID)%"
+      $clientSecret: "%env(AI_ENRICHMENT_WORKER_SECRET)%"
+      $uriPrefix: "%env(URI_PREFIX)%"
+  
+  App\Command\TranscribingWorkerCommand:
+    arguments:
+      $enrichmentWorkerService: '@app.transcription_worker'
+  
+  App\Command\AiEnrichmentWorkerCommand:
+    arguments:
+      $enrichmentWorkerService: '@app.ai_enrichment_worker'

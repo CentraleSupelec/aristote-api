@@ -50,10 +50,18 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Enrichment::class)]
     private Collection $ownedEnrichments;
 
+    #[ORM\OneToMany(mappedBy: 'aiProcessedBy', targetEntity: Enrichment::class)]
+    private Collection $aiProcessedEnrichments;
+
+    #[ORM\OneToMany(mappedBy: 'transcribedBy', targetEntity: Enrichment::class)]
+    private Collection $transcribedEnrichments;
+
     public function __construct(string $name, string $identifier, ?string $secret)
     {
         parent::__construct($name, $identifier, $secret);
         $this->ownedEnrichments = new ArrayCollection();
+        $this->aiProcessedEnrichments = new ArrayCollection();
+        $this->transcribedEnrichments = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -174,7 +182,7 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         return $this->ownedEnrichments;
     }
 
-    public function addOwnedEnrichments(Enrichment $enrichment): static
+    public function addOwnedEnrichment(Enrichment $enrichment): static
     {
         if (!$this->ownedEnrichments->contains($enrichment)) {
             $this->ownedEnrichments->add($enrichment);
@@ -184,11 +192,67 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         return $this;
     }
 
-    public function removeOwnedEnrichments(Enrichment $enrichment): static
+    public function removeOwnedEnrichment(Enrichment $enrichment): static
     {
         // set the owning side to null (unless already changed)
         if ($this->ownedEnrichments->removeElement($enrichment) && $enrichment->getCreatedBy() === $this) {
             $enrichment->setCreatedBy(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Enrichment>
+     */
+    public function getAiProcessedEnrichments(): Collection
+    {
+        return $this->aiProcessedEnrichments;
+    }
+
+    public function addAiProcessedEnrichment(Enrichment $enrichment): static
+    {
+        if (!$this->aiProcessedEnrichments->contains($enrichment)) {
+            $this->aiProcessedEnrichments->add($enrichment);
+            $enrichment->setAiProcessedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAiProcessedEnrichment(Enrichment $enrichment): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->aiProcessedEnrichments->removeElement($enrichment) && $enrichment->getAiProcessedBy() === $this) {
+            $enrichment->setAiProcessedBy(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Enrichment>
+     */
+    public function getTranscribedEnrichments(): Collection
+    {
+        return $this->transcribedEnrichments;
+    }
+
+    public function addTranscribedEnrichment(Enrichment $enrichment): static
+    {
+        if (!$this->transcribedEnrichments->contains($enrichment)) {
+            $this->transcribedEnrichments->add($enrichment);
+            $enrichment->setTranscribedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTranscribedEnrichment(Enrichment $enrichment): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->transcribedEnrichments->removeElement($enrichment) && $enrichment->getTranscribedBy() === $this) {
+            $enrichment->setTranscribedBy(null);
         }
 
         return $this;

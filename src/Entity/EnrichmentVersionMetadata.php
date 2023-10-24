@@ -3,8 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EnrichmentVersionMetadataRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Validator\Constraints as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use OpenApi\Attributes as OA;
@@ -25,34 +24,33 @@ class EnrichmentVersionMetadata implements Stringable
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string')]
     #[Assert\NotBlank(allowNull: false)]
     #[Groups(groups: ['enrichment_versions'])]
     private ?string $title = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string')]
     #[Assert\NotBlank(allowNull: false)]
     #[Groups(groups: ['enrichment_versions'])]
     private ?string $description = null;
 
-    #[ORM\OneToMany(mappedBy: 'enrichmentVersionMetadata', targetEntity: Topic::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'topics', description: 'Topics', type: 'array', items: new OA\Items(type: 'string'))]
-    private Collection $topics;
-
-    #[ORM\OneToMany(mappedBy: 'enrichmentVersionMetadata', targetEntity: Tag::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     #[Groups(groups: ['enrichment_versions'])]
-    #[OA\Property(property: 'tags', description: 'Tags', type: 'array', items: new OA\Items(type: 'string'))]
-    private Collection $tags;
+    private ?array $topics = [];
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    #[AppAssert\DisciplineConstraint]
+    private string $discipline;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    #[AppAssert\MediaTypeConstraint]
+    private string $mediaType;
 
     #[ORM\OneToOne(inversedBy: 'enrichmentVersionMetadata', targetEntity: EnrichmentVersion::class)]
     private ?EnrichmentVersion $enrichmentVersion = null;
-
-    public function __construct()
-    {
-        $this->topics = new ArrayCollection();
-        $this->tags = new ArrayCollection();
-    }
 
     public function __toString(): string
     {
@@ -88,58 +86,38 @@ class EnrichmentVersionMetadata implements Stringable
         return $this;
     }
 
-    /**
-     * @return Collection<int, Topic>
-     */
-    public function getTopics(): Collection
+    public function getTopics(): array
     {
         return $this->topics;
     }
 
-    public function addTopic(Topic $topic): static
+    public function setTopics(array $topics): self
     {
-        if (!$this->topics->contains($topic)) {
-            $this->topics->add($topic);
-            $topic->setEnrichmentVersionMetadata($this);
-        }
+        $this->topics = $topics;
 
         return $this;
     }
 
-    public function removeTopic(Topic $topic): static
+    public function getDiscipline(): ?string
     {
-        // set the owning side to null (unless already changed)
-        if ($this->topics->removeElement($topic) && $topic->getEnrichmentVersionMetadata() === $this) {
-            $topic->setEnrichmentVersionMetadata(null);
-        }
+        return $this->discipline;
+    }
+
+    public function setDiscipline(?string $discipline): self
+    {
+        $this->discipline = $discipline;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Tag>
-     */
-    public function getTags(): Collection
+    public function getMediaType(): ?string
     {
-        return $this->tags;
+        return $this->mediaType;
     }
 
-    public function addTag(Tag $tag): static
+    public function setMediaType(?string $mediaType): self
     {
-        if (!$this->tags->contains($tag)) {
-            $this->tags->add($tag);
-            $tag->setEnrichmentVersionMetadata($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTag(Tag $tag): static
-    {
-        // set the owning side to null (unless already changed)
-        if ($this->topics->removeElement($tag) && $tag->getEnrichmentVersionMetadata() === $this) {
-            $tag->setEnrichmentVersionMetadata(null);
-        }
+        $this->mediaType = $mediaType;
 
         return $this;
     }
