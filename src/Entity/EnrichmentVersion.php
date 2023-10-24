@@ -13,6 +13,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnrichmentVersionRepository::class)]
 class EnrichmentVersion
@@ -51,6 +52,7 @@ class EnrichmentVersion
 
     #[ORM\OneToOne(mappedBy: 'enrichmentVersion', targetEntity: EnrichmentVersionMetadata::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     #[Groups(groups: ['enrichment_versions'])]
+    #[Assert\Valid]
     private ?EnrichmentVersionMetadata $enrichmentVersionMetadata = null;
 
     #[ORM\OneToOne(mappedBy: 'enrichmentVersion', targetEntity: Transcript::class, orphanRemoval: true, cascade: ['persist', 'remove'])]

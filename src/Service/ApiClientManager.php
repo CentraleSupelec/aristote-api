@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\ApiClient;
 use App\Repository\ApiClientRepository;
 use League\Bundle\OAuth2ServerBundle\Model\AbstractClient;
-use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
@@ -21,7 +20,7 @@ class ApiClientManager implements ClientRepositoryInterface
     ) {
     }
 
-    public function getClientEntity($clientIdentifier): ClientEntityInterface|null
+    public function getClientEntity($clientIdentifier): ApiClient|null
     {
         return $this->apiClientRepository->findOneBy(['identifier' => $clientIdentifier]);
     }

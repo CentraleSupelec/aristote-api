@@ -2,15 +2,13 @@
 
 namespace App\Controller\Api;
 
+use App\Constants;
 use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\EnrichmentVersionMetadata;
 use App\Entity\MultipleChoiceQuestion;
-use App\Entity\Tag;
-use App\Entity\Topic;
 use App\Entity\Transcript;
-use App\Entity\Video;
 use App\Message\VideoUploadFromUrlMessage;
 use App\Model\EnrichmentCreationVideoUploadRequestPayload;
 use App\Model\EnrichmentCreationVideoUrlRequestPayload;
@@ -21,6 +19,7 @@ use App\Repository\EnrichmentRepository;
 use App\Repository\EnrichmentVersionRepository;
 use App\Repository\VideoRepository;
 use App\Service\ApiClientManager;
+use App\Service\ScopeAuthorizationCheckerService;
 use App\Service\VideoUploadService;
 use App\Utils\PaginationUtils;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,7 +47,8 @@ class EnrichmentsController extends AbstractController
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
-        private readonly PaginationUtils $paginationUtils
+        private readonly PaginationUtils $paginationUtils,
+        private readonly ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService
     ) {
     }
 
@@ -124,6 +124,10 @@ class EnrichmentsController extends AbstractController
     #[Route('/enrichments', name: 'enrichments', methods: ['GET'])]
     public function getEnrichments(Request $request, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository): Response
     {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         $sort = $request->query->get('sort', 'createdAt');
         $order = $request->query->get('order', 'DESC');
         $size = $request->query->get('size', 50);
@@ -197,6 +201,10 @@ class EnrichmentsController extends AbstractController
     #[Route('/enrichments/{id}', name: 'enrichment', methods: ['GET'])]
     public function getEnrichmentByID(string $id, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository): Response
     {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         $uuidValidationErrorResponse = $this->validateUuid($id);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
@@ -320,6 +328,10 @@ class EnrichmentsController extends AbstractController
         EnrichmentVersionRepository $enrichmentVersionRepository,
         EnrichmentRepository $enrichmentRepository
     ): Response {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         $uuidValidationErrorResponse = $this->validateUuid($id);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
@@ -433,6 +445,10 @@ class EnrichmentsController extends AbstractController
         EnrichmentRepository $enrichmentRepository,
         EntityManagerInterface $entityManager,
     ): Response {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         $uuidValidationErrorResponse = $this->validateUuid($id);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
@@ -482,13 +498,9 @@ class EnrichmentsController extends AbstractController
             ->setTitle($inputEnrichmentVersionMetadata['title'])
         ;
 
-        foreach ($inputEnrichmentVersionMetadata['tags'] as $tag) {
-            $enrichmentVersionMetadata->addTag((new Tag())->setText($tag));
-        }
-
-        foreach ($inputEnrichmentVersionMetadata['topics'] as $topic) {
-            $enrichmentVersionMetadata->addTopic((new Topic())->setText($topic));
-        }
+        $enrichmentVersionMetadata->setTopics($inputEnrichmentVersionMetadata['topics']);
+        $enrichmentVersionMetadata->setDiscipline($inputEnrichmentVersionMetadata['discipline']);
+        $enrichmentVersionMetadata->setMediaType($inputEnrichmentVersionMetadata['mediaType']);
 
         $enrichmentVersion = (new EnrichmentVersion())
             ->setInitialVersion(false)
@@ -574,8 +586,12 @@ class EnrichmentsController extends AbstractController
         schema: new OA\Schema(type: 'string')
     )]
     #[Route('/enrichments/{id}/versions/latest', name: 'latest_enrichment_version', methods: ['GET'])]
-    public function getLatestEnrichmentVersionByEnrichmentID(string $id, ApiClientManager $apiClientManager, EnrichmentVersionRepository $enrichmentVersionRepository, EnrichmentRepository $enrichmentRepository): Response
+    public function getLatestEnrichmentVersionByEnrichmentID(string $id, EnrichmentVersionRepository $enrichmentVersionRepository, EnrichmentRepository $enrichmentRepository): Response
     {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         $uuidValidationErrorResponse = $this->validateUuid($id);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
@@ -649,8 +665,12 @@ class EnrichmentsController extends AbstractController
         schema: new OA\Schema(type: 'string')
     )]
     #[Route('/versions/{versionId}', name: 'enrichment_version', methods: ['GET'])]
-    public function getEnrichmentVersionByID(string $versionId, ApiClientManager $apiClientManager, EnrichmentVersionRepository $enrichmentVersionRepository): Response
+    public function getEnrichmentVersionByID(string $versionId, EnrichmentVersionRepository $enrichmentVersionRepository): Response
     {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         $uuidValidationErrorResponse = $this->validateUuid($versionId);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
@@ -724,6 +744,10 @@ class EnrichmentsController extends AbstractController
     #[Route('/versions/{versionId}', name: 'delete_enrichment_version', methods: ['DELETE'])]
     public function deleteEnrichmentVersion(string $versionId, EnrichmentVersionRepository $enrichmentVersionRepository, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         $uuidValidationErrorResponse = $this->validateUuid($versionId);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
@@ -736,9 +760,9 @@ class EnrichmentsController extends AbstractController
             return $enrichmentVersionAccessErrorResponse;
         }
 
-        if ($enrichmentVersion->isInitialVersion()) {
-            return $this->json(['status' => 'KO', 'errors' => "Can't delete initial version"], 403);
-        }
+        // if ($enrichmentVersion->isInitialVersion()) {
+        //     return $this->json(['status' => 'KO', 'errors' => "Can't delete initial version"], 403);
+        // }
 
         $entityManager->remove($enrichmentVersion);
         $entityManager->flush();
@@ -791,6 +815,10 @@ class EnrichmentsController extends AbstractController
     #[Route('/enrichments/video-urls/upload', name: 'create_enrichment_from_video_url', methods: ['POST'])]
     public function createEnrichmentFromVideoUrl(Request $request, VideoRepository $videoRepository, VideoUploadService $videoUploadService, MessageBusInterface $messageBus, ApiClientManager $apiClientManager, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $enrichmentCreationVideoUrlRequestPayload = (new EnrichmentCreationVideoUrlRequestPayload())
             ->setVideoUrl($content['videoUrl'])
@@ -816,6 +844,8 @@ class EnrichmentsController extends AbstractController
             ->setCreatedBy($clientEntity)
             ->setMediaUrl($enrichmentCreationVideoUrlRequestPayload->getVideoUrl())
             ->setNotificationWebhookUrl($enrichmentCreationVideoUrlRequestPayload->getNotificationWebhookUrl())
+            ->setDisciplines($enrichmentCreationVideoUrlRequestPayload->getEnrichmentParameters()->getDisciplines())
+            ->setMediaTypes($enrichmentCreationVideoUrlRequestPayload->getEnrichmentParameters()->getVideoTypes())
         ;
 
         $entityManager->persist($enrichment);
@@ -871,12 +901,21 @@ class EnrichmentsController extends AbstractController
         description: 'User is not authenticated',
     )]
     #[Route('/enrichments/videos/upload', name: 'create_enrichment_from_uploaded_video', methods: ['POST'])]
-    public function createEnrichmentFromUploadedVideo(Request $request, VideoUploadService $videoUploadService, ApiClientManager $apiClientManager, VideoRepository $videoRepository): Response
-    {
+    public function createEnrichmentFromUploadedVideo(
+        Request $request,
+        VideoUploadService $videoUploadService,
+        ApiClientManager $apiClientManager,
+        VideoRepository $videoRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
         /** @var UploadedFile $videoFile */
         $videoFile = $request->files->get('videoFile');
         $inputEnrichmentParameters = json_decode($request->request->get('enrichmentParameters'), true, 512, JSON_THROW_ON_ERROR);
-        $enrichmentCreationRequestPayload = (new EnrichmentCreationVideoUploadRequestPayload())
+        $enrichmentCreationVideoUploadRequestPayload = (new EnrichmentCreationVideoUploadRequestPayload())
             ->setVideoFile($videoFile)
             ->setNotificationWebhookUrl($request->request->get('notificationWebhookUrl'))
             ->setEnrichmentParameters((new EnrichmentParameters())
@@ -885,7 +924,7 @@ class EnrichmentsController extends AbstractController
             )
         ;
 
-        $errors = $this->validator->validate($enrichmentCreationRequestPayload);
+        $errors = $this->validator->validate($enrichmentCreationVideoUploadRequestPayload);
 
         if (count($errors) > 0) {
             $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
@@ -896,15 +935,24 @@ class EnrichmentsController extends AbstractController
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
 
-        $videoOrErrorsArray = $videoUploadService->uploadVideo($videoFile, $clientEntity);
+        $enrichment = (new Enrichment())
+                ->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT)
+                ->setCreatedBy($clientEntity)
+        ;
 
-        if (!$videoOrErrorsArray instanceof Video) {
-            return $this->json(['status' => 'KO', 'errors' => $videoOrErrorsArray], 400);
-        } else {
-            $video = $videoRepository->findOneBy(['id' => $videoOrErrorsArray->getId()]);
+        $enrichment = $videoUploadService->uploadVideo($videoFile, $clientEntity, $enrichment);
 
-            return $this->json(['status' => 'OK', 'id' => $video->getEnrichment()->getId()]);
+        $errors = $this->validator->validate($enrichment);
+        if (count($errors) > 0) {
+            return $this->json([
+                'status' => 'KO',
+                'errors' => array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors)),
+            ], 400);
         }
+        $entityManager->persist($enrichment);
+        $entityManager->flush();
+
+        return $this->json(['status' => 'OK', 'id' => $enrichment->getId()]);
     }
 
     private function validateUuid(string $id): ?JsonResponse
@@ -928,7 +976,7 @@ class EnrichmentsController extends AbstractController
         $enrichment = $object instanceof EnrichmentVersion ? $object->getEnrichment() : $object;
 
         if ($enrichment->getCreatedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf('You are not allowed to access this %s', $objectName, $id)]], 403);
+            return $this->json(['status' => 'KO', 'errors' => [sprintf('You are not allowed to access this %s', $objectName)]], 403);
         }
 
         return null;

@@ -4,7 +4,6 @@ namespace App\MessageHandler;
 
 use App\Constants;
 use App\Entity\Enrichment;
-use App\Entity\Video;
 use App\Message\VideoUploadFromUrlMessage;
 use App\Repository\EnrichmentRepository;
 use App\Service\VideoUploadService;
@@ -28,8 +27,7 @@ class VideoUploadFromUrlMessageHandler
     public function __invoke(VideoUploadFromUrlMessage $videoUploadFromUrlMessage): void
     {
         $enrichment = $this->enrichmentRepository->findOneBy(['id' => $videoUploadFromUrlMessage->getEnrichmentId()]);
-        $enrichment->setStatus(Enrichment::STATUS_UPLOADING);
-        $this->entityManager->persist($enrichment);
+        $enrichment->setStatus(Enrichment::STATUS_UPLOADING_MEDIA);
         $this->entityManager->flush();
 
         $videoUrl = $videoUploadFromUrlMessage->getEnrichmentCreationVideoUrlRequestPayload()->getVideoUrl();
@@ -45,13 +43,9 @@ class VideoUploadFromUrlMessageHandler
 
         try {
             $uploadedFile = new UploadedFile($temporaryVideoPath, $videoUrl);
-            $videoOrErrorsArray = $this->videoUploadService->uploadVideo($uploadedFile, $videoUploadFromUrlMessage->getApiClient(), $enrichment);
-
+            $enrichment = $this->videoUploadService->uploadVideo($uploadedFile, $videoUploadFromUrlMessage->getApiClient(), $enrichment);
+            $this->entityManager->flush();
             unlink($temporaryVideoPath);
-            if (!$videoOrErrorsArray instanceof Video) {
-                $errorMessage = implode(',', $videoOrErrorsArray);
-                $this->handleUploadFailure($enrichment, new Exception($errorMessage), $errorMessage);
-            }
         } catch (Exception $exception) {
             if (file_exists($temporaryVideoPath)) {
                 unlink($temporaryVideoPath);

@@ -2,23 +2,23 @@
 
 namespace App\Service;
 
+use App\Constants;
 use App\Entity\ApiClient;
 use App\Entity\Enrichment;
 use App\Entity\Video;
-use Doctrine\ORM\EntityManagerInterface;
+use Aws\S3\S3Client;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class VideoUploadService
 {
     public function __construct(
         private readonly string $baseDirectory,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator,
+        private readonly string $bucketName,
+        private readonly S3Client $s3Client
     ) {
     }
 
-    public function uploadVideo(UploadedFile $uploadedFile, ApiClient $apiClient, Enrichment $enrichment = null): Video|array
+    public function uploadVideo(UploadedFile $uploadedFile, ApiClient $apiClient, Enrichment $enrichment): Enrichment
     {
         $directory = $this->baseDirectory.$apiClient->getIdentifier();
 
@@ -27,25 +27,22 @@ class VideoUploadService
             ->setFileDirectory($directory)
         ;
 
-        if (!$enrichment instanceof Enrichment) {
-            $enrichment = (new Enrichment())
-                ->setStatus(Enrichment::STATUS_PENDING)
-                ->setMedia($video)
-                ->setCreatedBy($apiClient)
-            ;
+        $enrichment
+            ->setMedia($video)
+            ->setStatus(Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION)
+        ;
 
-            $constraintViolationList = $this->validator->validate($enrichment);
-            if (count($constraintViolationList) > 0) {
-                return array_map(fn ($error) => $error->getMessage(), iterator_to_array($constraintViolationList));
-            }
-            $this->entityManager->persist($enrichment);
-        } else {
-            $enrichment
-                ->setMedia($video)
-                ->setStatus(Enrichment::STATUS_PENDING);
-        }
-        $this->entityManager->flush();
+        return $enrichment;
+    }
 
-        return $video;
+    public function generatePublicLink(string $filePath): string
+    {
+        $command = $this->s3Client->getCommand('GetObject', [
+            'Bucket' => $this->bucketName,
+            'Key' => Constants::MEDIAS_PREFIX.'/'.$filePath,
+            'Expires' => time() + 3600,
+        ]);
+
+        return $this->s3Client->createPresignedRequest($command, '+1 hour')->getUri();
     }
 }

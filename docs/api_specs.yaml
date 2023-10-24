@@ -437,7 +437,10 @@ components:
           type: string
           description: Status
           enum:
+            - WAITING_MEIDA_UPLOAD
+            - UPLOADING
             - PENDING
+            - PROCESSING_AI
             - SUCCESS
             - FAILURE
         initialVersionId:
@@ -445,6 +448,14 @@ components:
           format: int64
           description: Initial version extracted from enrichment pipeline if status is SUCCESS, null otherwise
           example: null
+        disciplines:
+          type: array
+          items:
+            type: string
+        mediaTypes:
+          type: array
+          items:
+            type: string
         failureCause:
           type: object
           description: Object containing failure cause is status is FAILURE, null otherwise
@@ -482,10 +493,10 @@ components:
           type: array
           items:
             type: string
-        tags:
-          type: array
-          items:
-            type: string
+        discipline:
+          type: string
+        mediaType:
+          type: string
     transcript:
       type: object
       properties:
