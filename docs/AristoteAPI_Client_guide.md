@@ -16,7 +16,7 @@ The result of an `Enrichment` is called a `Version`, and the `Version`produced b
 `Enrichments` by AI are very usefull and time savers but are not perfect. It is important that the edTech product in which the **AristoteAPI** `client` is integrated implements a user interface to let the end user correct the generated output. In order to improve **Aristote AI**, it is also important the the corrected `Version` is posted by the `client`using the **AristoteAPI**
 
 
-# Client API Flowcharts
+# Client API Charts
 
 ## Posting a `Media` and crating an `Enrichment`
 The first step is to post a media to be processed by **Aristote**.
@@ -119,7 +119,7 @@ sequenceDiagram
    AristoteAPI-->>Client: Status, latest Version
 ```
 
-The `client` may delete a `Version` of a particular `Enrichment` he owns, if it's not the `InitialVersion`:
+The `client` owning an `Enrichment` may delete a `Version` if it's not the `InitialVersion`:
 ```mermaid
 sequenceDiagram
    participant Client
