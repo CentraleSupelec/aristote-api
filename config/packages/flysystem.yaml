@@ -5,7 +5,7 @@ flysystem:
             adapter: 'aws'
             # visibility: public # Make the uploaded file publicly accessible in S3
             options:
-                client: 'media_storage_s3' # The service ID of the Aws\S3\S3Client instance
+                client: 'media_storage_s3'
                 bucket: '%env(OVH_BUCKET_NAME)%'
                 prefix: 'medias'
                 streamReads: true

@@ -58,6 +58,7 @@ services:
     arguments:
       $baseDirectory: '%env(APP_ENV)%/videos/'
       $bucketName: '%env(OVH_BUCKET_NAME)%'
+      $linkExpirationInMinutes: '%env(S3_LINK_EXPIRATION_IN_MINUTES)%'
 
   App\Service\VideoUploadService: '@app.service.video_upload_service'
 
@@ -82,3 +83,11 @@ services:
   App\Command\AiEnrichmentWorkerCommand:
     arguments:
       $enrichmentWorkerService: '@app.ai_enrichment_worker'
+  
+  App\Controller\Api\TranscribingWorkerController:
+    arguments:
+      $transcriptionWorkerTimeoutInMinutes: "%env(TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES)%"
+
+  App\Controller\Api\AiEnrichmentsWorkerController:
+    arguments:
+      $aiEnrichmentWorkerTimeoutInMinutes: "%env(AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES)%"

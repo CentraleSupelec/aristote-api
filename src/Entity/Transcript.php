@@ -25,22 +25,22 @@ class Transcript
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(allowNull: false)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job'])]
     private ?string $originalFilename = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job'])]
     private ?string $language = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job'])]
     private ?string $text = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[Assert\Json]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job'])]
     #[OA\Property(property: 'sentences', description: "Transcipt's sentences", type: 'array', items: new OA\Items(type: 'object', properties: [
         new OA\Property(
             property: 'is_transient',

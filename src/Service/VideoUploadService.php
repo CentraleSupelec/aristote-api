@@ -14,6 +14,7 @@ class VideoUploadService
     public function __construct(
         private readonly string $baseDirectory,
         private readonly string $bucketName,
+        private readonly int $linkExpirationInMinutes,
         private readonly S3Client $s3Client
     ) {
     }
@@ -37,12 +38,13 @@ class VideoUploadService
 
     public function generatePublicLink(string $filePath): string
     {
+        $expirationDate = time() + $this->linkExpirationInMinutes * 60;
         $command = $this->s3Client->getCommand('GetObject', [
             'Bucket' => $this->bucketName,
             'Key' => Constants::MEDIAS_PREFIX.'/'.$filePath,
-            'Expires' => time() + 3600,
+            'Expires' => $expirationDate,
         ]);
 
-        return $this->s3Client->createPresignedRequest($command, '+1 hour')->getUri();
+        return $this->s3Client->createPresignedRequest($command, $expirationDate)->getUri();
     }
 }

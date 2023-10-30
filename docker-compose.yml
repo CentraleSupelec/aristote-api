@@ -68,6 +68,38 @@ services:
       - "./var/cache:/app/var/cache:delegated"
       - "./var/log:/app/var/log:delegated"
 
+  client-worker:
+    restart: always
+    build:
+      dockerfile: ./docker/php/Dockerfile
+      context: .
+      target: php_dev
+    command:
+      - php-fpm
+      - -d xdebug.client_host=host.docker.internal
+    entrypoint: [ '/bin/bash', '/worker-enrichment-entrypoint.sh' ]
+    depends_on:
+      - php
+    volumes:
+      - ".:/app:cached"
+      - "./var/cache:/app/var/cache:delegated"
+      - "./var/log:/app/var/log:delegated"
+
+  client-nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+      target: nginx_dev
+    depends_on:
+      - client-worker
+    environment:
+      PHP_BACKEND: client-worker
+    volumes:
+      - "./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:cached"
+      - ".:/app:cached"
+    ports:
+      - ${FRONT_PORT:-8081}:80
+
   nginx:
     build:
       context: .

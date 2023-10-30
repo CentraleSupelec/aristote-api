@@ -8,6 +8,7 @@ use App\Entity\EnrichmentVersion;
 use App\Entity\Transcript;
 use App\Model\EnrichmentTranscriptRequestPayload;
 use App\Model\ErrorsResponse;
+use App\Model\TranscriptionJobResponse;
 use App\Repository\EnrichmentRepository;
 use App\Repository\EnrichmentVersionRepository;
 use App\Service\ApiClientManager;
@@ -27,13 +28,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Constraints\Uuid;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints\Uuid as UuidConstraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/v1')]
 class TranscribingWorkerController extends AbstractController
 {
     public function __construct(
+        private readonly int $transcriptionWorkerTimeoutInMinutes,
         private readonly LoggerInterface $logger,
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
@@ -127,9 +130,13 @@ class TranscribingWorkerController extends AbstractController
             return $uuidValidationErrorResponse;
         }
 
+        $taskId = $request->request->get('taskId');
+        $status = $request->request->get('status');
+        $failureCause = $request->request->get('failureCause');
+
         $enrichment = $enrichmentRepository->findOneBy(['id' => $id]);
 
-        $enrichmentAccessErrorResponse = $this->validateEnrichmentAccess($enrichment, $id);
+        $enrichmentAccessErrorResponse = $this->validateEnrichmentAccess($enrichment, $id, $taskId);
         if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
@@ -141,6 +148,14 @@ class TranscribingWorkerController extends AbstractController
                 'status' => 'KO',
                 'errors' => ['There is already an initial version found for the enrichment'],
             ], 403);
+        }
+
+        if ('KO' === $status) {
+            $enrichment->setFailureCause($failureCause);
+            $enrichment->setStatus(Enrichment::STATUS_FAILURE);
+            $entityManager->flush();
+
+            return $this->json(['status' => 'OK']);
         }
 
         $inputTranscript = $request->files->get('transcript');
@@ -187,18 +202,7 @@ class TranscribingWorkerController extends AbstractController
         response: 200,
         description: 'Returns an enrichment',
         content: new OA\JsonContent(
-            properties: [
-                new OA\Property(
-                    property: 'id',
-                    description: 'Enrichment ID',
-                    type: 'string'
-                ),
-                new OA\Property(
-                    property: 'mediaTemporaryUrl',
-                    description: 'Media Temporary Url',
-                    type: 'string'
-                ),
-            ],
+            ref: new Model(type: TranscriptionJobResponse::class),
             type: 'object'
         )
     )]
@@ -222,8 +226,15 @@ class TranscribingWorkerController extends AbstractController
             type: 'object'
         )
     )]
+    #[OA\Parameter(
+        name: 'taskId',
+        description: 'Task ID',
+        in: 'query',
+        schema: new OA\Schema(type: 'string')
+    )]
     #[Route('/enrichments/transcription/job/oldest', name: 'get_transcription_job', methods: ['GET'])]
     public function getEnrichmentJob(
+        Request $request,
         ApiClientManager $apiClientManager,
         EnrichmentRepository $enrichmentRepository,
         LockFactory $lockFactory,
@@ -235,12 +246,19 @@ class TranscribingWorkerController extends AbstractController
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
         }
 
+        $taskId = $request->query->get('taskId');
+
+        $uuidValidationErrorResponse = $this->validateUuid($taskId);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
-            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingMediaTranscriptionStatusOrTranscribingMediaStatusForMoreThanXMinutes(1);
+            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingMediaTranscriptionStatusOrTranscribingMediaStatusForMoreThanXMinutes($this->transcriptionWorkerTimeoutInMinutes);
 
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => ['No transcription job currently available']], 404);
@@ -251,17 +269,16 @@ class TranscribingWorkerController extends AbstractController
                 $mediaFilePath = sprintf('%s/%s', $enrichment->getMedia()->getFileDirectory(), $enrichment->getMedia()->getFileName());
                 $mediaTemporaryUrl = $videoUploadService->generatePublicLink($mediaFilePath);
                 $enrichment
-                    ->setStatus(Enrichment::STATUS_TRANSCRBING_MEDIA)
+                    ->setStatus(Enrichment::STATUS_TRANSCRIBING_MEDIA)
                     ->setTransribingStartedAt(new DateTime())
                     ->setTranscribedBy($clientEntity)
+                    ->setTranscriptionTaskId(Uuid::fromString($taskId))
                 ;
                 $entityManager->flush();
                 $enrichmentLock->release();
+                $transcriptionJobResponse = (new TranscriptionJobResponse())->setEnrichmentId($enrichment->getId())->setMediaTemporaryUrl($mediaTemporaryUrl);
 
-                return $this->json([
-                    'id' => $enrichment->getId(),
-                    'mediaTemporaryUrl' => $mediaTemporaryUrl,
-                ]);
+                return $this->json($transcriptionJobResponse);
             }
         }
 
@@ -270,7 +287,7 @@ class TranscribingWorkerController extends AbstractController
 
     private function validateUuid(string $id): ?JsonResponse
     {
-        $constraintViolationList = $this->validator->validate($id, new Uuid());
+        $constraintViolationList = $this->validator->validate($id, new UuidConstraint());
 
         if ($constraintViolationList->count() > 0) {
             return $this->json(['status' => 'KO', 'errors' => [sprintf("'%s' is not a valid UUID", $id)]], 400);
@@ -279,15 +296,16 @@ class TranscribingWorkerController extends AbstractController
         return null;
     }
 
-    private function validateEnrichmentAccess(Enrichment|null $object, string $id): ?JsonResponse
+    private function validateEnrichmentAccess(Enrichment|null $enrichment, string $id, string $taskId): ?JsonResponse
     {
-        if (!$object instanceof Enrichment) {
+        if (!$enrichment instanceof Enrichment) {
             return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment with ID '%s' has been found", $id)]], 404);
         }
 
-        $enrichment = $object instanceof EnrichmentVersion ? $object->getEnrichment() : $object;
-
-        if ($enrichment->getTranscribedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')) {
+        if (
+            $enrichment->getTranscribedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')
+            || (string) $enrichment->getTranscriptionTaskId() !== $taskId
+        ) {
             return $this->json(['status' => 'KO', 'errors' => ['You are not allowed to access this enrichment']], 403);
         }
 
