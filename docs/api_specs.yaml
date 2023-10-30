@@ -444,8 +444,8 @@ components:
             - SUCCESS
             - FAILURE
         initialVersionId:
-          type: integer
-          format: int64
+          type: string
+          format: uuid4
           description: Initial version extracted from enrichment pipeline if status is SUCCESS, null otherwise
           example: null
         disciplines:
@@ -457,19 +457,19 @@ components:
           items:
             type: string
         failureCause:
-          type: object
-          description: Object containing failure cause is status is FAILURE, null otherwise
-          properties:
-            reason:
-              type: string
-              description: Text containing failure reason
+          type: string
+        notificationStatus:
+          type: integer
+          format: int64
+        notifiedAt:
+          type: string
+          format: date
     VersionDetailResponse:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
-          example: 10
+          type: string
+          format: uuid4
         createdAt:
           type: string
           format: date
