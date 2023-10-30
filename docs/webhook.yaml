@@ -1,0 +1,35 @@
+openapi: 3.0.3
+info:
+  title: Swagger Aristote - OpenAPI 3.0
+  version: 0.0.1
+  description: All endpoints are protected using authentication mechanism. This is not describe in this document.
+paths:
+  /webhook:
+    post:
+      summary: This endpoint describe the mecanism in case of a notification event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid4
+                  description: The enrichment ID
+                status:
+                  type: string
+                  description: Status
+                  enum:
+                    - SUCCESS
+                    - FAILURE
+                initialVersionId:
+                  type: string
+                  format: uuid4
+                  example: null
+                failureCause:
+                  type: string
+      responses:
+        '200':
+          description: successful operation
