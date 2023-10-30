@@ -22,7 +22,7 @@ class Enrichment
     final public const STATUS_WAITING_MEIDA_UPLOAD = 'WAITING_MEIDA_UPLOAD';
     final public const STATUS_UPLOADING_MEDIA = 'UPLOADING_MEDIA';
     final public const STATUS_WAITING_MEDIA_TRANSCRIPTION = 'WAITING_MEDIA_TRANSCRIPTION';
-    final public const STATUS_TRANSCRBING_MEDIA = 'TRANSCRBING_MEDIA';
+    final public const STATUS_TRANSCRIBING_MEDIA = 'TRANSCRIBING_MEDIA';
     final public const STATUS_WAITING_AI_ENRICHMENT = 'WAITING_AI_ENRICHMENT';
     final public const STATUS_AI_ENRICHING = 'AI_ENRICHING';
     final public const STATUS_SUCCESS = 'SUCCESS';
@@ -33,8 +33,8 @@ class Enrichment
         return [
             self::STATUS_WAITING_MEIDA_UPLOAD => self::STATUS_WAITING_MEIDA_UPLOAD,
             self::STATUS_UPLOADING_MEDIA => self::STATUS_UPLOADING_MEDIA,
-            self::STATUS_WAITING_MEDIA_TRANSCRIPTION => self::STATUS_TRANSCRBING_MEDIA,
-            self::STATUS_TRANSCRBING_MEDIA => self::STATUS_TRANSCRBING_MEDIA,
+            self::STATUS_WAITING_MEDIA_TRANSCRIPTION => self::STATUS_WAITING_MEDIA_TRANSCRIPTION,
+            self::STATUS_TRANSCRIBING_MEDIA => self::STATUS_TRANSCRIBING_MEDIA,
             self::STATUS_WAITING_AI_ENRICHMENT => self::STATUS_WAITING_AI_ENRICHMENT,
             self::STATUS_AI_ENRICHING => self::STATUS_AI_ENRICHING,
             self::STATUS_SUCCESS => self::STATUS_SUCCESS,
@@ -67,9 +67,15 @@ class Enrichment
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     private ?ApiClient $aiProcessedBy = null;
 
+    #[ORM\Column(type: UuidType::NAME, nullable: true)]
+    private ?Uuid $aiProcessingTaskId = null;
+
     #[ORM\ManyToOne(inversedBy: 'transcribedEnrichments', targetEntity: ApiClient::class, )]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     private ?ApiClient $transcribedBy = null;
+
+    #[ORM\Column(type: UuidType::NAME, nullable: true)]
+    private ?Uuid $transcriptionTaskId = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(allowNull: false)]
@@ -110,6 +116,10 @@ class Enrichment
     #[Assert\Url]
     private ?string $notificationWebhookUrl = null;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(groups: ['enrichments'])]
+    private ?string $notificationStatus = null;
+
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'disciplines', description: 'Disciplines', type: 'array', items: new OA\Items(type: 'string'))]
     #[Groups(groups: ['enrichments'])]
@@ -133,6 +143,10 @@ class Enrichment
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $transribingEndedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments'])]
+    private ?DateTimeInterface $notifiedAt = null;
 
     public function __construct()
     {
@@ -188,6 +202,30 @@ class Enrichment
     public function setStatus(?string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getAiProcessingTaskId(): ?Uuid
+    {
+        return $this->aiProcessingTaskId;
+    }
+
+    public function setAiProcessingTaskId(?Uuid $aiProcessingTaskId): self
+    {
+        $this->aiProcessingTaskId = $aiProcessingTaskId;
+
+        return $this;
+    }
+
+    public function getTranscriptionTaskId(): ?Uuid
+    {
+        return $this->transcriptionTaskId;
+    }
+
+    public function setTranscriptionTaskId(?Uuid $transcriptionTaskId): self
+    {
+        $this->transcriptionTaskId = $transcriptionTaskId;
 
         return $this;
     }
@@ -317,6 +355,30 @@ class Enrichment
     public function setTransribingEndedAt(DateTimeInterface $transribingEndedAt): self
     {
         $this->transribingEndedAt = $transribingEndedAt;
+
+        return $this;
+    }
+
+    public function getNotifiedAt(): ?DateTimeInterface
+    {
+        return $this->notifiedAt;
+    }
+
+    public function setNotifiedAt(DateTimeInterface $notifiedAt): self
+    {
+        $this->notifiedAt = $notifiedAt;
+
+        return $this;
+    }
+
+    public function getNotificationStatus(): ?string
+    {
+        return $this->notificationStatus;
+    }
+
+    public function setNotificationStatus(?string $notificationStatus): self
+    {
+        $this->notificationStatus = $notificationStatus;
 
         return $this;
     }

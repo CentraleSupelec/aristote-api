@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -34,8 +35,19 @@ class TranscribingWorkerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $symfonyStyle = new SymfonyStyle($input, $output);
+        $taskId = Uuid::v7();
 
-        $response = $this->enrichmentWorkerService->apiRequestWithToken('GET', '/enrichments/transcription/job/oldest', successCodes: [Response::HTTP_OK, Response::HTTP_NOT_FOUND]);
+        $response = $this->enrichmentWorkerService->apiRequestWithToken(
+            'GET',
+            '/enrichments/transcription/job/oldest',
+            options: [
+                'query' => [
+                    'taskId' => (string) $taskId,
+                ],
+            ],
+            successCodes: [Response::HTTP_OK, Response::HTTP_NOT_FOUND]
+        );
+
         if (!$response instanceof ResponseInterface) {
             $aristoteApiException = new AristoteApiException(
                 'Null response from AristoteApi API'
@@ -61,20 +73,38 @@ class TranscribingWorkerCommand extends Command
             throw new AristoteApiException($aristoteApiException->getMessage(), $aristoteApiException->getCode(), $aristoteApiException);
         }
 
-        if (isset($job['id']) && isset($job['mediaTemporaryUrl'])) {
-            $enrichmentId = $job['id'];
-            $symfonyStyle->info(sprintf('Got 1 job : Enrichment ID => %s', $enrichmentId));
+        if (isset($job['enrichmentId'])) {
+            $enrichmentId = $job['enrichmentId'];
+            if (isset($job['mediaTemporaryUrl'])) {
+                $symfonyStyle->info(sprintf('Got 1 job : Enrichment ID => %s', $enrichmentId));
+            } else {
+                $requestOptions = [
+                    'body' => [
+                        'status' => 'KO',
+                        'failureCause' => 'No MediaUrl in AristoteApi response',
+                    ],
+                ];
+
+                $response = $this->enrichmentWorkerService->apiRequestWithToken('POST', sprintf('/enrichments/%s/versions/initial/transcript', $enrichmentId), $requestOptions);
+
+                throw new AristoteApiException('No Enrichment ID or MediaUrl in AristoteApi response');
+            }
         } else {
-            throw new AristoteApiException('No Enrichment ID or MediaUrl in AristoteApi response');
+            throw new AristoteApiException('No Enrichment ID in AristoteApi response');
         }
 
         // Simulate generation initial version
         $symfonyStyle->info('Generating transcript ...');
-        sleep(10);
+        sleep(5);
 
         $requestOptions = [
             'body' => [
                 'transcript' => fopen('public/transcript.json', 'r'),
+                'taskId' => $taskId,
+                'status' => 'OK',
+            ],
+            'query' => [
+                'taskId' => $taskId,
             ],
         ];
 

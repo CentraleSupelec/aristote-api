@@ -81,7 +81,7 @@ class EnrichmentRepository extends ServiceEntityRepository
         ))
             ->setParameters([
             'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
-            'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRBING_MEDIA,
+            'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
             'timeThreshold' => (new DateTime())->modify('-'.$minutes.' minutes'),
         ])
             ->orderBy('e.createdAt', 'ASC')

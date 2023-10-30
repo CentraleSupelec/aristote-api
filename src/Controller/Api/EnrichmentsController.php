@@ -915,6 +915,7 @@ class EnrichmentsController extends AbstractController
         /** @var UploadedFile $videoFile */
         $videoFile = $request->files->get('videoFile');
         $inputEnrichmentParameters = json_decode($request->request->get('enrichmentParameters'), true, 512, JSON_THROW_ON_ERROR);
+
         $enrichmentCreationVideoUploadRequestPayload = (new EnrichmentCreationVideoUploadRequestPayload())
             ->setVideoFile($videoFile)
             ->setNotificationWebhookUrl($request->request->get('notificationWebhookUrl'))
@@ -936,8 +937,10 @@ class EnrichmentsController extends AbstractController
         $clientEntity = $apiClientManager->getClientEntity($clientId);
 
         $enrichment = (new Enrichment())
-                ->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT)
                 ->setCreatedBy($clientEntity)
+                ->setNotificationWebhookUrl($enrichmentCreationVideoUploadRequestPayload->getNotificationWebhookUrl())
+                ->setDisciplines($enrichmentCreationVideoUploadRequestPayload->getEnrichmentParameters()->getDisciplines())
+                ->setMediaTypes($enrichmentCreationVideoUploadRequestPayload->getEnrichmentParameters()->getVideoTypes())
         ;
 
         $enrichment = $videoUploadService->uploadVideo($videoFile, $clientEntity, $enrichment);

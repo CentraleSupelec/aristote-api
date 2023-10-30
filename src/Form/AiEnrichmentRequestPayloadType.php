@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Model\AiEnrichmentRequestPayload;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\UuidType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,6 +19,9 @@ class AiEnrichmentRequestPayloadType extends AbstractType
                 'entry_type' => MultipleChoiceQuestionType::class,
                 'allow_add' => true,
             ])
+            ->add('taskId', UuidType::class)
+            ->add('failureCause')
+            ->add('status')
         ;
     }
 

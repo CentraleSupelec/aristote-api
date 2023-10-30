@@ -6,7 +6,9 @@ use App\Constants;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Form\AiEnrichmentRequestPayloadType;
+use App\Model\AiEnrichmentJobResponse;
 use App\Model\AiEnrichmentRequestPayload;
+use App\Model\EnrichmentWebhookPayload;
 use App\Model\ErrorsResponse;
 use App\Repository\EnrichmentRepository;
 use App\Repository\EnrichmentVersionRepository;
@@ -16,11 +18,14 @@ use App\Service\VideoUploadService;
 use App\Utils\PaginationUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use League\Flysystem\FilesystemOperator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,13 +33,16 @@ use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Constraints\Uuid;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints\Uuid as UuidConstraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/v1')]
 class AiEnrichmentsWorkerController extends AbstractController
 {
     public function __construct(
+        private readonly int $aiEnrichmentWorkerTimeoutInMinutes,
         private readonly LoggerInterface $logger,
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
@@ -110,7 +118,9 @@ class AiEnrichmentsWorkerController extends AbstractController
         EnrichmentVersionRepository $enrichmentVersionRepository,
         EnrichmentRepository $enrichmentRepository,
         EntityManagerInterface $entityManager,
-        ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService
+        ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
+        HttpClientInterface $httpClient,
+        FilesystemOperator $mediaStorage
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_PROCESSING_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
@@ -121,35 +131,47 @@ class AiEnrichmentsWorkerController extends AbstractController
             return $uuidValidationErrorResponse;
         }
 
-        $enrichmentVersion = $enrichmentVersionRepository->findOneBy(['id' => $versionId]);
-
-        $enrichmentVersionAccessErrorResponse = $this->validateEnrichmentVersionAccess($enrichmentVersion, $versionId);
-        if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
-            return $enrichmentVersionAccessErrorResponse;
-        }
-
-        if (!$enrichmentVersion->isInitialVersion()) {
-            return $this->json([
-                'status' => 'KO',
-                'errors' => ['This enrichment version is not an initial version waiting for AI Enrichment'],
-            ], 403);
-        }
-
         $aiEnrichmentRequestPayload = new AiEnrichmentRequestPayload();
         $form = $this->createForm(AiEnrichmentRequestPayloadType::class, $aiEnrichmentRequestPayload);
         $requestBody = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $form->submit($requestBody);
 
-        $errors = $this->validator->validate($aiEnrichmentRequestPayload);
-        if (0 === $errors->count() && $form->isValid()) {
+        if ($form->isValid()) {
+            $enrichmentVersion = $enrichmentVersionRepository->findOneBy(['id' => $versionId]);
+
+            $enrichmentVersionAccessErrorResponse = $this->validateEnrichmentVersionAccess(
+                $enrichmentVersion,
+                $versionId,
+                $aiEnrichmentRequestPayload->getTaskId()
+            );
+            if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
+                return $enrichmentVersionAccessErrorResponse;
+            }
+
+            if (!$enrichmentVersion->isInitialVersion()) {
+                return $this->json([
+                    'status' => 'KO',
+                    'errors' => ['This enrichment version is not an initial version waiting for AI Enrichment'],
+                ], 403);
+            }
+
+            $enrichment = $enrichmentVersion->getEnrichment();
+
+            if ('KO' === $aiEnrichmentRequestPayload->getStatus()) {
+                $enrichment->setFailureCause($aiEnrichmentRequestPayload->getFailureCause());
+                $enrichment->setStatus(Enrichment::STATUS_FAILURE);
+                $entityManager->flush();
+
+                return $this->json(['status' => 'OK']);
+            }
+
             $enrichmentVersion->setEnrichmentVersionMetadata($aiEnrichmentRequestPayload->getEnrichmentVersionMetadata());
 
             $multipleChoiceQuestions = $aiEnrichmentRequestPayload->getMultipleChoiceQuestions();
             foreach ($multipleChoiceQuestions as $multipleChoiceQuestion) {
                 $enrichmentVersion->addMultipleChoiceQuestion($multipleChoiceQuestion);
             }
-
-            $enrichmentVersion->getEnrichment()->setStatus(Enrichment::STATUS_SUCCESS)->setAiEnrichmentEndedAt(new DateTime());
+            $enrichment->setStatus(Enrichment::STATUS_SUCCESS)->setAiEnrichmentEndedAt(new DateTime());
 
             $errors = $this->validator->validate($enrichmentVersion);
             if (count($errors) > 0) {
@@ -158,11 +180,43 @@ class AiEnrichmentsWorkerController extends AbstractController
                 return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
             }
 
+            $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
+                ->setId($enrichment->getId())
+                ->setStatus($enrichment->getStatus())
+                ->setFailureCause($enrichment->getFailureCause())
+                ->setInitialVersionId($enrichmentVersion->getId())
+            ;
+            try {
+                $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
+
+                $response = $httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [
+                    'body' => $serialized,
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                    ],
+                ]);
+
+                $enrichment->setNotificationStatus($response->getStatusCode());
+                if (200 === $response->getStatusCode()) {
+                    $enrichment->setNotifiedAt(new DateTime());
+                }
+            } catch (Exception $e) {
+                $enrichment->setNotificationStatus($e->getCode());
+            }
+
             $entityManager->flush();
+            $mediaStorage->delete($enrichment->getMedia()->getFileDirectory().'/'.$enrichment->getMedia()->getFileName());
 
             return $this->json(['status' => 'OK']);
         } else {
-            return $this->json(['errors' => $errors]);
+            $errors = $form->getErrors(deep: true);
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                /* @var FormError $error */
+                $errorMessages[] = sprintf("Error on field '%s' : %s", $error->getOrigin()->getName(), $error->getMessage());
+            }
+
+            return $this->json(['status' => 'KO', 'errors' => $errorMessages], 400);
         }
     }
 
@@ -173,21 +227,10 @@ class AiEnrichmentsWorkerController extends AbstractController
     )]
     #[OA\Response(
         response: 200,
-        description: 'Returns an enrichment',
+        description: 'Returns a job',
         content: new OA\JsonContent(
-            properties: [
-                new OA\Property(
-                    property: 'id',
-                    description: 'Enrichment ID',
-                    type: 'string'
-                ),
-                new OA\Property(
-                    property: 'mediaTemporaryUrl',
-                    description: 'Media Temporary Url',
-                    type: 'string'
-                ),
-            ],
-            type: 'object'
+            type: 'object',
+            ref: new Model(type: AiEnrichmentJobResponse::class),
         )
     )]
     #[OA\Response(
@@ -210,8 +253,15 @@ class AiEnrichmentsWorkerController extends AbstractController
             type: 'object'
         )
     )]
+    #[OA\Parameter(
+        name: 'taskId',
+        description: 'Task ID',
+        in: 'query',
+        schema: new OA\Schema(type: 'string')
+    )]
     #[Route('/enrichments/job/ai_enrichment/oldest', name: 'get_enrichment_job', methods: ['GET'])]
     public function getEnrichmentJob(
+        Request $request,
         ApiClientManager $apiClientManager,
         EnrichmentRepository $enrichmentRepository,
         LockFactory $lockFactory,
@@ -223,12 +273,19 @@ class AiEnrichmentsWorkerController extends AbstractController
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
         }
 
+        $taskId = $request->query->get('taskId');
+
+        $uuidValidationErrorResponse = $this->validateUuid($taskId);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
-            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(1);
+            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes($this->aiEnrichmentWorkerTimeoutInMinutes);
 
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => ['No job currently available']], 404);
@@ -245,20 +302,23 @@ class AiEnrichmentsWorkerController extends AbstractController
                     ->setStatus(Enrichment::STATUS_AI_ENRICHING)
                     ->setAiEnrichmentStartedAt(new DateTime())
                     ->setAiProcessedBy($clientEntity)
+                    ->setAiProcessingTaskId(Uuid::fromString($taskId))
                 ;
                 $entityManager->flush();
                 $enrichmentLock->release();
 
                 $options = [
-                    AbstractNormalizer::GROUPS => ['enrichment_versions'],
+                    AbstractNormalizer::GROUPS => ['enrichment_job'],
                 ];
 
-                return $this->json([
-                    'enrichmentVersionId' => $enrichmentVersion->getId(),
-                    'transcript' => $enrichmentVersion->getTranscript(),
-                    'disciplines' => $enrichment->getDisciplines(),
-                    'mediaTypes' => $enrichment->getMediaTypes(),
-                ], context: $options);
+                $aiEnrichmentJobResponse = (new AiEnrichmentJobResponse())
+                    ->setEnrichmentVersionId($enrichmentVersion->getId())
+                    ->setTranscript($enrichmentVersion->getTranscript())
+                    ->setDisciplines($enrichment->getDisciplines())
+                    ->setMediaTypes($enrichment->getMediaTypes())
+                ;
+
+                return $this->json($aiEnrichmentJobResponse, context: $options);
             }
         }
 
@@ -267,7 +327,7 @@ class AiEnrichmentsWorkerController extends AbstractController
 
     private function validateUuid(string $id): ?JsonResponse
     {
-        $constraintViolationList = $this->validator->validate($id, new Uuid());
+        $constraintViolationList = $this->validator->validate($id, new UuidConstraint());
 
         if ($constraintViolationList->count() > 0) {
             return $this->json(['status' => 'KO', 'errors' => [sprintf("'%s' is not a valid UUID", $id)]], 400);
@@ -276,13 +336,18 @@ class AiEnrichmentsWorkerController extends AbstractController
         return null;
     }
 
-    private function validateEnrichmentVersionAccess(EnrichmentVersion|null $enrichmentVersion, string $id): ?JsonResponse
+    private function validateEnrichmentVersionAccess(EnrichmentVersion|null $enrichmentVersion, string $id, string $taskId): ?JsonResponse
     {
         if (!$enrichmentVersion instanceof EnrichmentVersion) {
             return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment version with ID '%s' has been found", $id)]], 404);
         }
 
-        if ($enrichmentVersion->getEnrichment()->getAiProcessedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')) {
+        $enrichment = $enrichmentVersion->getEnrichment();
+
+        if (
+            $enrichment->getAiProcessedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')
+            || (string) $enrichment->getAiProcessingTaskId() !== $taskId
+        ) {
             return $this->json(['status' => 'KO', 'errors' => ['You are not allowed to access this enrichment version']], 403);
         }
 
