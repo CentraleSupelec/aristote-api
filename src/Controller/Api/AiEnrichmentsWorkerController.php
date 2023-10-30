@@ -201,6 +201,7 @@ class AiEnrichmentsWorkerController extends AbstractController
                     $enrichment->setNotifiedAt(new DateTime());
                 }
             } catch (Exception $e) {
+                $this->logger->error($e->getMessage());
                 $enrichment->setNotificationStatus($e->getCode());
             }
 
