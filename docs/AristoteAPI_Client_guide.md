@@ -85,7 +85,7 @@ sequenceDiagram
    participant Client
    participant AristoteAPI
    Client->>+AristoteAPI: GET /api/v1/versions/{versionId}
-   AristoteAPI-->>Client: Status, transcript, metadata (title, descripiton, tags, media-type), discipline, MCQ
+   AristoteAPI-->>Client: Status, transcript, metadata (title, description, tags, media-type), discipline, MCQ
 ```
 
 ## Managing multiple `Enrichment` `Versions`
