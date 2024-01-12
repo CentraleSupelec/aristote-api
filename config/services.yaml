@@ -53,14 +53,14 @@ services:
 
   Aws\S3\S3Client: '@media_storage_s3'
 
-  app.service.video_upload_service:
-    class: App\Service\VideoUploadService
+  app.service.file_upload_service:
+    class: App\Service\FileUploadService
     arguments:
       $baseDirectory: '%env(APP_ENV)%/videos/'
       $bucketName: '%env(OVH_BUCKET_NAME)%'
       $linkExpirationInMinutes: '%env(S3_LINK_EXPIRATION_IN_MINUTES)%'
 
-  App\Service\VideoUploadService: '@app.service.video_upload_service'
+  App\Service\FileUploadService: '@app.service.file_upload_service'
 
   app.transcription_worker:
     class: App\Service\EnrichmentWorkerService
@@ -75,7 +75,14 @@ services:
       $clientId: "%env(AI_ENRICHMENT_WORKER_CLIENT_ID)%"
       $clientSecret: "%env(AI_ENRICHMENT_WORKER_SECRET)%"
       $uriPrefix: "%env(URI_PREFIX)%"
-  
+
+  app.ai_evaluation_worker:
+    class: App\Service\EnrichmentWorkerService
+    arguments:
+      $clientId: "%env(AI_EVALUATION_WORKER_CLIENT_ID)%"
+      $clientSecret: "%env(AI_EVALUATION_WORKER_SECRET)%"
+      $uriPrefix: "%env(URI_PREFIX)%"
+
   App\Command\TranscribingWorkerCommand:
     arguments:
       $enrichmentWorkerService: '@app.transcription_worker'
@@ -83,7 +90,11 @@ services:
   App\Command\AiEnrichmentWorkerCommand:
     arguments:
       $enrichmentWorkerService: '@app.ai_enrichment_worker'
-  
+
+  App\Command\AiEvaluationWorkerCommand:
+    arguments:
+      $enrichmentWorkerService: '@app.ai_evaluation_worker'
+
   App\Controller\Api\TranscribingWorkerController:
     arguments:
       $transcriptionWorkerTimeoutInMinutes: "%env(TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES)%"
@@ -91,3 +102,7 @@ services:
   App\Controller\Api\AiEnrichmentsWorkerController:
     arguments:
       $aiEnrichmentWorkerTimeoutInMinutes: "%env(AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES)%"
+
+  App\Controller\Api\AiEvaluationWorkerController:
+    arguments:
+      $aiEvaluationWorkerTimeoutInMinutes: "%env(AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES)%"

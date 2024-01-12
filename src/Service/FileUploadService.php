@@ -9,7 +9,7 @@ use App\Entity\Video;
 use Aws\S3\S3Client;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class VideoUploadService
+class FileUploadService
 {
     public function __construct(
         private readonly string $baseDirectory,
@@ -19,7 +19,7 @@ class VideoUploadService
     ) {
     }
 
-    public function uploadVideo(UploadedFile $uploadedFile, ApiClient $apiClient, Enrichment $enrichment): Enrichment
+    public function uploadFile(UploadedFile $uploadedFile, ApiClient $apiClient, Enrichment $enrichment): Enrichment
     {
         $directory = $this->baseDirectory.$apiClient->getIdentifier();
 

@@ -12,8 +12,8 @@ use App\Model\TranscriptionJobResponse;
 use App\Repository\EnrichmentRepository;
 use App\Repository\EnrichmentVersionRepository;
 use App\Service\ApiClientManager;
+use App\Service\FileUploadService;
 use App\Service\ScopeAuthorizationCheckerService;
-use App\Service\VideoUploadService;
 use App\Utils\PaginationUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -240,7 +240,7 @@ class TranscribingWorkerController extends AbstractController
         LockFactory $lockFactory,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
-        VideoUploadService $videoUploadService
+        FileUploadService $fileUploadService
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSCRIPTION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
@@ -267,7 +267,7 @@ class TranscribingWorkerController extends AbstractController
             $enrichmentLock = $lockFactory->createLock(sprintf('transcibing-enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
                 $mediaFilePath = sprintf('%s/%s', $enrichment->getMedia()->getFileDirectory(), $enrichment->getMedia()->getFileName());
-                $mediaTemporaryUrl = $videoUploadService->generatePublicLink($mediaFilePath);
+                $mediaTemporaryUrl = $fileUploadService->generatePublicLink($mediaFilePath);
                 $enrichment
                     ->setStatus(Enrichment::STATUS_TRANSCRIBING_MEDIA)
                     ->setTransribingStartedAt(new DateTime())

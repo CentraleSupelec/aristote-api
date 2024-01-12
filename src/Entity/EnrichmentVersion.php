@@ -61,6 +61,7 @@ class EnrichmentVersion
 
     #[ORM\OneToMany(mappedBy: 'enrichmentVersion', targetEntity: MultipleChoiceQuestion::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     #[Groups(groups: ['enrichment_versions'])]
+    #[ORM\OrderBy(['createdAt' => 'ASC'])]
     private Collection $multipleChoiceQuestions;
 
     #[ORM\ManyToOne(inversedBy: 'versions', targetEntity: Enrichment::class)]
@@ -68,6 +69,7 @@ class EnrichmentVersion
     private ?Enrichment $enrichment = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    #[Groups(groups: ['enrichment_versions'])]
     private bool $initialVersion = false;
 
     public function __construct()

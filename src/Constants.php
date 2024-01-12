@@ -7,10 +7,12 @@ use League\Bundle\OAuth2ServerBundle\OAuth2Grants;
 final class Constants
 {
     public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    public const ROLE_USER = 'ROLE_USER';
     public const SCOPE_DEFAULT = 'scope_default';
     public const SCOPE_CLIENT = 'scope_client';
     public const SCOPE_PROCESSING_WORKER = 'scope_processing_worker';
     public const SCOPE_TRANSCRIPTION_WORKER = 'scope_transcription_worker';
+    public const SCOPE_EVALUATION_WORKER = 'scope_evaluation_worker';
     public const SORT_ORDER_OPTIONS = ['asc', 'desc'];
     public const TEMPORARY_STORAGE_PATH = './tmp/videos';
     public const TEMPORARY_STORAGE_FOR_WORKER_PATH = './public/tmp/videos';
@@ -23,6 +25,7 @@ final class Constants
             'Client' => Constants::SCOPE_CLIENT,
             'AI Enrichment Worker' => Constants::SCOPE_PROCESSING_WORKER,
             'Transcription Worker' => Constants::SCOPE_TRANSCRIPTION_WORKER,
+            'AI Evaluation Worker' => Constants::SCOPE_EVALUATION_WORKER,
         ];
     }
 

@@ -2,34 +2,38 @@
 
 namespace App\Model;
 
+use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[OA\Schema()]
-class AiEnrichmentJobResponse
+class AiEvaluationJobResponse
 {
     #[OA\Property(property: 'enrichmentId', type: 'string')]
-    #[Groups(groups: ['enrichment_job'])]
+    #[Groups(groups: ['ai_evaluation_job'])]
     private ?Uuid $enrichmentId = null;
 
     #[OA\Property(property: 'enrichmentVersionId', type: 'string')]
-    #[Groups(groups: ['enrichment_job'])]
+    #[Groups(groups: ['ai_evaluation_job'])]
     private ?Uuid $enrichmentVersionId = null;
 
     #[OA\Property(property: 'transcript', type: 'object', ref: new Model(type: Transcript::class, groups: ['enrichment_versions']))]
-    #[Groups(groups: ['enrichment_job'])]
+    #[Groups(groups: ['ai_evaluation_job'])]
     private ?Transcript $transcript = null;
 
-    #[OA\Property(property: 'mediaTypes', description: 'List of media types', type: 'array', items: new OA\Items(type: 'string'))]
-    #[Groups(groups: ['enrichment_job'])]
-    private array $mediaTypes = [];
+    #[OA\Property(property: 'multipleChoiceQuestions', type: 'array', items: new OA\Items(ref: new Model(type: MultipleChoiceQuestion::class, groups: ['ai_evaluation_job'])))]
+    #[Groups(groups: ['ai_evaluation_job'])]
+    private Collection $multipleChoiceQuestions;
 
-    #[OA\Property(property: 'disciplines', description: 'List of disciplines', type: 'array', items: new OA\Items(type: 'string'))]
-    #[Groups(groups: ['enrichment_job'])]
-    private array $disciplines = [];
+    public function __construct()
+    {
+        $this->multipleChoiceQuestions = new ArrayCollection();
+    }
 
     public function getEnrichmentId(): ?Uuid
     {
@@ -55,30 +59,6 @@ class AiEnrichmentJobResponse
         return $this;
     }
 
-    public function getMediaTypes(): array
-    {
-        return $this->mediaTypes;
-    }
-
-    public function setMediaTypes(array $mediaTypes): self
-    {
-        $this->mediaTypes = $mediaTypes;
-
-        return $this;
-    }
-
-    public function getDisciplines(): array
-    {
-        return $this->disciplines;
-    }
-
-    public function setDisciplines(array $disciplines): self
-    {
-        $this->disciplines = $disciplines;
-
-        return $this;
-    }
-
     public function getTranscript(): ?Transcript
     {
         return $this->transcript;
@@ -87,6 +67,21 @@ class AiEnrichmentJobResponse
     public function setTranscript(?Transcript $transcript): self
     {
         $this->transcript = $transcript;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MultipleChoiceQuestion>
+     */
+    public function getMultipleChoiceQuestions(): Collection
+    {
+        return $this->multipleChoiceQuestions;
+    }
+
+    public function setMultipleChoiceQuestions(Collection $multipleChoiceQuestion): self
+    {
+        $this->multipleChoiceQuestions = $multipleChoiceQuestion;
 
         return $this;
     }

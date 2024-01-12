@@ -23,13 +23,16 @@ class EnrichmentRepository extends ServiceEntityRepository
         parent::__construct($managerRegistry, Enrichment::class);
     }
 
-    public function findByCreatedBy(string $client, int $page, int $size, string $sortField, string $sortDirection)
+    public function findByCreatedBy(string $client, int $page, int $size, string $sortField, string $sortDirection, ?string $endUserIdentifier)
     {
         $queryBuilder = $this->createQueryBuilder('e')
             ->where('e.createdBy = :client')
-            ->setParameters([
-                'client' => $client,
-            ]);
+            ->setParameter('client', $client);
+
+        if ($endUserIdentifier) {
+            $queryBuilder->andWhere('e.endUserIdentifier = :endUserIdentifier')
+                ->setParameter('endUserIdentifier', $endUserIdentifier);
+        }
 
         $queryBuilder->orderBy(sprintf('e.%s', $sortField), $sortDirection);
 
@@ -84,6 +87,40 @@ class EnrichmentRepository extends ServiceEntityRepository
             'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
             'timeThreshold' => (new DateTime())->modify('-'.$minutes.' minutes'),
         ])
+            ->orderBy('e.createdAt', 'ASC')
+        ;
+
+        $enrichments = $qb->getQuery()->getResult();
+
+        if ([] !== $enrichments) {
+            return $enrichments[0];
+        }
+
+        return null;
+    }
+
+    public function findOldestEnrichmentInWaitingAiEvaluationStatusOrAiEvaluatingStatusForMoreThanXMinutesByEvaluator(string $evaluator, int $minutes = 120): ?Enrichment
+    {
+        $qb = $this->createQueryBuilder('e');
+
+        $qb
+            ->where($qb->expr()->eq('e.aiEvaluation', ':evaluator'))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('e.status', ':statusWaitingAiEvaluation'),
+                $qb->expr()->andX(
+                    $qb->expr()->eq('e.status', ':statusAiEvaluating'),
+                    $qb->expr()->lte(
+                        'e.aiEvaluationStartedAt',
+                        ':timeThreshold'
+                    )
+                ))
+            )
+            ->setParameters([
+                'statusWaitingAiEvaluation' => Enrichment::STATUS_WAITING_AI_EVALUATION,
+                'statusAiEvaluating' => Enrichment::STATUS_AI_EVALUATING,
+                'timeThreshold' => (new DateTime())->modify('-'.$minutes.' minutes'),
+                'evaluator' => $evaluator,
+            ])
             ->orderBy('e.createdAt', 'ASC')
         ;
 

@@ -103,7 +103,7 @@ paths:
           description: Bad request, invalid data provided
         '401':
           description: User is not authenticated
-  /enrichments/videos/upload:
+  /enrichments/upload:
     post:
       summary: Create an enrichment from a video file
       requestBody:
@@ -137,7 +137,7 @@ paths:
           description: Bad request, invalid data provided
         '401':
           description: User is not authenticated
-  /enrichments/video-urls/upload:
+  /enrichments/url:
     post:
       summary: Create an enrichment from a video URL (accessible without authentication)
       requestBody:

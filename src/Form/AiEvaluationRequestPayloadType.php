@@ -2,34 +2,32 @@
 
 namespace App\Form;
 
-use App\Entity\MultipleChoiceQuestion;
+use App\Model\AiEvaluationRequestPayload;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\UuidType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class MultipleChoiceQuestionType extends AbstractType
+class AiEvaluationRequestPayloadType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('id', UuidType::class)
-            ->add('question')
-            ->add('explanation')
-            ->add('choices', CollectionType::class, [
-                'entry_type' => ChoiceType::class,
+            ->add('evaluations', CollectionType::class, [
+                'entry_type' => MultipleChoiceQuestionType::class,
                 'allow_add' => true,
             ])
-            ->add('evaluation')
-            ->add('answerPointer', AnswerPointerType::class)
+            ->add('taskId', UuidType::class)
+            ->add('failureCause')
+            ->add('status')
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => MultipleChoiceQuestion::class,
+            'data_class' => AiEvaluationRequestPayload::class,
             'csrf_protection' => false,
         ]);
     }

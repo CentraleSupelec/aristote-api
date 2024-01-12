@@ -3,14 +3,14 @@
 namespace App\Message;
 
 use App\Entity\ApiClient;
-use App\Model\EnrichmentCreationVideoUrlRequestPayload;
+use App\Model\EnrichmentCreationUrlRequestPayload;
 
-class VideoUploadFromUrlMessage
+class FileUploadFromUrlMessage
 {
     public function __construct(
         private readonly string $enrichmentId,
         private readonly ApiClient $apiClient,
-        private readonly EnrichmentCreationVideoUrlRequestPayload $enrichmentCreationVideoUrlRequestPayload
+        private readonly EnrichmentCreationUrlRequestPayload $enrichmentCreationUrlRequestPayload
     ) {
     }
 
@@ -24,8 +24,8 @@ class VideoUploadFromUrlMessage
         return $this->apiClient;
     }
 
-    public function getEnrichmentCreationVideoUrlRequestPayload(): EnrichmentCreationVideoUrlRequestPayload
+    public function getEnrichmentCreationUrlRequestPayload(): EnrichmentCreationUrlRequestPayload
     {
-        return $this->enrichmentCreationVideoUrlRequestPayload;
+        return $this->enrichmentCreationUrlRequestPayload;
     }
 }
