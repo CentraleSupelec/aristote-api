@@ -53,8 +53,8 @@ class AiEvaluationWorkerController extends AbstractController
 
     #[OA\Tag(name: 'AI Evaluation - Worker')]
     #[OA\Post(
-        description: 'Evaluates an initial version of an enrichment with AI',
-        summary: 'Evaluates an initial version of an enrichment with AI'
+        description: 'Evaluates the MCQs of an initial version of an enrichment with AI',
+        summary: 'Evaluates the MCQs of an initial version of an enrichment with AI'
     )]
     #[OA\RequestBody(
         content: new OA\JsonContent(

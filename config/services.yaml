@@ -69,12 +69,20 @@ services:
       $clientSecret: "%env(TRANSCRIPTION_WORKER_SECRET)%"
       $uriPrefix: "%env(URI_PREFIX)%"
 
+  App\Command\TranscribingWorkerCommand:
+    arguments:
+      $enrichmentWorkerService: '@app.transcription_worker'
+
   app.ai_enrichment_worker:
     class: App\Service\EnrichmentWorkerService
     arguments:
       $clientId: "%env(AI_ENRICHMENT_WORKER_CLIENT_ID)%"
       $clientSecret: "%env(AI_ENRICHMENT_WORKER_SECRET)%"
       $uriPrefix: "%env(URI_PREFIX)%"
+
+  App\Command\AiEnrichmentWorkerCommand:
+    arguments:
+      $enrichmentWorkerService: '@app.ai_enrichment_worker'
 
   app.ai_evaluation_worker:
     class: App\Service\EnrichmentWorkerService
@@ -83,18 +91,11 @@ services:
       $clientSecret: "%env(AI_EVALUATION_WORKER_SECRET)%"
       $uriPrefix: "%env(URI_PREFIX)%"
 
-  App\Command\TranscribingWorkerCommand:
-    arguments:
-      $enrichmentWorkerService: '@app.transcription_worker'
-  
-  App\Command\AiEnrichmentWorkerCommand:
-    arguments:
-      $enrichmentWorkerService: '@app.ai_enrichment_worker'
 
   App\Command\AiEvaluationWorkerCommand:
     arguments:
       $enrichmentWorkerService: '@app.ai_evaluation_worker'
-
+  
   App\Controller\Api\TranscribingWorkerController:
     arguments:
       $transcriptionWorkerTimeoutInMinutes: "%env(TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES)%"
@@ -102,7 +103,7 @@ services:
   App\Controller\Api\AiEnrichmentsWorkerController:
     arguments:
       $aiEnrichmentWorkerTimeoutInMinutes: "%env(AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES)%"
-
+  
   App\Controller\Api\AiEvaluationWorkerController:
     arguments:
       $aiEvaluationWorkerTimeoutInMinutes: "%env(AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES)%"

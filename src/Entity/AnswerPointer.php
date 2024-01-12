@@ -21,12 +21,12 @@ class AnswerPointer
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: Types::DECIMAL, nullable: true, scale: 2)]
-    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_enrichment_post'])]
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_enrichment_post', 'enrichment_version_creation'])]
     private ?string $startAnswerPointer = null;
 
-    #[ORM\Column(type: Types::DECIMAL, nullable: true, scale: 2)]
-    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_enrichment_post'])]
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_enrichment_post', 'enrichment_version_creation'])]
     private ?string $stopAnswerPointer = null;
 
     #[ORM\OneToOne(inversedBy: 'answerPointer', targetEntity: MultipleChoiceQuestion::class)]

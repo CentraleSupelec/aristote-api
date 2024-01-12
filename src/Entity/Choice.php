@@ -22,16 +22,16 @@ class Choice implements Stringable
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[OA\Property(property: 'id', description: 'Choice ID', type: 'string')]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'enrichment_version_evaluation'])]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une option.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
     private ?string $optionText = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
     private bool $correctAnswer = false;
 
     #[ORM\ManyToOne(inversedBy: 'choices', targetEntity: MultipleChoiceQuestion::class)]
@@ -39,7 +39,7 @@ class Choice implements Stringable
     private ?MultipleChoiceQuestion $multipleChoiceQuestion = null;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
     private ?bool $thumbUp = null;
 
     public function __toString(): string

@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Constants;
+use App\Entity\AnswerPointer;
 use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
@@ -23,6 +24,7 @@ use App\Service\ApiClientManager;
 use App\Service\FileUploadService;
 use App\Service\ScopeAuthorizationCheckerService;
 use App\Utils\PaginationUtils;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -520,6 +522,13 @@ class EnrichmentsController extends AbstractController
                 ->setQuestion($inputMultipleChoiceQuestion['question'])
                 ->setExplanation($inputMultipleChoiceQuestion['explanation'])
             ;
+            $answerPointer = $inputMultipleChoiceQuestion['answerPointer'];
+            if ($answerPointer && $answerPointer['startAnswerPointer']) {
+                $multipleChoiceQuestion->setAnswerPointer((new AnswerPointer())->setStartAnswerPointer($answerPointer['startAnswerPointer']));
+                if ($answerPointer['stopAnswerPointer']) {
+                    $multipleChoiceQuestion->setAnswerPointer((new AnswerPointer())->setStopAnswerPointer($answerPointer['stopAnswerPointer']));
+                }
+            }
 
             foreach ($inputMultipleChoiceQuestion['choices'] as $choice) {
                 $multipleChoiceQuestion->addChoice((new Choice())
@@ -988,6 +997,119 @@ class EnrichmentsController extends AbstractController
 
     #[OA\Tag(name: 'Enrichments')]
     #[OA\Post(
+        description: 'Evaluate an enrichment version',
+        summary: 'Evaluate an enrichment version'
+    )]
+    #[OA\RequestBody(
+        content: new OA\JsonContent(
+            ref: new Model(type: EnrichmentVersion::class, groups: ['enrichment_version_evaluation']),
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Enrichment version evaluated successfully',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: 'status',
+                    description: 'OK',
+                    type: 'string'
+                ),
+                new OA\Property(
+                    type: 'object',
+                    ref: new Model(type: EnrichmentVersion::class, groups: ['enrichment_versions', 'enrichment_versions_with_transcript'])
+                ),
+            ],
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad request, invalid data provided',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
+    )]
+    #[Route('/enrichments/{enrichmentId}/versions/{versionId}/evaluate', name: 'evaluate_enrichment_version', methods: ['POST'])]
+    public function evaluateEnrichmentVersion(
+        string $enrichmentId,
+        string $versionId,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        EnrichmentVersionRepository $enrichmentVersionRepository
+    ): Response {
+        $multipleChoiceQuestion = null;
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
+        $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
+        $uuidValidationErrorResponse = $this->validateUuid($versionId);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
+        $enrichmentVersion = $enrichmentVersionRepository->findOneBy(['id' => $versionId]);
+
+        $enrichmentVersionAccessErrorResponse = $this->validateEnrichmentVersionAccess($enrichmentVersion, $versionId, $enrichmentId);
+        if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
+            return $enrichmentVersionAccessErrorResponse;
+        }
+
+        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        $enrichmentVersion->getEnrichmentVersionMetadata()
+            ->setThumbUpTitle($content['enrichmentVersionMetadata']['thumbUpTitle'])
+            ->setThumbUpDescription($content['enrichmentVersionMetadata']['thumbUpDescription'])
+            ->setThumbUpDiscipline($content['enrichmentVersionMetadata']['thumbUpDiscipline'])
+            ->setThumbUpMediaType($content['enrichmentVersionMetadata']['thumbUpMediaType'])
+            ->setThumbUpTopics($content['enrichmentVersionMetadata']['thumbUpTopics'])
+            ->setUserFeedback($content['enrichmentVersionMetadata']['userFeedback'])
+        ;
+
+        foreach ($enrichmentVersion->getMultipleChoiceQuestions() as $multipleChoiceQuestion) {
+            $inputMultipleChoiceQuestion = array_values(array_filter($content['multipleChoiceQuestions'], fn (array $currentMultipleChoiceQuestion) => $multipleChoiceQuestion->getId()->toRfc4122() === $currentMultipleChoiceQuestion['id']));
+
+            if ([] !== $inputMultipleChoiceQuestion) {
+                $multipleChoiceQuestion
+                    ->setThumbUp($inputMultipleChoiceQuestion[0]['thumbUp'])
+                    ->setUserFeedback($inputMultipleChoiceQuestion[0]['userFeedback'])
+                ;
+                foreach ($multipleChoiceQuestion->getChoices() as $choice) {
+                    $inputChoice = array_values(array_filter($inputMultipleChoiceQuestion[0]['choices'], fn (array $currentChoice) => $choice->getId()->toRfc4122() === $currentChoice['id']));
+
+                    if ([] !== $inputChoice) {
+                        $choice
+                            ->setThumbUp($inputChoice[0]['thumbUp'])
+                        ;
+                    }
+                }
+            }
+        }
+
+        $enrichmentVersion->setLastEvaluationDate(new DateTime());
+
+        $entityManager->flush();
+
+        $options = [
+            AbstractNormalizer::GROUPS => ['enrichment_versions', 'enrichment_versions_with_transcript'],
+        ];
+
+        return $this->json(['status' => 'OK', 'enrichmentVersion' => $multipleChoiceQuestion->getEnrichmentVersion()], context: $options);
+    }
+
+    #[OA\Tag(name: 'Enrichments')]
+    #[OA\Post(
         description: 'Evaluate a multiple choice question',
         summary: 'Evaluate a multiple choice question'
     )]
@@ -1212,7 +1334,7 @@ class EnrichmentsController extends AbstractController
     {
         $enrichment = $enrichmentVersion instanceof EnrichmentVersion ? $enrichmentVersion->getEnrichment() : null;
 
-        if ($enrichment && $enrichment->getId()->equals($enrichmentId)) {
+        if ($enrichment && $enrichment->getId()->toRfc4122() === $enrichmentId) {
             return $this->validateEnrichmentAccess($enrichment, $enrichmentId);
         } else {
             return $this->json(['status' => 'KO', 'errors' => [

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EnrichmentVersionRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -51,7 +52,7 @@ class EnrichmentVersion
     private ?Uuid $id = null;
 
     #[ORM\OneToOne(mappedBy: 'enrichmentVersion', targetEntity: EnrichmentVersionMetadata::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
     #[Assert\Valid]
     private ?EnrichmentVersionMetadata $enrichmentVersionMetadata = null;
 
@@ -60,7 +61,7 @@ class EnrichmentVersion
     private ?Transcript $transcript = null;
 
     #[ORM\OneToMany(mappedBy: 'enrichmentVersion', targetEntity: MultipleChoiceQuestion::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
     #[ORM\OrderBy(['createdAt' => 'ASC'])]
     private Collection $multipleChoiceQuestions;
 
@@ -71,6 +72,10 @@ class EnrichmentVersion
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     #[Groups(groups: ['enrichment_versions'])]
     private bool $initialVersion = false;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?DateTimeInterface $lastEvaluationDate = null;
 
     public function __construct()
     {
@@ -156,6 +161,18 @@ class EnrichmentVersion
     public function setInitialVersion(bool $initialVersion): self
     {
         $this->initialVersion = $initialVersion;
+
+        return $this;
+    }
+
+    public function getLastEvaluationDate(): ?DateTimeInterface
+    {
+        return $this->lastEvaluationDate;
+    }
+
+    public function setLastEvaluationDate(DateTimeInterface $lastEvaluationDate): self
+    {
+        $this->lastEvaluationDate = $lastEvaluationDate;
 
         return $this;
     }

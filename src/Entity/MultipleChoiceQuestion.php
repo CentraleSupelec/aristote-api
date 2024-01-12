@@ -24,22 +24,22 @@ class MultipleChoiceQuestion implements Stringable
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'ai_evaluation_post'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'ai_evaluation_post', 'enrichment_version_evaluation'])]
     #[OA\Property(property: 'id', description: 'Multiple Choice Question ID', type: 'string')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une question.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
     private ?string $question = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une explication.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
     private ?string $explanation = null;
 
     #[ORM\OneToMany(mappedBy: 'multipleChoiceQuestion', targetEntity: Choice::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation', 'enrichment_version_evaluation'])]
     #[ORM\OrderBy(['createdAt' => 'ASC'])]
     private Collection $choices;
 
@@ -48,7 +48,7 @@ class MultipleChoiceQuestion implements Stringable
     private ?EnrichmentVersion $enrichmentVersion = null;
 
     #[ORM\OneToOne(mappedBy: 'multipleChoiceQuestion', targetEntity: AnswerPointer::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'enrichment_version_creation'])]
     #[Assert\Valid]
     private ?AnswerPointer $answerPointer = null;
 
@@ -75,11 +75,11 @@ class MultipleChoiceQuestion implements Stringable
     private ?string $evaluation = null;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
     private ?bool $thumbUp = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
     private ?string $userFeedback = null;
 
     public function __construct()

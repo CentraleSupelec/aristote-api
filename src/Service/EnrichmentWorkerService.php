@@ -62,7 +62,6 @@ class EnrichmentWorkerService
         }
         $this->initToken();
         $options['headers'] += [
-            'Authorization' => sprintf('Bearer %s', $this->token),
             'Accept' => 'application/json',
         ];
 
