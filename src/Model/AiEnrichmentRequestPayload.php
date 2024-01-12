@@ -16,7 +16,7 @@ class AiEnrichmentRequestPayload
     #[OA\Property(property: 'enrichmentVersionMetadata', type: 'object', ref: new Model(type: EnrichmentVersionMetadata::class, groups: ['enrichment_versions']))]
     private ?EnrichmentVersionMetadata $enrichmentVersionMetadata = null;
 
-    #[OA\Property(property: 'multipleChoiceQuestions', type: 'array', items: new OA\Items(ref: new Model(type: MultipleChoiceQuestion::class, groups: ['enrichment_versions'])))]
+    #[OA\Property(property: 'multipleChoiceQuestions', type: 'array', items: new OA\Items(ref: new Model(type: MultipleChoiceQuestion::class, groups: ['ai_enrichment_post'])))]
     private readonly Collection $multipleChoiceQuestions;
 
     #[OA\Property(property: 'taskId', type: 'string')]

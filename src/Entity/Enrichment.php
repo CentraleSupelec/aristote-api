@@ -25,6 +25,8 @@ class Enrichment
     final public const STATUS_TRANSCRIBING_MEDIA = 'TRANSCRIBING_MEDIA';
     final public const STATUS_WAITING_AI_ENRICHMENT = 'WAITING_AI_ENRICHMENT';
     final public const STATUS_AI_ENRICHING = 'AI_ENRICHING';
+    final public const STATUS_WAITING_AI_EVALUATION = 'WAITING_AI_EVALUATION';
+    final public const STATUS_AI_EVALUATING = 'AI_EVALUATING';
     final public const STATUS_SUCCESS = 'SUCCESS';
     final public const STATUS_FAILURE = 'FAILURE';
 
@@ -37,6 +39,8 @@ class Enrichment
             self::STATUS_TRANSCRIBING_MEDIA => self::STATUS_TRANSCRIBING_MEDIA,
             self::STATUS_WAITING_AI_ENRICHMENT => self::STATUS_WAITING_AI_ENRICHMENT,
             self::STATUS_AI_ENRICHING => self::STATUS_AI_ENRICHING,
+            self::STATUS_WAITING_AI_EVALUATION => self::STATUS_WAITING_AI_EVALUATION,
+            self::STATUS_AI_EVALUATING => self::STATUS_AI_EVALUATING,
             self::STATUS_SUCCESS => self::STATUS_SUCCESS,
             self::STATUS_FAILURE => self::STATUS_FAILURE,
         ];
@@ -67,6 +71,10 @@ class Enrichment
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     private ?ApiClient $aiProcessedBy = null;
 
+    #[ORM\ManyToOne(inversedBy: 'aiEvaluatedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
+    private ?ApiClient $aiEvaluatedBy = null;
+
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
     private ?Uuid $aiProcessingTaskId = null;
 
@@ -76,6 +84,9 @@ class Enrichment
 
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
     private ?Uuid $transcriptionTaskId = null;
+
+    #[ORM\Column(type: UuidType::NAME, nullable: true)]
+    private ?Uuid $aiEvaluationTaskId = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(allowNull: false)]
@@ -105,6 +116,7 @@ class Enrichment
     private ?string $failureCause = null;
 
     #[ORM\OneToOne(mappedBy: 'enrichment', targetEntity: Media::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    #[Groups(groups: ['enrichments'])]
     #[Assert\Valid]
     private ?Media $media = null;
 
@@ -147,6 +159,20 @@ class Enrichment
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(groups: ['enrichments'])]
     private ?DateTimeInterface $notifiedAt = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichments'])]
+    private ?string $aiEvaluation = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $aiEvaluationStartedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $aiEvaluationEndedAt = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichments'])]
+    private ?string $endUserIdentifier = null;
 
     public function __construct()
     {
@@ -194,6 +220,18 @@ class Enrichment
         return $this;
     }
 
+    public function getAiEvaluatedBy(): ?ApiClient
+    {
+        return $this->aiEvaluatedBy;
+    }
+
+    public function setAiEvaluatedBy(?ApiClient $apiClient): static
+    {
+        $this->aiEvaluatedBy = $apiClient;
+
+        return $this;
+    }
+
     public function getStatus(): ?string
     {
         return $this->status;
@@ -226,6 +264,18 @@ class Enrichment
     public function setTranscriptionTaskId(?Uuid $transcriptionTaskId): self
     {
         $this->transcriptionTaskId = $transcriptionTaskId;
+
+        return $this;
+    }
+
+    public function getAiEvaluationTaskId(): ?Uuid
+    {
+        return $this->aiEvaluationTaskId;
+    }
+
+    public function setAiEvaluationTaskId(?Uuid $aiEvaluationTaskId): self
+    {
+        $this->aiEvaluationTaskId = $aiEvaluationTaskId;
 
         return $this;
     }
@@ -403,6 +453,54 @@ class Enrichment
     public function setDisciplines(array $disciplines): self
     {
         $this->disciplines = $disciplines;
+
+        return $this;
+    }
+
+    public function getAiEvaluation(): ?string
+    {
+        return $this->aiEvaluation;
+    }
+
+    public function setAiEvaluation(?string $aiEvaluation): self
+    {
+        $this->aiEvaluation = $aiEvaluation;
+
+        return $this;
+    }
+
+    public function getAiEvaluationStartedAt(): ?DateTimeInterface
+    {
+        return $this->aiEvaluationStartedAt;
+    }
+
+    public function setAiEvaluationStartedAt(DateTimeInterface $aiEvaluationStartedAt): self
+    {
+        $this->aiEvaluationStartedAt = $aiEvaluationStartedAt;
+
+        return $this;
+    }
+
+    public function getAiEvaluationEndedAt(): ?DateTimeInterface
+    {
+        return $this->aiEvaluationEndedAt;
+    }
+
+    public function setAiEvaluationEndedAt(DateTimeInterface $aiEvaluationEndedAt): self
+    {
+        $this->aiEvaluationEndedAt = $aiEvaluationEndedAt;
+
+        return $this;
+    }
+
+    public function getEndUserIdentifier(): ?string
+    {
+        return $this->endUserIdentifier;
+    }
+
+    public function setEndUserIdentifier(?string $endUserIdentifier): self
+    {
+        $this->endUserIdentifier = $endUserIdentifier;
 
         return $this;
     }

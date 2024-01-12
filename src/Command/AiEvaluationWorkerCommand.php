@@ -18,9 +18,11 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-#[AsCommand(name: 'app:ai-enrichment-worker', description: 'Generates enrichment')]
-class AiEnrichmentWorkerCommand extends Command
+#[AsCommand(name: 'app:ai-evaluation-worker', description: 'Generates evaluations')]
+class AiEvaluationWorkerCommand extends Command
 {
+    final public const EVALUATOR = 'ChatGPT';
+
     public function __construct(
         private readonly EnrichmentWorkerService $enrichmentWorkerService
     ) {
@@ -38,10 +40,11 @@ class AiEnrichmentWorkerCommand extends Command
         $taskId = Uuid::v7();
         $response = $this->enrichmentWorkerService->apiRequestWithToken(
             'GET',
-            '/enrichments/job/ai_enrichment/oldest',
+            '/enrichments/job/ai_evaluation/oldest',
             options: [
                 'query' => [
                     'taskId' => (string) $taskId,
+                    'evaluator' => self::EVALUATOR,
                 ],
             ],
             successCodes: [Response::HTTP_OK, Response::HTTP_NOT_FOUND]
@@ -52,7 +55,7 @@ class AiEnrichmentWorkerCommand extends Command
 
             return Command::FAILURE;
         } elseif (Response::HTTP_NOT_FOUND === $response->getStatusCode()) {
-            $symfonyStyle->warning('There are currently no AI Enrichment jobs available');
+            $symfonyStyle->warning('There are currently no AI Evaluation jobs available');
 
             return Command::SUCCESS;
         }
@@ -72,85 +75,56 @@ class AiEnrichmentWorkerCommand extends Command
         if (isset($job['enrichmentVersionId'])) {
             $enrichmentVersionId = $job['enrichmentVersionId'];
             $enrichmentId = $job['enrichmentId'];
-            if (isset($job['transcript'])) {
-                $disciplines = $job['disciplines'];
-                $mediaTypes = $job['mediaTypes'];
+            $transcriptProvided = isset($job['transcript']);
+            $multipleChoiceQuestionsProvided = isset($job['multipleChoiceQuestions']);
+            if ($transcriptProvided && $multipleChoiceQuestionsProvided) {
+                $multipleChoiceQuestions = $job['multipleChoiceQuestions'];
                 $symfonyStyle->info(sprintf('Got 1 job : Enrichment Version ID => %s', $enrichmentVersionId));
             } else {
+                $failureCause = !$transcriptProvided && !$multipleChoiceQuestionsProvided ? 'Neither transcript nor MCQs in AristoteApi response' :
+                    ($transcriptProvided ? 'No MCQs in AristoteApi response' : 'No transcript in AristoteApi response');
                 $requestOptions = [
                     'body' => [
                         'status' => 'KO',
-                        'failureCause' => 'No transcript in AristoteApi response',
+                        'failureCause' => $failureCause,
                     ],
                 ];
 
-                $response = $this->enrichmentWorkerService->apiRequestWithToken('POST', sprintf('/enrichments/%s/versions/%s/ai_enrichment', $enrichmentId, $enrichmentVersionId), $requestOptions);
+                $response = $this->enrichmentWorkerService->apiRequestWithToken('POST', sprintf('/enrichments/%s/versions/%s/ai_evaluation', $enrichmentId, $enrichmentVersionId), $requestOptions);
 
-                throw new AristoteApiException('No transcript in AristoteApi response');
+                throw new AristoteApiException($failureCause);
             }
         } else {
             throw new AristoteApiException('No Enrichment version ID in AristoteApi response');
         }
 
-        // Simulate generation initial version
-        $symfonyStyle->info('Generating AI enrichment ...');
+        // Simulate evaluation
+        $symfonyStyle->info('Evaluating AI enrichment ...');
 
         sleep(1);
 
+        $evaluations = [];
+        foreach ($multipleChoiceQuestions as $multipleChoiceQuestion) {
+            $evaluations[] = [
+                'id' => $multipleChoiceQuestion['id'],
+                'evaluation' => json_encode([
+                    'criteria1' => true,
+                    'criteria2' => false,
+                    'criteria3' => true,
+                ]),
+            ];
+        }
+
         $requestOptions = [
             'body' => json_encode([
-                'enrichmentVersionMetadata' => [
-                    'title' => 'Worker enrichment',
-                    'description' => 'This is an example of an enrichment version',
-                    'topics' => ['Random topic 1', 'Random topic 2'],
-                    'discipline' => $disciplines[0],
-                    'mediaType' => $mediaTypes[0],
-                ],
-                'multipleChoiceQuestions' => [
-                    [
-                        'question' => 'Question 1',
-                        'explanation' => 'Question 1 explanation',
-                        'choices' => [
-                            [
-                                'optionText' => 'Option 1',
-                                'correctAnswer' => true,
-                            ],
-                            [
-                                'optionText' => 'Option 2',
-                                'correctAnswer' => false,
-                            ],
-                        ],
-                        'answerPointer' => [
-                            'startAnswerPointer' => 20.40,
-                            'stopAnswerPointer' => 21.90,
-                        ],
-                    ],
-                    [
-                        'question' => 'Question 2',
-                        'explanation' => 'Question 2 explanation',
-                        'choices' => [
-                            [
-                                'optionText' => 'Option 1',
-                                'correctAnswer' => true,
-                            ],
-                            [
-                                'optionText' => 'Option 2',
-                                'correctAnswer' => false,
-                            ],
-                        ],
-                        'answerPointer' => [
-                            'startAnswerPointer' => 26.40,
-                            'stopAnswerPointer' => 28.90,
-                        ],
-                    ],
-                ],
+                'evaluations' => $evaluations,
                 'taskId' => $taskId,
                 'status' => 'OK',
-            ]),
+            ], JSON_THROW_ON_ERROR),
         ];
 
         try {
-            $response = $this->enrichmentWorkerService->apiRequestWithToken('POST', sprintf('/enrichments/%s/versions/%s/ai_enrichment', $enrichmentId, $enrichmentVersionId), $requestOptions);
+            $response = $this->enrichmentWorkerService->apiRequestWithToken('POST', sprintf('/enrichments/%s/versions/%s/ai_evaluation', $enrichmentId, $enrichmentVersionId), $requestOptions);
         } catch (AristoteApiException $e) {
             $symfonyStyle->error($e->getMessage());
 
@@ -158,11 +132,11 @@ class AiEnrichmentWorkerCommand extends Command
         }
 
         if (200 === $response->getStatusCode()) {
-            $symfonyStyle->info('Posting AI enrichment successful !');
+            $symfonyStyle->info('Posting AI evaluation successful !');
 
             return Command::SUCCESS;
         } else {
-            $symfonyStyle->error(sprintf('Posting AI enrichment failed : %s', $response->toArray()['errors']));
+            $symfonyStyle->error(sprintf('Posting AI evaluation failed : %s', $response->toArray()['errors']));
 
             return Command::FAILURE;
         }

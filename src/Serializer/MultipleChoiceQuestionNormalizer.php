@@ -2,11 +2,11 @@
 
 namespace App\Serializer;
 
-use App\Entity\Transcript;
+use App\Entity\MultipleChoiceQuestion;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class TranscriptNormalizer implements NormalizerInterface
+class MultipleChoiceQuestionNormalizer implements NormalizerInterface
 {
     public function __construct(
         private readonly ObjectNormalizer $objectNormalizer,
@@ -16,8 +16,9 @@ class TranscriptNormalizer implements NormalizerInterface
     public function normalize($enrichment, string $format = null, array $context = []): array
     {
         $data = $this->objectNormalizer->normalize($enrichment, $format, $context);
-        if (isset($data['sentences'])) {
-            $data['sentences'] = json_decode((string) $data['sentences'], null, 512, JSON_THROW_ON_ERROR);
+
+        if (isset($data['evaluation'])) {
+            $data['evaluation'] = json_decode((string) $data['evaluation'], null, 512, JSON_THROW_ON_ERROR);
         }
 
         return $data;
@@ -25,6 +26,6 @@ class TranscriptNormalizer implements NormalizerInterface
 
     public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
-        return $data instanceof Transcript;
+        return $data instanceof MultipleChoiceQuestion;
     }
 }

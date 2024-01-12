@@ -4,9 +4,9 @@ namespace App\MessageHandler;
 
 use App\Constants;
 use App\Entity\Enrichment;
-use App\Message\VideoUploadFromUrlMessage;
+use App\Message\FileUploadFromUrlMessage;
 use App\Repository\EnrichmentRepository;
-use App\Service\VideoUploadService;
+use App\Service\FileUploadService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -14,57 +14,57 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class VideoUploadFromUrlMessageHandler
+class FileUploadFromUrlMessageHandler
 {
     public function __construct(
-        private readonly VideoUploadService $videoUploadService,
+        private readonly FileUploadService $fileUploadService,
         private readonly EnrichmentRepository $enrichmentRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger
     ) {
     }
 
-    public function __invoke(VideoUploadFromUrlMessage $videoUploadFromUrlMessage): void
+    public function __invoke(FileUploadFromUrlMessage $fileUploadFromUrlMessage): void
     {
-        $enrichment = $this->enrichmentRepository->findOneBy(['id' => $videoUploadFromUrlMessage->getEnrichmentId()]);
+        $enrichment = $this->enrichmentRepository->findOneBy(['id' => $fileUploadFromUrlMessage->getEnrichmentId()]);
         $enrichment->setStatus(Enrichment::STATUS_UPLOADING_MEDIA);
         $this->entityManager->flush();
 
-        $videoUrl = $videoUploadFromUrlMessage->getEnrichmentCreationVideoUrlRequestPayload()->getVideoUrl();
+        $url = $fileUploadFromUrlMessage->getEnrichmentCreationUrlRequestPayload()->getUrl();
 
         try {
-            $videoName = $this->getVideoFromUrl($videoUrl);
+            $fileName = $this->getFileFromUrl($url);
         } catch (Exception $exception) {
-            $this->handleUploadFailure($enrichment, $exception, "Couldn't get video from URL");
+            $this->handleUploadFailure($enrichment, $exception, "Couldn't get file from URL");
             throw $exception;
         }
 
-        $temporaryVideoPath = sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $videoName);
+        $temporaryFilePath = sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $fileName);
 
         try {
-            $uploadedFile = new UploadedFile($temporaryVideoPath, $videoUrl);
-            $enrichment = $this->videoUploadService->uploadVideo($uploadedFile, $videoUploadFromUrlMessage->getApiClient(), $enrichment);
+            $uploadedFile = new UploadedFile($temporaryFilePath, $url);
+            $enrichment = $this->fileUploadService->uploadFile($uploadedFile, $fileUploadFromUrlMessage->getApiClient(), $enrichment);
             $this->entityManager->flush();
-            unlink($temporaryVideoPath);
+            unlink($temporaryFilePath);
         } catch (Exception $exception) {
-            if (file_exists($temporaryVideoPath)) {
-                unlink($temporaryVideoPath);
+            if (file_exists($temporaryFilePath)) {
+                unlink($temporaryFilePath);
             }
-            $this->handleUploadFailure($enrichment, $exception, "Couldn't upload video to bucket");
+            $this->handleUploadFailure($enrichment, $exception, "Couldn't upload file to bucket");
             throw $exception;
         }
     }
 
-    private function getVideoFromUrl(string $videoUrl): string
+    private function getFileFromUrl(string $fileUrl): string
     {
-        $fileName = uniqid('video_').'.mp4';
+        $fileName = uniqid('file');
 
         if (!is_dir(Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH)) {
             mkdir(Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, 0777, true);
         }
 
-        $videoContents = file_get_contents($videoUrl);
-        file_put_contents(sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $fileName), $videoContents);
+        $fileContents = file_get_contents($fileUrl);
+        file_put_contents(sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $fileName), $fileContents);
 
         return $fileName;
     }

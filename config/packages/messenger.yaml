@@ -12,7 +12,7 @@ framework:
     routing:
       # Route your messages to the transports
       'App\Message\CustomMessage': async
-      'App\Message\VideoUploadFromUrlMessage': async
+      'App\Message\FileUploadFromUrlMessage': async
 
 when@test:
   framework:

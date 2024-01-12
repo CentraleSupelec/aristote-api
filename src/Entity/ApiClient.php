@@ -56,12 +56,16 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'transcribedBy', targetEntity: Enrichment::class)]
     private Collection $transcribedEnrichments;
 
+    #[ORM\OneToMany(mappedBy: 'aiEvaluatedBy', targetEntity: Enrichment::class)]
+    private Collection $aiEvaluatedEnrichments;
+
     public function __construct(string $name, string $identifier, ?string $secret)
     {
         parent::__construct($name, $identifier, $secret);
         $this->ownedEnrichments = new ArrayCollection();
         $this->aiProcessedEnrichments = new ArrayCollection();
         $this->transcribedEnrichments = new ArrayCollection();
+        $this->aiEvaluatedEnrichments = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -253,6 +257,34 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         // set the owning side to null (unless already changed)
         if ($this->transcribedEnrichments->removeElement($enrichment) && $enrichment->getTranscribedBy() === $this) {
             $enrichment->setTranscribedBy(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Enrichment>
+     */
+    public function getAiEvaluatedEnrichments(): Collection
+    {
+        return $this->aiEvaluatedEnrichments;
+    }
+
+    public function addAiEvaluatedEnrichment(Enrichment $enrichment): static
+    {
+        if (!$this->aiEvaluatedEnrichments->contains($enrichment)) {
+            $this->aiEvaluatedEnrichments->add($enrichment);
+            $enrichment->setAiEvaluatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAiEvaluatedEnrichment(Enrichment $enrichment): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->aiEvaluatedEnrichments->removeElement($enrichment) && $enrichment->getAiEvaluatedBy() === $this) {
+            $enrichment->setAiEvaluatedBy(null);
         }
 
         return $this;

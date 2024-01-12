@@ -95,7 +95,7 @@ class TranscribingWorkerCommand extends Command
 
         // Simulate generation initial version
         $symfonyStyle->info('Generating transcript ...');
-        sleep(5);
+        sleep(1);
 
         $requestOptions = [
             'body' => [

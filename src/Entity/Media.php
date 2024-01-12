@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
@@ -23,9 +24,11 @@ class Media
     private ?string $fileName = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichments'])]
     private ?string $originalFileName = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichments'])]
     private ?string $mimeType = null;
 
     #[ORM\Column(type: 'string', length: 255)]

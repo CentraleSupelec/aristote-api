@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ChoiceRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use OpenApi\Attributes as OA;
 use Stringable;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -20,20 +21,26 @@ class Choice implements Stringable
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[OA\Property(property: 'id', description: 'Choice ID', type: 'string')]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une option.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
     private ?string $optionText = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job'])]
     private bool $correctAnswer = false;
 
     #[ORM\ManyToOne(inversedBy: 'choices', targetEntity: MultipleChoiceQuestion::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?MultipleChoiceQuestion $multipleChoiceQuestion = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?bool $thumbUp = null;
 
     public function __toString(): string
     {
@@ -77,6 +84,18 @@ class Choice implements Stringable
     public function setMultipleChoiceQuestion(?MultipleChoiceQuestion $multipleChoiceQuestion): static
     {
         $this->multipleChoiceQuestion = $multipleChoiceQuestion;
+
+        return $this;
+    }
+
+    public function getThumbUp(): ?bool
+    {
+        return $this->thumbUp;
+    }
+
+    public function setThumbUp(?bool $thumbUp): self
+    {
+        $this->thumbUp = $thumbUp;
 
         return $this;
     }
