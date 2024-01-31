@@ -121,8 +121,8 @@ class AiEnrichmentWorkerCommand extends Command
                             ],
                         ],
                         'answerPointer' => [
-                            'startAnswerPointer' => 20.40,
-                            'stopAnswerPointer' => 21.90,
+                            'startAnswerPointer' => '00:01:30',
+                            'stopAnswerPointer' => '00:01:37',
                         ],
                     ],
                     [
@@ -139,8 +139,8 @@ class AiEnrichmentWorkerCommand extends Command
                             ],
                         ],
                         'answerPointer' => [
-                            'startAnswerPointer' => 26.40,
-                            'stopAnswerPointer' => 28.90,
+                            'startAnswerPointer' => '00:02:34',
+                            'stopAnswerPointer' => '00:02:43',
                         ],
                     ],
                 ],

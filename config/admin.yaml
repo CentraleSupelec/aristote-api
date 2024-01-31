@@ -5,7 +5,7 @@ services:
       - name: sonata.admin
         model_class: App\Entity\Administrator
         manager_type: orm
-        group: Administrateurs
+        group: Utilisateurs
         label: Administrateurs
     calls:
       - [setUserManager, ['@App\Service\UserManager']]
@@ -17,7 +17,7 @@ services:
       - name: sonata.admin
         model_class: App\Entity\ApiClient
         manager_type: orm
-        group: Clients API
+        group: Utilisateurs
         label: Clients API
     calls:
       - [setApiClientManager, ['@App\Service\ApiClientManager']]

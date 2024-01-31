@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use OpenApi\Attributes as OA;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -62,6 +63,11 @@ class Enrichment
     #[Groups(groups: ['enrichments'])]
     #[OA\Property(property: 'id', description: 'Enrichment ID', type: 'string')]
     private ?Uuid $id = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Gedmo\Timestampable(on: 'create')]
+    #[Groups(['enrichments'])]
+    protected $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'ownedEnrichments', targetEntity: ApiClient::class, )]
     #[ORM\JoinColumn(nullable: false, referencedColumnName: 'identifier')]

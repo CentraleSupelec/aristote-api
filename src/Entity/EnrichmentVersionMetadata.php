@@ -24,12 +24,12 @@ class EnrichmentVersionMetadata implements Stringable
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(allowNull: false)]
     #[Groups(groups: ['enrichment_versions'])]
     private ?string $title = null;
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(allowNull: false)]
     #[Groups(groups: ['enrichment_versions'])]
     private ?string $description = null;
@@ -51,6 +51,30 @@ class EnrichmentVersionMetadata implements Stringable
 
     #[ORM\OneToOne(inversedBy: 'enrichmentVersionMetadata', targetEntity: EnrichmentVersion::class)]
     private ?EnrichmentVersion $enrichmentVersion = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
+    private ?bool $thumbUpTitle = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
+    private ?bool $thumbUpDescription = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
+    private ?bool $thumbUpTopics = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
+    private ?bool $thumbUpDiscipline = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
+    private ?bool $thumbUpMediaType = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_version_evaluation'])]
+    private ?string $userFeedback = null;
 
     public function __toString(): string
     {
@@ -130,6 +154,78 @@ class EnrichmentVersionMetadata implements Stringable
     public function setEnrichmentVersion(?EnrichmentVersion $enrichmentVersion): self
     {
         $this->enrichmentVersion = $enrichmentVersion;
+
+        return $this;
+    }
+
+    public function getThumbUpTitle(): ?bool
+    {
+        return $this->thumbUpTitle;
+    }
+
+    public function setThumbUpTitle(?bool $thumbUpTitle): self
+    {
+        $this->thumbUpTitle = $thumbUpTitle;
+
+        return $this;
+    }
+
+    public function getThumbUpDescription(): ?bool
+    {
+        return $this->thumbUpDescription;
+    }
+
+    public function setThumbUpDescription(?bool $thumbUpDescription): self
+    {
+        $this->thumbUpDescription = $thumbUpDescription;
+
+        return $this;
+    }
+
+    public function getThumbUpTopics(): ?bool
+    {
+        return $this->thumbUpTopics;
+    }
+
+    public function setThumbUpTopics(?bool $thumbUpTopics): self
+    {
+        $this->thumbUpTopics = $thumbUpTopics;
+
+        return $this;
+    }
+
+    public function getThumbUpDiscipline(): ?bool
+    {
+        return $this->thumbUpDiscipline;
+    }
+
+    public function setThumbUpDiscipline(?bool $thumbUpDiscipline): self
+    {
+        $this->thumbUpDiscipline = $thumbUpDiscipline;
+
+        return $this;
+    }
+
+    public function getThumbUpMediaType(): ?bool
+    {
+        return $this->thumbUpMediaType;
+    }
+
+    public function setThumbUpMediaType(?bool $thumbUpMediaType): self
+    {
+        $this->thumbUpMediaType = $thumbUpMediaType;
+
+        return $this;
+    }
+
+    public function getUserFeedback(): ?string
+    {
+        return $this->userFeedback;
+    }
+
+    public function setUserFeedback(?string $userFeedback): self
+    {
+        $this->userFeedback = $userFeedback;
 
         return $this;
     }
