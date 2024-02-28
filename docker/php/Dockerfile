@@ -78,5 +78,5 @@ RUN mkdir -p var && chown -R www-data:www-data var/
 USER www-data
 
 # Install bundles assets
-ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN APP_ENV=prod composer require symfony/runtime
 RUN APP_ENV=prod composer run-script post-install-cmd
