@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Constants;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -19,6 +20,7 @@ class EnrichmentParameters
     private array $disciplines = [];
 
     #[OA\Property(property: 'aiEvaluation', description: 'The name of the AI to evaluate the MCQs', type: 'string')]
+    #[Assert\Choice(callback: [Constants::class, 'getEvaluators'], multiple: false, message: 'Invalid aiEvaluation value')]
     private ?string $aiEvaluation = null;
 
     public function getMediaTypes(): array

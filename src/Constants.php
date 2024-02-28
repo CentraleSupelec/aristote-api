@@ -17,6 +17,14 @@ final class Constants
     public const TEMPORARY_STORAGE_PATH = './tmp/videos';
     public const TEMPORARY_STORAGE_FOR_WORKER_PATH = './public/tmp/videos';
     public const MEDIAS_PREFIX = 'medias';
+    public const EVALUATOR_CHAT_GPT = 'ChatGPT';
+
+    public static function getEvaluators(): array
+    {
+        return [
+            self::EVALUATOR_CHAT_GPT => self::EVALUATOR_CHAT_GPT,
+        ];
+    }
 
     public static function getAvailableScopes(): array
     {
