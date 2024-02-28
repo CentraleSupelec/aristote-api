@@ -295,7 +295,7 @@ class AiEnrichmentsWorkerController extends AbstractController
             }
 
             if (1 !== $enrichment->getVersions()->count()) {
-                return $this->json(['status' => 'KO', 'errors' => ['No or more than one versions have been found for the eligible enrichment, please report this issue']], 404);
+                return $this->json(['status' => 'KO', 'errors' => [sprintf('No or more than one versions have been found for the eligible enrichment (%s), please report this issue', $enrichment->getId())]], 404);
             }
 
             $enrichmentLock = $lockFactory->createLock(sprintf('enrichment-%s', $enrichment->getId()));

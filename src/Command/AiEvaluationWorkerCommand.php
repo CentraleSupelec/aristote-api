@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Constants;
 use App\Exception\AristoteApiException;
 use App\Service\EnrichmentWorkerService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -21,8 +22,6 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 #[AsCommand(name: 'app:ai-evaluation-worker', description: 'Generates evaluations')]
 class AiEvaluationWorkerCommand extends Command
 {
-    final public const EVALUATOR = 'ChatGPT';
-
     public function __construct(
         private readonly EnrichmentWorkerService $enrichmentWorkerService
     ) {
@@ -44,7 +43,7 @@ class AiEvaluationWorkerCommand extends Command
             options: [
                 'query' => [
                     'taskId' => (string) $taskId,
-                    'evaluator' => self::EVALUATOR,
+                    'evaluator' => Constants::EVALUATOR_CHAT_GPT,
                 ],
             ],
             successCodes: [Response::HTTP_OK, Response::HTTP_NOT_FOUND]
