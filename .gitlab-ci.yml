@@ -60,7 +60,7 @@ tests:
 build:
   stage: Build
   image:
-    name: gcr.io/kaniko-project/executor:v1.10.0-debug
+    name: gcr.io/kaniko-project/executor:v1.20.1-debug
     entrypoint: [ "" ]
   before_script:
     # Login to registry
@@ -75,6 +75,7 @@ build:
         --target php_prod \
         --snapshotMode=redo \
         --use-new-run=true \
+        --cache \
         --cleanup
     - >
       /kaniko/executor \
@@ -85,6 +86,7 @@ build:
         --build-arg PHP_DESTINATION=${REGISTRY_HOSTNAME}/aristote/php:${CI_COMMIT_REF_NAME} \
         --snapshotMode=redo \
         --use-new-run=true \
+        --cache \
         --cleanup
   only:
     - tags
