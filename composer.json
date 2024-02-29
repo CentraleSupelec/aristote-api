@@ -62,6 +62,7 @@
         "symfony/web-profiler-bundle": "6.3.*"
     },
     "config": {
+        "optimize-autoloader": true,
         "allow-plugins": {
             "php-http/discovery": true,
             "symfony/flex": true,
