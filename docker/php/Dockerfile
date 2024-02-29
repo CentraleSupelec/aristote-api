@@ -78,4 +78,4 @@ RUN mkdir -p var && chown -R www-data:www-data var/
 USER www-data
 
 # Install bundles assets
-# RUN APP_ENV=prod composer run-script post-install-cmd
+RUN APP_ENV=prod composer run-script post-install-cmd
