@@ -40,7 +40,7 @@ ENTRYPOINT ["/bin/bash", "/symfony-entrypoint.sh"]
 
 FROM php_base as php_installer
 
-RUN APP_ENV=prod composer install --optimize-autoloader --no-progress --no-interaction --no-dev --no-scripts
+RUN APP_ENV=prod composer install --optimize-autoloader --no-progress --no-interaction --no-dev
 
 FROM php_base as php_dev
 
