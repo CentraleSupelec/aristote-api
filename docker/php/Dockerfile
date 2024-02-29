@@ -28,7 +28,7 @@ COPY .env \
     symfony.lock \
     ./
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 ADD docker/php/symfony-entrypoint.sh /
 ADD docker/php/worker-messenger-mq-entrypoint.sh /
