@@ -28,7 +28,7 @@ COPY .env \
     symfony.lock \
     ./
 
-COPY --from=composer:2.7.1 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/local/bin/composer
 
 ADD docker/php/symfony-entrypoint.sh /
 ADD docker/php/worker-messenger-mq-entrypoint.sh /
@@ -41,6 +41,7 @@ ENTRYPOINT ["/bin/bash", "/symfony-entrypoint.sh"]
 FROM php_base as php_installer
 
 RUN ls -l /app
+RUN composer --version
 
 RUN APP_ENV=prod composer install --optimize-autoloader --no-progress --no-interaction --no-dev --no-scripts
 
