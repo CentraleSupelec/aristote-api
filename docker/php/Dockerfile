@@ -40,7 +40,7 @@ ENTRYPOINT ["/bin/bash", "/symfony-entrypoint.sh"]
 
 FROM php_base as php_installer
 
-RUN APP_ENV=prod composer install --optimize-autoloader --no-progress --no-interaction --no-dev
+RUN APP_ENV=prod composer install --optimize-autoloader --no-progress --no-interaction --no-dev --no-scripts
 
 FROM php_base as php_dev
 
@@ -78,7 +78,4 @@ RUN mkdir -p var && chown -R www-data:www-data var/
 USER www-data
 
 # Install bundles assets
-RUN ls
-RUN ls -l /app/vendor
-RUN composer --version
 RUN APP_ENV=prod composer run-script post-install-cmd

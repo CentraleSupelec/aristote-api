@@ -75,7 +75,6 @@ build:
         --target php_prod \
         --snapshotMode=redo \
         --use-new-run=true \
-        --cache \
         --cleanup
     - >
       /kaniko/executor \
@@ -86,7 +85,6 @@ build:
         --build-arg PHP_DESTINATION=${REGISTRY_HOSTNAME}/aristote/php:${CI_COMMIT_REF_NAME} \
         --snapshotMode=redo \
         --use-new-run=true \
-        --cache \
         --cleanup
   only:
     - tags
