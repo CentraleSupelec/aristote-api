@@ -80,5 +80,5 @@ USER www-data
 # Install bundles assets
 RUN ls
 RUN ls -l /app/vendor
-RUN compose --version
+RUN composer --version
 RUN APP_ENV=prod composer run-script post-install-cmd
