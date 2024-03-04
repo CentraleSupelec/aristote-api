@@ -180,6 +180,14 @@ class Enrichment
     #[Groups(groups: ['enrichments'])]
     private ?string $endUserIdentifier = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichments'])]
+    private ?string $aiModel = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichments'])]
+    private ?string $infrastructure = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -507,6 +515,30 @@ class Enrichment
     public function setEndUserIdentifier(?string $endUserIdentifier): self
     {
         $this->endUserIdentifier = $endUserIdentifier;
+
+        return $this;
+    }
+
+    public function getAiModel(): ?string
+    {
+        return $this->aiModel;
+    }
+
+    public function setAiModel(?string $aiModel): self
+    {
+        $this->aiModel = $aiModel;
+
+        return $this;
+    }
+
+    public function getInfrastructure(): ?string
+    {
+        return $this->infrastructure;
+    }
+
+    public function setInfrastructure(?string $infrastructure): self
+    {
+        $this->infrastructure = $infrastructure;
 
         return $this;
     }

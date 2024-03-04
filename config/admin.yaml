@@ -22,3 +22,23 @@ services:
     calls:
       - [setApiClientManager, ['@App\Service\ApiClientManager']]
     public: true
+
+  admin.ai_model:
+    class: App\Admin\AiModelAdmin
+    tags:
+      - name: sonata.admin
+        model_class: App\Entity\AiModel
+        manager_type: orm
+        group: Utilisateurs
+        label: Modèles IA
+    public: true
+
+  admin.infrastructure:
+    class: App\Admin\InfrastructureAdmin
+    tags:
+      - name: sonata.admin
+        model_class: App\Entity\Infrastructure
+        manager_type: orm
+        group: Utilisateurs
+        label: Infrastructures
+    public: true

@@ -20,4 +20,21 @@ class ApiClientRepository extends ServiceEntityRepository
     {
         parent::__construct($managerRegistry, ApiClient::class);
     }
+
+    public function getDistinctCombinations()
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb
+            ->leftJoin('a.aiModel', 'ai')
+            ->leftJoin('a.infrastructure', 'i')
+            ->where($qb->expr()->orX($qb->expr()->isNotNull('ai.name'), $qb->expr()->isNotNull('i.name')))
+            ->groupBy('ai.name', 'i.name')
+            ->select(
+                'ai.name AS aiModel',
+                'i.name AS infrastructure'
+            )
+        ;
+
+        return $qb->getQuery()->getArrayResult();
+    }
 }

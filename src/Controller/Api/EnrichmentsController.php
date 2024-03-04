@@ -16,6 +16,7 @@ use App\Model\EnrichmentCreationUrlRequestPayload;
 use App\Model\EnrichmentParameters;
 use App\Model\EnrichmentVersionCreationRequestPayload;
 use App\Model\ErrorsResponse;
+use App\Repository\ApiClientRepository;
 use App\Repository\ChoiceRepository;
 use App\Repository\EnrichmentRepository;
 use App\Repository\EnrichmentVersionRepository;
@@ -163,6 +164,43 @@ class EnrichmentsController extends AbstractController
 
     #[OA\Tag(name: 'Enrichments')]
     #[OA\Get(
+        description: 'Get available AI Model-Infrastructure combinations',
+        summary: 'Get available AI Model-Infrastructure combinations'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns an enrichment',
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: new Model(type: Enrichment::class, groups: ['enrichments'])
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Not allowed to access this resource',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[Route('/enrichments/ai_model_infrastructure_combinations', name: 'ai_model_infrastructure_combinations', methods: ['GET'])]
+    public function getAiModelInfrastructureCombinations(ApiClientRepository $apiClientRepository): Response
+    {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
+        $cominations = $apiClientRepository->getDistinctCombinations();
+
+        return $this->json($cominations);
+    }
+
+    #[OA\Tag(name: 'Enrichments')]
+    #[OA\Get(
         description: 'Get enrichment status by id',
         summary: 'Get enrichment status by id'
     )]
@@ -232,6 +270,84 @@ class EnrichmentsController extends AbstractController
         ];
 
         return $this->json($enrichment, context: $options);
+    }
+
+    #[OA\Tag(name: 'Enrichments')]
+    #[OA\Delete(
+        description: 'Delete enrichment by id',
+        summary: 'Delete enrichment by id'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Enrichment deleted successfully',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: 'status',
+                    description: 'OK',
+                    type: 'string'
+                ),
+            ],
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad parameters',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Not allowed to access this resource',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Entity not found',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Parameter(
+        name: 'id',
+        description: 'Enrichment ID',
+        in: 'path',
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[Route('/enrichments/{id}', name: 'enrichment', methods: ['DELETE'])]
+    public function deleteEnrichmentByID(string $id, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to delete this resource']], 403);
+        }
+
+        $uuidValidationErrorResponse = $this->validateUuid($id);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
+        $enrichment = $enrichmentRepository->findOneBy(['id' => $id]);
+
+        $enrichmentAccessErrorResponse = $this->validateEnrichmentAccess($enrichment, $id);
+        if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
+            return $enrichmentAccessErrorResponse;
+        }
+
+        $entityManager->remove($enrichment);
+        $entityManager->flush();
+
+        return $this->json(['status' => 'OK']);
     }
 
     #[OA\Tag(name: 'Enrichments')]
@@ -848,12 +964,14 @@ class EnrichmentsController extends AbstractController
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $enrichmentCreationUrlRequestPayload = (new EnrichmentCreationUrlRequestPayload())
             ->setUrl($content['url'])
-            ->setEndUserIdentifier($content['endUserIdentifier'] ?? null)
+            ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
             ->setNotificationWebhookUrl($content['notificationWebhookUrl'])
             ->setEnrichmentParameters((new EnrichmentParameters())
                 ->setDisciplines($content['enrichmentParameters']['disciplines'] ?? [])
                 ->setMediaTypes($content['enrichmentParameters']['mediaTypes'] ?? [])
                 ->setAiEvaluation($content['enrichmentParameters']['aiEvaluation'] ?? null)
+                ->setAiModel(null === $content['aiModel'] || '' === $content['aiModel'] ? null : $content['aiModel'])
+                ->setInfrastructure(null === $content['infrastructure'] || '' === $content['infrastructure'] ? null : $content['infrastructure'])
             )
         ;
 
@@ -876,6 +994,8 @@ class EnrichmentsController extends AbstractController
             ->setMediaTypes($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getMediaTypes())
             ->setAiEvaluation($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getAiEvaluation())
             ->setEndUserIdentifier($enrichmentCreationUrlRequestPayload->getEndUserIdentifier())
+            ->setAiModel($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getAiModel())
+            ->setInfrastructure($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getInfrastructure())
         ;
 
         $entityManager->persist($enrichment);
@@ -949,14 +1069,19 @@ class EnrichmentsController extends AbstractController
         }
 
         $inputEnrichmentParameters = json_decode($request->request->get('enrichmentParameters'), true, 512, JSON_THROW_ON_ERROR);
+        $endUserIdentifier = $request->request->get('endUserIdentifier');
+        $aiModel = $inputEnrichmentParameters['aiModel'];
+        $infrastructure = $inputEnrichmentParameters['infrastructure'];
         $enrichmentCreationFileUploadRequestPayload = (new EnrichmentCreationFileUploadRequestPayload())
             ->setFile($file)
             ->setNotificationWebhookUrl($request->request->get('notificationWebhookUrl'))
-            ->setEndUserIdentifier($request->request->get('endUserIdentifier') ?? null)
+            ->setEndUserIdentifier(null === $endUserIdentifier || '' === $endUserIdentifier ? null : $endUserIdentifier)
             ->setEnrichmentParameters((new EnrichmentParameters())
                 ->setDisciplines($inputEnrichmentParameters['disciplines'] ?? [])
                 ->setMediaTypes($inputEnrichmentParameters['mediaTypes'] ?? [])
                 ->setAiEvaluation($inputEnrichmentParameters['aiEvaluation'] ?? null)
+                ->setAiModel(null === $aiModel || '' === $aiModel ? null : $aiModel)
+                ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
             )
         ;
 
@@ -978,6 +1103,8 @@ class EnrichmentsController extends AbstractController
                 ->setMediaTypes($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getMediaTypes())
                 ->setAiEvaluation($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getAiEvaluation())
                 ->setEndUserIdentifier($enrichmentCreationFileUploadRequestPayload->getEndUserIdentifier())
+                ->setAiModel($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getAiModel())
+                ->setInfrastructure($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getInfrastructure())
         ;
 
         $enrichment = $fileUploadService->uploadFile($file, $clientEntity, $enrichment);

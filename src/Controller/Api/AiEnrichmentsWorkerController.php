@@ -288,7 +288,11 @@ class AiEnrichmentsWorkerController extends AbstractController
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
-            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes($this->aiEnrichmentWorkerTimeoutInMinutes);
+            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(
+                $this->aiEnrichmentWorkerTimeoutInMinutes,
+                $clientEntity->getAiModel(),
+                $clientEntity->getInfrastructure()
+            );
 
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => ['No job currently available']], 404);

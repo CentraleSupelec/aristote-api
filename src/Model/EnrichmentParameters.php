@@ -23,6 +23,12 @@ class EnrichmentParameters
     #[Assert\Choice(callback: [Constants::class, 'getEvaluators'], multiple: false, message: 'Invalid aiEvaluation value')]
     private ?string $aiEvaluation = null;
 
+    #[OA\Property(property: 'aiModel', description: 'AI Model to be used for enrichment', type: 'string')]
+    private ?string $aiModel = null;
+
+    #[OA\Property(property: 'infrastructure', description: 'Infrastructure to be used for enrichment', type: 'string')]
+    private ?string $infrastructure = null;
+
     public function getMediaTypes(): array
     {
         return $this->mediaTypes;
@@ -55,6 +61,30 @@ class EnrichmentParameters
     public function setAiEvaluation(?string $aiEvaluation): self
     {
         $this->aiEvaluation = $aiEvaluation;
+
+        return $this;
+    }
+
+    public function getAiModel(): ?string
+    {
+        return $this->aiModel;
+    }
+
+    public function setAiModel(?string $aiModel): self
+    {
+        $this->aiModel = $aiModel;
+
+        return $this;
+    }
+
+    public function getInfrastructure(): ?string
+    {
+        return $this->infrastructure;
+    }
+
+    public function setInfrastructure(?string $infrastructure): self
+    {
+        $this->infrastructure = $infrastructure;
 
         return $this;
     }
