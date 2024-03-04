@@ -59,6 +59,12 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'aiEvaluatedBy', targetEntity: Enrichment::class)]
     private Collection $aiEvaluatedEnrichments;
 
+    #[ORM\ManyToOne(inversedBy: 'apiClients', targetEntity: AiModel::class)]
+    private ?AiModel $aiModel = null;
+
+    #[ORM\ManyToOne(inversedBy: 'apiClients', targetEntity: Infrastructure::class)]
+    private ?Infrastructure $infrastructure = null;
+
     public function __construct(string $name, string $identifier, ?string $secret)
     {
         parent::__construct($name, $identifier, $secret);
@@ -286,6 +292,30 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         if ($this->aiEvaluatedEnrichments->removeElement($enrichment) && $enrichment->getAiEvaluatedBy() === $this) {
             $enrichment->setAiEvaluatedBy(null);
         }
+
+        return $this;
+    }
+
+    public function getAiModel(): ?AiModel
+    {
+        return $this->aiModel;
+    }
+
+    public function setAiModel(?AiModel $aiModel): static
+    {
+        $this->aiModel = $aiModel;
+
+        return $this;
+    }
+
+    public function getInfrastructure(): ?Infrastructure
+    {
+        return $this->infrastructure;
+    }
+
+    public function setInfrastructure(?Infrastructure $infrastructure): static
+    {
+        $this->infrastructure = $infrastructure;
 
         return $this;
     }

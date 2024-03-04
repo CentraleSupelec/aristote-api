@@ -39,7 +39,7 @@ class EnrichmentRepository extends ServiceEntityRepository
         return $this->paginator->paginate($queryBuilder, $page, $size);
     }
 
-    public function findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(int $minutes = 120): ?Enrichment
+    public function findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(int $minutes = 120, string $aiModel = null, string $infrastructure = null): ?Enrichment
     {
         $qb = $this->createQueryBuilder('e');
         $qb->where($qb->expr()->orX(
@@ -51,12 +51,36 @@ class EnrichmentRepository extends ServiceEntityRepository
                     ':timeThreshold'
                 )
             )
-        ))
-            ->setParameters([
+        ));
+
+        $parameters = [
             'statusWaitingAiEnrichment' => Enrichment::STATUS_WAITING_AI_ENRICHMENT,
             'statusAiEnrichment' => Enrichment::STATUS_AI_ENRICHING,
             'timeThreshold' => (new DateTime())->modify('-'.$minutes.' minutes'),
-        ])
+        ];
+
+        if ($aiModel) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('e.aiModel', ':aiModel'),
+                $qb->expr()->isNull('e.aiModel'))
+            );
+            $parameters['aiModel'] = $aiModel;
+        } else {
+            $qb->andWhere($qb->expr()->isNull('e.aiModel'));
+        }
+
+        if ($infrastructure) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('e.infrastructure', ':infrastructure'),
+                $qb->expr()->isNull('e.infrastructure'))
+            );
+            $parameters['infrastructure'] = $infrastructure;
+        } else {
+            $qb->andWhere($qb->expr()->isNull('e.infrastructure'));
+        }
+
+        $qb
+            ->setParameters($parameters)
             ->orderBy('e.createdAt', 'ASC')
         ;
 

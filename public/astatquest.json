@@ -1,0 +1,337 @@
+{
+    "original_file_name": "astatquest.mp4",
+    "language": "en",
+    "sentences": [
+        {
+            "start": 0,
+            "end": 16,
+            "text": "Elastic Net regression sounds so crazy fancy, but it's way, way simpler than you might expect."
+        },
+        {
+            "start": 16,
+            "end": 19,
+            "text": "StatQuest."
+        },
+        {
+            "start": 19,
+            "end": 24,
+            "text": "Hello, I'm Josh Stormer and welcome to StatQuest."
+        },
+        {
+            "start": 24,
+            "end": 28,
+            "text": "Today we're going to do part three of our series on regularization."
+        },
+        {
+            "start": 28,
+            "end": 33,
+            "text": "We're going to cover elastic net regression and it's going to be clearly explained."
+        },
+        {
+            "start": 33,
+            "end": 39,
+            "text": "This StatQuest follows up on the StatQuests on ridge regression and lasso regression,"
+        },
+        {
+            "start": 39,
+            "end": 43,
+            "text": "so if you aren't already familiar with them, check them out."
+        },
+        {
+            "start": 43,
+            "end": 47,
+            "text": "We ended the StatQuest on lasso regression by saying that it works best when your model"
+        },
+        {
+            "start": 47,
+            "end": 51,
+            "text": "contains a lot of useless variables."
+        },
+        {
+            "start": 51,
+            "end": 57,
+            "text": "So if this was the model we were using to predict size, then lasso regression would"
+        },
+        {
+            "start": 57,
+            "end": 62,
+            "text": "keep the terms for weight and high-fat diet, and it would eliminate the terms for astrological"
+        },
+        {
+            "start": 62,
+            "end": 69,
+            "text": "sign and the airspeed of a swallow, African or European, creating a simpler model that"
+        },
+        {
+            "start": 69,
+            "end": 72,
+            "text": "is easier to interpret."
+        },
+        {
+            "start": 72,
+            "end": 77,
+            "text": "We also said that ridge regression works best when most of the variables in your model are"
+        },
+        {
+            "start": 77,
+            "end": 79,
+            "text": "useful."
+        },
+        {
+            "start": 79,
+            "end": 85,
+            "text": "So if we were trying to predict size using a model where most of the variables were useful,"
+        },
+        {
+            "start": 85,
+            "end": 90,
+            "text": "then ridge regression will shrink the parameters, but will not remove any of them."
+        },
+        {
+            "start": 90,
+            "end": 92,
+            "text": "Great!"
+        },
+        {
+            "start": 92,
+            "end": 96,
+            "text": "When we know a lot about all of the parameters in our model, it's easy to choose if we want"
+        },
+        {
+            "start": 96,
+            "end": 101,
+            "text": "to use lasso regression or ridge regression."
+        },
+        {
+            "start": 101,
+            "end": 107,
+            "text": "But what do we do when we have a model that includes tons more variables?"
+        },
+        {
+            "start": 107,
+            "end": 111,
+            "text": "Last week I went to a deep learning conference and people there were using models that included"
+        },
+        {
+            "start": 111,
+            "end": 117,
+            "text": "millions of parameters, far too many to know everything about."
+        },
+        {
+            "start": 117,
+            "end": 120,
+            "text": "And when you have millions of parameters, then you will almost certainly need to use"
+        },
+        {
+            "start": 120,
+            "end": 124,
+            "text": "some sort of regularization to estimate them."
+        },
+        {
+            "start": 124,
+            "end": 129,
+            "text": "However, the variables in those models might be useful or useless."
+        },
+        {
+            "start": 129,
+            "end": 132,
+            "text": "We don't know in advance."
+        },
+        {
+            "start": 132,
+            "end": 137,
+            "text": "So how do you choose if you should use lasso or ridge regression?"
+        },
+        {
+            "start": 137,
+            "end": 140,
+            "text": "The good news is that you don't have to choose."
+        },
+        {
+            "start": 140,
+            "end": 144,
+            "text": "Instead, you use elastic net regression."
+        },
+        {
+            "start": 144,
+            "end": 149,
+            "text": "Elastic net regression sounds super fancy, but if you already know about lasso and ridge"
+        },
+        {
+            "start": 149,
+            "end": 152,
+            "text": "regression, it's super simple."
+        },
+        {
+            "start": 152,
+            "end": 158,
+            "text": "Just like lasso and ridge regression, elastic net regression starts with least squares."
+        },
+        {
+            "start": 158,
+            "end": 166,
+            "text": "Then it combines the lasso regression penalty with the ridge regression penalty."
+        },
+        {
+            "start": 166,
+            "end": 167,
+            "text": "Burr."
+        },
+        {
+            "start": 167,
+            "end": 173,
+            "text": "Altogether, elastic net combines the strengths of lasso and ridge regression."
+        },
+        {
+            "start": 173,
+            "end": 180,
+            "text": "Note, the lasso regression penalty and the ridge regression penalty get their own lambdas."
+        },
+        {
+            "start": 180,
+            "end": 186,
+            "text": "Lambda sub 1 for lasso and lambda sub 2 for ridge."
+        },
+        {
+            "start": 186,
+            "end": 192,
+            "text": "We use cross-validation on different combinations of lambda sub 1 and lambda sub 2 to find the"
+        },
+        {
+            "start": 192,
+            "end": 195,
+            "text": "best values."
+        },
+        {
+            "start": 195,
+            "end": 202,
+            "text": "When both lambda sub 1 and lambda sub 2 equal 0, then we get the original least squares"
+        },
+        {
+            "start": 202,
+            "end": 205,
+            "text": "parameter estimates."
+        },
+        {
+            "start": 205,
+            "end": 215,
+            "text": "When lambda sub 1 is greater than 0 and lambda sub 2 equals 0, then we get lasso regression."
+        },
+        {
+            "start": 215,
+            "end": 224,
+            "text": "When lambda sub 1 equals 0 and lambda sub 2 is greater than 0, then we get ridge regression."
+        },
+        {
+            "start": 224,
+            "end": 230,
+            "text": "And when both lambda sub 1 is greater than 0 and lambda sub 2 is greater than 0, then"
+        },
+        {
+            "start": 230,
+            "end": 234,
+            "text": "we get a hybrid of the two."
+        },
+        {
+            "start": 234,
+            "end": 239,
+            "text": "The hybrid elastic net regression is especially good at dealing with situations when there"
+        },
+        {
+            "start": 239,
+            "end": 242,
+            "text": "are correlations between parameters."
+        },
+        {
+            "start": 242,
+            "end": 248,
+            "text": "This is because, on its own, lasso regression tends to pick just one of the correlated terms"
+        },
+        {
+            "start": 248,
+            "end": 251,
+            "text": "and eliminate the others."
+        },
+        {
+            "start": 251,
+            "end": 256,
+            "text": "Whereas ridge regression tends to shrink all of the parameters for the correlated variables"
+        },
+        {
+            "start": 256,
+            "end": 258,
+            "text": "together."
+        },
+        {
+            "start": 258,
+            "end": 264,
+            "text": "By combining lasso and ridge regression, elastic net regression groups and shrinks the parameters"
+        },
+        {
+            "start": 264,
+            "end": 269,
+            "text": "associated with the correlated variables and leaves them in the equation or removes them"
+        },
+        {
+            "start": 269,
+            "end": 271,
+            "text": "all at once."
+        },
+        {
+            "start": 271,
+            "end": 273,
+            "text": "Bam!"
+        },
+        {
+            "start": 273,
+            "end": 282,
+            "text": "In summary, elastic net regression combines the lasso regression penalty with the ridge"
+        },
+        {
+            "start": 282,
+            "end": 286,
+            "text": "regression penalty."
+        },
+        {
+            "start": 286,
+            "end": 291,
+            "text": "And by doing so, gets the best of both worlds, plus it does a better job dealing with correlated"
+        },
+        {
+            "start": 291,
+            "end": 293,
+            "text": "parameters."
+        },
+        {
+            "start": 293,
+            "end": 295,
+            "text": "Hooray!"
+        },
+        {
+            "start": 295,
+            "end": 298,
+            "text": "We've made it to the end of another exciting StatQuest."
+        },
+        {
+            "start": 298,
+            "end": 302,
+            "text": "If you like this StatQuest and want to see more, please subscribe."
+        },
+        {
+            "start": 302,
+            "end": 306,
+            "text": "And if you want to support StatQuest, well, consider buying one or two of my original"
+        },
+        {
+            "start": 306,
+            "end": 307,
+            "text": "songs."
+        },
+        {
+            "start": 307,
+            "end": 315,
+            "text": "Alright, until next time, quest on!"
+        }
+    ],
+    "text": "Elastic Net regression sounds so crazy fancy, but it's way, way simpler than you might expect. StatQuest. Hello, I'm Josh Stormer and welcome to StatQuest. Today we're going to do part three of our series on regularization. We're going to cover elastic net regression and it's going to be clearly explained. This StatQuest follows up on the StatQuests on ridge regression and lasso regression, so if you aren't already familiar with them, check them out. We ended the StatQuest on lasso regression by saying that it works best when your model contains a lot of useless variables. So if this was the model we were using to predict size, then lasso regression would keep the terms for weight and high-fat diet, and it would eliminate the terms for astrological sign and the airspeed of a swallow, African or European, creating a simpler model that is easier to interpret. We also said that ridge regression works best when most of the variables in your model are useful. So if we were trying to predict size using a model where most of the variables were useful, then ridge regression will shrink the parameters, but will not remove any of them. Great! When we know a lot about all of the parameters in our model, it's easy to choose if we want to use lasso regression or ridge regression. But what do we do when we have a model that includes tons more variables? Last week I went to a deep learning conference and people there were using models that included millions of parameters, far too many to know everything about. And when you have millions of parameters, then you will almost certainly need to use some sort of regularization to estimate them. However, the variables in those models might be useful or useless. We don't know in advance. So how do you choose if you should use lasso or ridge regression? The good news is that you don't have to choose. Instead, you use elastic net regression. Elastic net regression sounds super fancy, but if you already know about lasso and ridge regression, it's super simple. Just like lasso and ridge regression, elastic net regression starts with least squares. Then it combines the lasso regression penalty with the ridge regression penalty. Burr. Altogether, elastic net combines the strengths of lasso and ridge regression. Note, the lasso regression penalty and the ridge regression penalty get their own lambdas. Lambda sub 1 for lasso and lambda sub 2 for ridge. We use cross-validation on different combinations of lambda sub 1 and lambda sub 2 to find the best values. When both lambda sub 1 and lambda sub 2 equal 0, then we get the original least squares parameter estimates. When lambda sub 1 is greater than 0 and lambda sub 2 equals 0, then we get lasso regression. When lambda sub 1 equals 0 and lambda sub 2 is greater than 0, then we get ridge regression. And when both lambda sub 1 is greater than 0 and lambda sub 2 is greater than 0, then we get a hybrid of the two. The hybrid elastic net regression is especially good at dealing with situations when there are correlations between parameters. This is because, on its own, lasso regression tends to pick just one of the correlated terms and eliminate the others. Whereas ridge regression tends to shrink all of the parameters for the correlated variables together. By combining lasso and ridge regression, elastic net regression groups and shrinks the parameters associated with the correlated variables and leaves them in the equation or removes them all at once. Bam! In summary, elastic net regression combines the lasso regression penalty with the ridge regression penalty. And by doing so, gets the best of both worlds, plus it does a better job dealing with correlated parameters. Hooray! We've made it to the end of another exciting StatQuest. If you like this StatQuest and want to see more, please subscribe. And if you want to support StatQuest, well, consider buying one or two of my original songs. Alright, until next time, quest on!"
+}

@@ -3,7 +3,9 @@
 namespace App\Admin;
 
 use App\Constants;
+use App\Entity\AiModel;
 use App\Entity\ApiClient;
+use App\Entity\Infrastructure;
 use App\Service\ApiClientManager;
 use League\Bundle\OAuth2ServerBundle\OAuth2Grants;
 use LogicException;
@@ -12,6 +14,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -113,6 +116,18 @@ class ApiClientAdmin extends AbstractAdmin
                     'multiple' => true,
                     'choices' => Constants::getAvailableGrants(),
                 ])
+                ->add('aiModel', EntityType::class, [
+                    'label' => "Modèle IA (si Worker d'enrichissment)",
+                    'class' => AiModel::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('infrastructure', EntityType::class, [
+                    'label' => "Infrastructure (si Worker d'enrichissment)",
+                    'class' => Infrastructure::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
             ->end()
         ;
     }
@@ -151,8 +166,19 @@ class ApiClientAdmin extends AbstractAdmin
                     'display' => 'values',
                     'inline' => false,
                 ])
+                ->add('aiModel', EntityType::class, [
+                    'label' => "Modèle IA (si Worker d'enrichissment)",
+                    'class' => AiModel::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('infrastructure', EntityType::class, [
+                    'label' => "Infrastructure (si Worker d'enrichissment)",
+                    'class' => Infrastructure::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
             ->end()
-
         ;
     }
 

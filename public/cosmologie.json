@@ -1,0 +1,2452 @@
+{
+    "original_file_name": "cosmologie.mp4",
+    "language": "fr",
+    "sentences": [
+        {
+            "start": 0,
+            "end": 4,
+            "text": "2, 1, 0, et lift off !"
+        },
+        {
+            "start": 4,
+            "end": 6,
+            "text": "Le dernier lift off de l'Atlantique !"
+        },
+        {
+            "start": 6,
+            "end": 30,
+            "text": "Showmaster de Space Shuttle !"
+        },
+        {
+            "start": 30,
+            "end": 60,
+            "text": "Le dernier lift off de l'Atlantique !"
+        },
+        {
+            "start": 60,
+            "end": 62,
+            "text": "Le dernier lift off de l'Atlantique !"
+        },
+        {
+            "start": 62,
+            "end": 90,
+            "text": "Showmaster de Space Shuttle !"
+        },
+        {
+            "start": 90,
+            "end": 117,
+            "text": "Conf\u00e9rence confin\u00e9e ASTRO Bonjour, bienvenue \u00e0 cette conf\u00e9rence confin\u00e9e num\u00e9ro 11 du 2 d\u00e9cembre 2020."
+        },
+        {
+            "start": 117,
+            "end": 120,
+            "text": "Le confinement semble toucher \u00e0 sa fin."
+        },
+        {
+            "start": 120,
+            "end": 131,
+            "text": "N\u00e9anmoins, les conf\u00e9rences confin\u00e9es continuent, parce que d'abord \u00e7a m'amuse, et puis j'ai l'impression que \u00e7a amuse certains d'entre vous, en tout cas \u00e7a int\u00e9resse certains d'entre vous, et certaines, donc nous allons continuer."
+        },
+        {
+            "start": 131,
+            "end": 173,
+            "text": "Alors aujourd'hui, au programme, parce que la semaine derni\u00e8re il n'y a pas eu de conf\u00e9rence confin\u00e9e, et je m'en excuse parce qu'on y reviendra peut-\u00eatre la semaine prochaine finalement, j'\u00e9tais tr\u00e8s impliqu\u00e9 dans la partie scientifique du nouveau satellite observatoire JWST, de la NASA, de l'ESA et de la CSA, donc am\u00e9ricain pour faire simple, europ\u00e9en et canadien, c'est un grand t\u00e9lescope qui sera lanc\u00e9 dans \u00e0 peu pr\u00e8s un an par une fus\u00e9e Ariane 5, et donc les programmes scientifiques \u00e9taient dus mercredi matin dernier, donc c'est pour \u00e7a que je n'ai pas pu avoir une semaine de conf\u00e9rences confin\u00e9es astro avec vous la semaine derni\u00e8re."
+        },
+        {
+            "start": 173,
+            "end": 206,
+            "text": "Alors aujourd'hui un programme int\u00e9ressant, voil\u00e0, je reprends ma petite feuille, parce que finalement c'est ce qu'il y a de plus pratique, nous allons parler de quatre choses aujourd'hui, tout d'abord des conseils pour peut-\u00eatre les \u00e9tudiants et les lyc\u00e9ens qui nous \u00e9coutent, et qui sont pour certains en confinement, en tout cas s'agissant de l'universit\u00e9 malheureusement, m\u00eame si on d\u00e9ploie tous les efforts \u00e0 tous les niveaux pour que les universit\u00e9s ouvrent de nouveau, beaucoup plus t\u00f4t que ce qui est annonc\u00e9, donc si possible en janvier, mais voil\u00e0 c'est en cours."
+        },
+        {
+            "start": 206,
+            "end": 220,
+            "text": "Mais en attendant, certains d'entre vous sont en distanciel, peut-\u00eatre aussi pour les lyc\u00e9es en partie, donc voil\u00e0 quelques conseils d'un prof d'universit\u00e9 qui a affaire \u00e0 quelques \u00e9tudiants, donc ce sera relativement court."
+        },
+        {
+            "start": 220,
+            "end": 234,
+            "text": "Deuxi\u00e8mement, on va parler un tout petit peu de la Station Spatiale Internationale, parce qu'on la voit tr\u00e8s tr\u00e8s bien en ce moment le soir depuis la France m\u00e9tropolitaine, donc c'est vraiment le moment pour la voir, surtout qu'en g\u00e9n\u00e9ral il fait \u00e0 peu pr\u00e8s beau, enfin \u00e7a d\u00e9pend de votre r\u00e9gion, mais l\u00e0 \u00e7a sera court."
+        },
+        {
+            "start": 234,
+            "end": 250,
+            "text": "On parlera un petit peu d'art dans ce monde de brut, parce que l'art et la culture \u00e7a nous nourrit, tout comme la science, donc on parlera un peu d'art, et puis on passera au plein de r\u00e9sistance, qui est la cosmologie, l'expansion de l'univers."
+        },
+        {
+            "start": 250,
+            "end": 291,
+            "text": "Donc l\u00e0 c'est tir\u00e9 d'un cours que je donnais en premi\u00e8re ann\u00e9e d'universit\u00e9 \u00e0 M\u00e9lun, alors que je ne donne plus parce que j'avais, bref, j'avais plus assez de s\u00e9ances, mais le niveau est \u00e0 peu pr\u00e8s du, disons, terminale, premi\u00e8re ann\u00e9e d'universit\u00e9, donc \u00e7a sera un petit peu technique, c'est pour \u00e7a qu'il y aura des \u00e9quations, c'est pour \u00e7a que j'ai pris le papier, c'est pas hyper compliqu\u00e9, s'il y a des petits aspects que vous ne comprenez pas, c'est pas tr\u00e8s g\u00eanant, d'abord vous pouvez me poser des questions en chat, et puis ce qui compte c'est vraiment le raisonnement g\u00e9n\u00e9ral, apr\u00e8s les d\u00e9tails techniques, les calculs, \u00e7a c'est pas g\u00eanant, \u00e7a vous trouverez le moment pour les comprendre, ou l'ann\u00e9e d'apr\u00e8s, \u00e7a c'est pas g\u00eanant, mais la logique globale, vous verrez, elle est relativement simple."
+        },
+        {
+            "start": 291,
+            "end": 311,
+            "text": "Donc, on y va, on commence par les conseils pour les, disons, terminale, premi\u00e8re ann\u00e9e, deuxi\u00e8me ann\u00e9e d'universit\u00e9, pour passer cette p\u00e9riode o\u00f9 il y a du cours en distanciel et comment essayer de pr\u00e9parer la suite de l'ann\u00e9e universitaire pour \u00eatre d'attaque."
+        },
+        {
+            "start": 311,
+            "end": 326,
+            "text": "Et bien c'est parti !"
+        },
+        {
+            "start": 326,
+            "end": 332,
+            "text": "Alors mes conseils sont les suivants, bas\u00e9s sur un petit peu d'exp\u00e9rience."
+        },
+        {
+            "start": 332,
+            "end": 351,
+            "text": "Le premier conseil que je pourrais donner aux \u00e9tudiants, c'est de travailler en groupe, \u00e7a c'est tr\u00e8s important, pour r\u00e9viser, pour se questionner mutuellement, pour r\u00e9pondre, parce que tout seul c'est difficile, alors m\u00eame si vous \u00eates \u00e0 distance, vous pouvez communiquer, il y a plein d'outils qui existent, \u00e7a va de WhatsApp, etc."
+        },
+        {
+            "start": 351,
+            "end": 358,
+            "text": "Mais bon, quand m\u00eame avoir du temps de parole, plus que juste du texte, c'est important."
+        },
+        {
+            "start": 358,
+            "end": 360,
+            "text": "Alors pourquoi c'est important ?"
+        },
+        {
+            "start": 360,
+            "end": 373,
+            "text": "Parce qu'en g\u00e9n\u00e9ral, on n'a pas tout compris d'un cours ou d'un concept, et le travail tout seul, \u00e7a peut \u00eatre difficile, surtout si on est \u00e0 distance, qu'on est seul, et que la motivation est difficile."
+        },
+        {
+            "start": 373,
+            "end": 386,
+            "text": "Le fait d'\u00eatre en groupe vous permet de poser des questions aux autres, les autres ont en g\u00e9n\u00e9ral la r\u00e9ponse, la r\u00e9ciproque \u00e9tant vraie, c'est-\u00e0-dire que vous pourrez certainement avoir des r\u00e9ponses aux questions que se posent vos copains."
+        },
+        {
+            "start": 386,
+            "end": 398,
+            "text": "Et mine de rien, penser \u00e0 des questions et penser \u00e0 des r\u00e9ponses, \u00e7a permet de faire travailler la r\u00e9flexion, et \u00e7a permet de mieux structurer son savoir et ses comp\u00e9tences."
+        },
+        {
+            "start": 398,
+            "end": 410,
+            "text": "Et donc \u00e7a va au-del\u00e0 juste de l'aide ponctuelle, qui est d\u00e9j\u00e0 tr\u00e8s bienvenue, et tr\u00e8s utile, et tr\u00e8s sympathique, et tr\u00e8s agr\u00e9able, \u00e7a permet en plus de vraiment bien int\u00e9grer, de se faire une r\u00e9flexion vraiment personnelle sur un sujet ou un concept."
+        },
+        {
+            "start": 410,
+            "end": 412,
+            "text": "Donc vous verrez, \u00e7a marche tr\u00e8s tr\u00e8s bien."
+        },
+        {
+            "start": 412,
+            "end": 414,
+            "text": "Donc \u00e7a c'est le conseil que je donne."
+        },
+        {
+            "start": 414,
+            "end": 417,
+            "text": "Certains \u00e9tudiants restent toujours un petit peu seuls, etc."
+        },
+        {
+            "start": 417,
+            "end": 421,
+            "text": "C'est peut-\u00eatre un choix, mais \u00e0 mon avis ce n'est pas un choix id\u00e9al."
+        },
+        {
+            "start": 421,
+            "end": 425,
+            "text": "Donc travaillez en groupe quand vous pouvez, les outils existent."
+        },
+        {
+            "start": 425,
+            "end": 431,
+            "text": "Le deuxi\u00e8me conseil, c'est poser des questions \u00e0 votre enseignant."
+        },
+        {
+            "start": 431,
+            "end": 433,
+            "text": "Pour cela je propose plusieurs choses."
+        },
+        {
+            "start": 433,
+            "end": 442,
+            "text": "D'abord c'est bien formuler vos questions, surtout si vous \u00eates \u00e0 distance avec une interface genre Zoom, Collaborate, etc."
+        },
+        {
+            "start": 442,
+            "end": 450,
+            "text": "Ou parfois le son passe mal, si vous dites \u00ab Monsieur, j'ai pas compris l'\u00e9quation 4 \u00bb ou \u00ab Madame, j'ai pas compris l'\u00e9quation 4 \u00bb D\u00e9j\u00e0 le temps que votre micro se r\u00e9veille, on n'entend rien."
+        },
+        {
+            "start": 450,
+            "end": 479,
+            "text": "Donc plut\u00f4t que de faire une question vraiment en mode onomatop\u00e9e, je sugg\u00e8re de dire, voil\u00e0, de lever la main selon l'outil, dire \u00ab Monsieur, Madame, l'\u00e9quation 4, il y a des choses que je ne comprends pas, notamment le terme bidule ou le terme machin, vous pouvez r\u00e9expliquer pourquoi ce terme, qu'est-ce qu'il fait, etc \u00bb Donc, poser des questions, bien formuler vos questions, m\u00eame si \u00e9videmment vous ne comprenez pas parce que vous posez une question."
+        },
+        {
+            "start": 479,
+            "end": 481,
+            "text": "Et c'est normal, il faut poser des questions."
+        },
+        {
+            "start": 481,
+            "end": 486,
+            "text": "Si vous \u00eates en cours, c'est qu'a priori, il y a des choses que vous ne connaissez pas."
+        },
+        {
+            "start": 486,
+            "end": 489,
+            "text": "Et c'est absolument pas honteux de poser des questions, au contraire."
+        },
+        {
+            "start": 489,
+            "end": 494,
+            "text": "Et l'enseignant se trouvera confort\u00e9 dans son cours si vous posez des questions."
+        },
+        {
+            "start": 494,
+            "end": 497,
+            "text": "Et puis il parle dans le vide, et puis en g\u00e9n\u00e9ral le niveau part un petit peu en live."
+        },
+        {
+            "start": 497,
+            "end": 499,
+            "text": "Enfin, \u00e7a d\u00e9pend des profs, bien s\u00fbr."
+        },
+        {
+            "start": 499,
+            "end": 501,
+            "text": "Et donc, c'est un peu difficile."
+        },
+        {
+            "start": 501,
+            "end": 506,
+            "text": "Donc, poser des questions, formuler les bien, et puis parler distinctement."
+        },
+        {
+            "start": 506,
+            "end": 509,
+            "text": "Peut-\u00eatre que je peux passer \u00e0 mon conseil num\u00e9ro 4."
+        },
+        {
+            "start": 509,
+            "end": 516,
+            "text": "Tester votre micro, parce que vous avez peut-\u00eatre un ordinateur qui n'est peut-\u00eatre pas de derni\u00e8re g\u00e9n\u00e9ration, et donc peut-\u00eatre que le micro ne marche pas tr\u00e8s bien."
+        },
+        {
+            "start": 516,
+            "end": 522,
+            "text": "Et donc si en plus, vous posez une question tr\u00e8s tr\u00e8s courte, le temps que le micro s'active, nous derri\u00e8re, on n'entend rien."
+        },
+        {
+            "start": 522,
+            "end": 524,
+            "text": "Donc, tester votre micro avant."
+        },
+        {
+            "start": 524,
+            "end": 529,
+            "text": "\u00c9ventuellement, prenez un t\u00e9l\u00e9phone si vous avez un aboiement avec appel illimit\u00e9."
+        },
+        {
+            "start": 529,
+            "end": 530,
+            "text": "En g\u00e9n\u00e9ral, c'est le cas."
+        },
+        {
+            "start": 530,
+            "end": 536,
+            "text": "Vous pouvez acc\u00e9der normalement aux cours, aux t\u00e9l\u00e9conf\u00e9rences, en voix, avec un num\u00e9ro de t\u00e9l\u00e9phone."
+        },
+        {
+            "start": 536,
+            "end": 539,
+            "text": "Et vous pouvez avoir la partie visio \u00e0 c\u00f4t\u00e9."
+        },
+        {
+            "start": 539,
+            "end": 546,
+            "text": "Surtout si vous avez une connexion Internet qui n'est pas extraordinaire, vous pouvez passer pour la voix par la partie t\u00e9l\u00e9phone."
+        },
+        {
+            "start": 546,
+            "end": 547,
+            "text": "Et \u00e7a marche tr\u00e8s tr\u00e8s bien."
+        },
+        {
+            "start": 547,
+            "end": 554,
+            "text": "Moi, j'ai des coll\u00e8gues qui font \u00e7a, qui mettent leur t\u00e9l\u00e9phone pour juste \u00e9couter et parler, et puis ils mettent sur leur \u00e9cran juste la partie vid\u00e9o."
+        },
+        {
+            "start": 554,
+            "end": 557,
+            "text": "Et comme \u00e7a, il n'y a pas de souci de micro."
+        },
+        {
+            "start": 557,
+            "end": 562,
+            "text": "Donc, posez des questions, formulez bien vos questions si vous pouvez, donc plus que 5 secondes, c'est mon conseil."
+        },
+        {
+            "start": 562,
+            "end": 566,
+            "text": "Faites une phrase un petit peu... ou quelques phrases un peu longues."
+        },
+        {
+            "start": 566,
+            "end": 580,
+            "text": "Et puis si jamais il y a un ou des profs qui vous disent que votre question est idiote, etc., passez \u00e0 votre chemin, parce que les mauvais profs, il y en a heureusement tr\u00e8s peu, effectivement, tensent \u00e9ventuellement les \u00e9l\u00e8ves ou les \u00e9tudiants \u00e0 cause de mauvaises questions."
+        },
+        {
+            "start": 580,
+            "end": 582,
+            "text": "Mais \u00e7a, heureusement, c'est tr\u00e8s rare."
+        },
+        {
+            "start": 582,
+            "end": 592,
+            "text": "Donc en fait, toutes les questions sont bonnes, et \u00e7a permet un dialogue, et \u00e7a permet d'illustrer des concepts."
+        },
+        {
+            "start": 592,
+            "end": 599,
+            "text": "Et puis figurez-vous que si vous avez une question, \u00e0 95% de chance, il y en a d'autres qui se posent la m\u00eame question."
+        },
+        {
+            "start": 599,
+            "end": 602,
+            "text": "Donc ne serait-ce que pour \u00e7a, n'h\u00e9sitez pas."
+        },
+        {
+            "start": 602,
+            "end": 614,
+            "text": "Et puis pour les profs, c'est beaucoup plus agr\u00e9able, je peux vous le dire en tant qu'ensignant-chercheur, avoir des \u00e9tudiants qui interagissent avec nous via l'\u00e9cran, parce qu'\u00e9videmment, quand on est en classe, c'est beaucoup plus facile, c'est beaucoup plus agr\u00e9able et beaucoup plus dynamique."
+        },
+        {
+            "start": 614,
+            "end": 618,
+            "text": "Et puis troisi\u00e8mement, \u00eatre \u00e0 l'aise avec les outils num\u00e9riques."
+        },
+        {
+            "start": 618,
+            "end": 620,
+            "text": "\u00c7a, vous pouvez le tester sans \u00eatre en cours."
+        },
+        {
+            "start": 620,
+            "end": 632,
+            "text": "Je pense aux interfaces de visioconf\u00e9rence, aux messageries instantan\u00e9es de type Slack, aux documents en ligne de type Framapad, \u00e9videmment, il y a Google, Legafa, mais enfin, si on peut \u00e9viter, ce n'est pas plus mal."
+        },
+        {
+            "start": 632,
+            "end": 636,
+            "text": "Enfin, Slack, \u00e7a fait aussi partie de Google, mais enfin, il y a d'autres outils qui existent."
+        },
+        {
+            "start": 636,
+            "end": 661,
+            "text": "Parce que pendant ce temps un peu, soit de confinement, soit de post-confinement, c'est une occasion unique, un peu impos\u00e9e, mais de devenir tr\u00e8s \u00e0 l'aise avec ces outils, parce qu'apr\u00e8s, quand on reviendra au pr\u00e9sentiel, et puis qu'il y aura, je ne sais pas, des t\u00e9l\u00e9conf\u00e9rences ou des interactions \u00e0 avoir de mani\u00e8re num\u00e9rique, si en plus ces outils vous sont un peu \u00e9trangers, l\u00e0, c'est un peu la double peine et c'est dommage."
+        },
+        {
+            "start": 661,
+            "end": 671,
+            "text": "Donc, formez-vous \u00e0 tous ces outils de partage de documents, de messagerie instantan\u00e9e mais structur\u00e9e, comme Slack ou les parties open source qui existent."
+        },
+        {
+            "start": 671,
+            "end": 686,
+            "text": "Pareil, sur les plateformes de visioconf\u00e9rence que vous utilisez, il y a des outils int\u00e9gr\u00e9s, que ce soit pour poser des questions en chat, pour prendre la parole ou pour mettre des \u00e9motions, des questionnements, des bravos, etc."
+        },
+        {
+            "start": 686,
+            "end": 691,
+            "text": "Et plus vous serez \u00e0 l'aise l\u00e0-dedans, plus \u00e7a sera simple ensuite de passer sur le fond."
+        },
+        {
+            "start": 691,
+            "end": 706,
+            "text": "Voil\u00e0, donc mes trois conseils, un peu, si vous \u00eates \u00e0 l'universit\u00e9 ou en distanciel, pour des cours, alors la p\u00e9riode n'est pas facile, heureusement je crois que c'est en voie de se terminer pour cette phase-l\u00e0, en tout cas."
+        },
+        {
+            "start": 706,
+            "end": 717,
+            "text": "Travaillez en groupe, posez des questions, et puis bien les formuler, mais m\u00eame si ce n'est pas clair dans votre t\u00eate, ce qui est normal, au moins prenez le temps de dire ce que vous ne comprenez pas et de l'objet de votre question."
+        },
+        {
+            "start": 717,
+            "end": 724,
+            "text": "Parce que si la question est trop courte, d\u00e9j\u00e0 le micro, \u00e7a ne passe pas, et en plus, nous derri\u00e8re, on se demande, mais c'est quoi la question ?"
+        },
+        {
+            "start": 724,
+            "end": 729,
+            "text": "Donc pr\u00e9cisez, et \u00e7a \u00e9vite des \u00ab mais alors, c'est quoi que tu n'as pas compris ?"
+        },
+        {
+            "start": 729,
+            "end": 733,
+            "text": "\u00bb et puis de parler au m\u00eame moment, etc."
+        },
+        {
+            "start": 733,
+            "end": 737,
+            "text": "Donc \u00e7a \u00e9vite de faire perdre cinq minutes \u00e0 tout le monde, et puis c'est beaucoup plus agr\u00e9able."
+        },
+        {
+            "start": 737,
+            "end": 746,
+            "text": "\u00catre \u00e0 l'aise avec les outils, et puis tester votre syst\u00e8me pour \u00eatre vraiment bien entendu, ce qui est quand m\u00eame plus agr\u00e9able pour tout le monde, si c'est possible."
+        },
+        {
+            "start": 746,
+            "end": 768,
+            "text": "Et bien voil\u00e0, on passe \u00e0 la deuxi\u00e8me partie ... Nous allons passer \u00e0 la deuxi\u00e8me partie, qui concerne la Station Spatiale Internationale."
+        },
+        {
+            "start": 768,
+            "end": 773,
+            "text": "Et l\u00e0, je vais vous mettre le site web que je pr\u00e9f\u00e8re, qui s'appelle HeavensAbove."
+        },
+        {
+            "start": 773,
+            "end": 779,
+            "text": "Vous avez l'adresse, je ne sais pas si on voit la souris, je ne crois pas trop, bon bref."
+        },
+        {
+            "start": 779,
+            "end": 804,
+            "text": "Heavens-above.com, vous mettez votre ville, votre endroit g\u00e9ographique, il y a une petite carte si vous voulez, et puis vous cliquez sur ISS, il y a un menu, et l\u00e0 vous avez les prochains passages pour Paris, mais en France, vous mettez votre ville, et vous avez la date des passages, et vous voyez que tous les soirs, en ce moment, il y a des passages."
+        },
+        {
+            "start": 804,
+            "end": 807,
+            "text": "Alors on peut aller au-del\u00e0 du 8 d\u00e9cembre."
+        },
+        {
+            "start": 807,
+            "end": 824,
+            "text": "Donc le 2 d\u00e9cembre, par exemple, le jour de notre conf\u00e9rence confin\u00e9e, \u00e0 18h15, d\u00e9but d'un passage, maximum \u00e0 18h18, c'est-\u00e0-dire l\u00e0 o\u00f9 l'ISS sera le plus haut dans le ciel, et puis fin \u00e0 18h20."
+        },
+        {
+            "start": 824,
+            "end": 830,
+            "text": "Je vous en ai parl\u00e9 il y a une ou deux s\u00e9ances de ce site, mais l\u00e0, \u00e7a vaut vraiment le coup, parce que tous les soirs, il se passe quelque chose."
+        },
+        {
+            "start": 830,
+            "end": 845,
+            "text": "Et puis je vous conseille, si vous avez le choix, de regarder les passages dont la magnitude est la plus brillante, c'est-\u00e0-dire le chiffre le plus n\u00e9gatif, le plus petit, parce que la magnitude, c'est une \u00e9chelle log inverse, enfin, moins log, donc plus c'est n\u00e9gatif, mieux c'est."
+        },
+        {
+            "start": 845,
+            "end": 855,
+            "text": "Et donc on voit qu'une magnitude de moins 3,5, donc mercredi soir, je clique, et puis pour Paris, c'est relativement simple."
+        },
+        {
+            "start": 855,
+            "end": 885,
+            "text": "Vous avez une carte du ciel, \u00e0 droite, c'est l'Ouest, alors normalement, il y a Jupiter et Saturne qui se rapprochent, d'ailleurs, qui sont tr\u00e8s tr\u00e8s beaux \u00e0 voir durant tous, au moins, donc je vous conseille, si vous avez des jumelles ou un t\u00e9lescope, elles sont tr\u00e8s tr\u00e8s basses sur l'horizon, mais vous regardez plein Ouest, et puis vous verrez un point qui avance, comme \u00e7a, vous voyez, vous avez les minutes, et puis qui passe rapproche du p\u00f4le Nord, c\u00e9leste, avec la petite ours, et puis qui s'\u00e9teindra juste apr\u00e8s d'en percer, et \u00e7a met plusieurs minutes, et c'est tr\u00e8s tr\u00e8s sympa \u00e0 voir."
+        },
+        {
+            "start": 885,
+            "end": 894,
+            "text": "Donc c'est la bonne saison, s'il fait beau chez vous, profitez-en pour regarder la Station Spatiale Internationale."
+        },
+        {
+            "start": 894,
+            "end": 906,
+            "text": "C'est le moment, depuis sa fen\u00eatre, il n'y a aucun souci, et puis il suffit que vous ayez le c\u00f4t\u00e9 Ouest ou le c\u00f4t\u00e9 Est, selon quel c\u00f4t\u00e9 vous regarderez, pour pouvoir la visualiser."
+        },
+        {
+            "start": 906,
+            "end": 918,
+            "text": "Voil\u00e0, et bien, bonnes observations !"
+        },
+        {
+            "start": 918,
+            "end": 924,
+            "text": "On va passer \u00e0 un peu d'art."
+        },
+        {
+            "start": 924,
+            "end": 928,
+            "text": "Voil\u00e0, un peu d'art pour dans ce monde de brut."
+        },
+        {
+            "start": 928,
+            "end": 951,
+            "text": "Alors je vais remettre cette fen\u00eatre, que j'ai pr\u00e9par\u00e9e, et donc je vais vous montrer un, deux, trois, quatre, cinq, six, six \u0153uvres qui m'ont inspir\u00e9, voil\u00e0, c'est compl\u00e8tement subjectif, donc voil\u00e0, c'est le choix du chef, des \u0153uvres embl\u00e9matiques, certaines ont \u00e0 peu pr\u00e8s mille ans, et puis je vais aller vers des p\u00e9riodes croissantes, de plus en plus proches de nous."
+        },
+        {
+            "start": 951,
+            "end": 1010,
+            "text": "Alors ici je prends mes antis\u00e8ches, m\u00eame si je connais, mais c'est pour ne pas vous dire trop de b\u00eatises, c'est la tapisserie de Bayeux, qui se trouve \u00e0 Bayeux, qui \u00e9tait cousue, qui repose sur une table, qui \u00e9tait cousue, qui repr\u00e9sente sur des dizaines de m\u00e8tres, toute une histoire, donc, onzi\u00e8me si\u00e8cle, vers \u00e0 peu pr\u00e8s 1080, et puis vous voyez en haut, tout en haut, au milieu, au-dessus de la tour, une sorte d'\u00e9toile avec une tra\u00een\u00e9e, c'est une com\u00e8te, la com\u00e8te de Halley, qui a \u00e9t\u00e9 observ\u00e9e \u00e0 cette \u00e9poque-l\u00e0, et qui annon\u00e7ait un destin funeste, les com\u00e8tes \u00e9taient annonciateurs de nouvelles terrifiantes, en tout cas c'\u00e9tait la croyance de l'\u00e9poque, et donc effectivement, le roi en question avait du souci \u00e0 se faire, et je crois qu'il a eu des soucis ensuite."
+        },
+        {
+            "start": 1010,
+            "end": 1031,
+            "text": "C'est pour \u00e7a que la com\u00e8te a \u00e9t\u00e9 signifi\u00e9e, et cousue, et notifi\u00e9e, dans cette tapisserie absolument extraordinaire, qui est un t\u00e9moignage de ce qui se passait, il y a presque 1000 ans, dans un \u00e9tat de conservation \u00e9patant, et donc, c'est de l'histoire, mais c'est de l'art aussi, et puis c'est un petit peu d'astronomie."
+        },
+        {
+            "start": 1031,
+            "end": 1041,
+            "text": "Donc voil\u00e0, aussi longtemps que l'humain existe, il a probablement lev\u00e9 les yeux au ciel."
+        },
+        {
+            "start": 1041,
+            "end": 1051,
+            "text": "Donc c'\u00e9tait un petit incis de la tapisserie de Bayeux, qui est toujours agr\u00e9able \u00e0 voir, et qu'on peut voir en France."
+        },
+        {
+            "start": 1051,
+            "end": 1094,
+            "text": "Cette mosa\u00efque est extraordinaire, celle-ci est du 16e si\u00e8cle, \u00e0 peu pr\u00e8s 1508, donc il y a \u00e0 peu pr\u00e8s 512 ans, quelque chose comme \u00e7a, et c'est le peintre Rapha\u00ebl, enfin l'artiste Rapha\u00ebl, parce que l\u00e0 il n'y a pas que de la peinture, c'est au Vatican, o\u00f9 il repr\u00e9sente Uranie, donc l'une des muses du quadrivium, et qui repr\u00e9sente l'univers tel qu'il est con\u00e7u \u00e0 l'\u00e9poque, avec la Terre au centre, et puis la sph\u00e8re des fixes, avec les \u00e9toiles, toutes dor\u00e9es, toutes brillantes."
+        },
+        {
+            "start": 1094,
+            "end": 1112,
+            "text": "Donc voil\u00e0 comment la conception de l'univers, et l'astronomie, inspire l'un des artistes les plus renomm\u00e9s de son \u00e9poque, dans un endroit de pouvoir important, qui \u00e9tait le Vatican au 16e si\u00e8cle."
+        },
+        {
+            "start": 1112,
+            "end": 1125,
+            "text": "Alors \u00e9videmment, Rapha\u00ebl, on pourrait y passer des heures, regarder la finesse, les couleurs, surtout quand on pense \u00e0 l'\u00e9poque lointaine \u00e0 laquelle \u00e7a a \u00e9t\u00e9 con\u00e7u."
+        },
+        {
+            "start": 1125,
+            "end": 1137,
+            "text": "On passe \u00e0 une autre \u0153uvre, j'esp\u00e8re que tout \u00e7a vous pla\u00eet, les traits r\u00e9gisseurs du Duc de B\u00e9ryd, je me suis tromp\u00e9, \u00e7a devait \u00eatre avant, c'est au 15e si\u00e8cle, vers 1411."
+        },
+        {
+            "start": 1137,
+            "end": 1245,
+            "text": "Elles sont conserv\u00e9es au ch\u00e2teau de Chantilly, si vous avez la chance de les voir, moi j'ai eu la chance de les voir il y a quelques ann\u00e9es, et donc vous avez 12 mois, c'est un ouvrage dans l'huminure absolument magnifique, avec notamment un calendrier, donc 12 mois, de janvier en haut \u00e0 d\u00e9cembre en bas \u00e0 droite, et puis en haut, comme c'est un calendrier, vous voyez que vous avez des \u00e9toiles, la position du Soleil, et donc un calendrier, et puis la position du Soleil dans les constellations du Zodiac, parce que le Zodiac a une r\u00e9alit\u00e9 astronomique et scientifique, m\u00eame si apr\u00e8s les astrologues en ont fait des \u00e2neries avec, n'emp\u00eache que le Zodiac est une bande de 13 constellations, de taille et de dur\u00e9e non homog\u00e8nes, vous pouvez vous renseigner sur \u00e7a, et donc on peut voir ce calendrier avec ses couleurs, ce bleu \u00e9patant du 15e si\u00e8cle, les constellations, et puis \u00e9videmment, ces tr\u00e8s r\u00e9gisseurs du Luc du Berry nous renseignent sur la vie \u00e0 l'\u00e9poque, avec les semences au mois d'octobre, les vendanges au mois de septembre, je fais en sens inverse, les moissons en juin-juillet, et puis au mois de f\u00e9vrier, avec la neige, les semailles au mois de mars, et donc m\u00eame si l'astronomie n'est peut-\u00eatre pas l'inspiratrice, la premi\u00e8re de cette \u0153uvre majeure que sont les tr\u00e8s riches \u0153uvres du Luc du Berry, on voit n\u00e9anmoins qu'il y a une part non n\u00e9gligeable qui est consacr\u00e9e au ph\u00e9nom\u00e8ne c\u00e9leste."
+        },
+        {
+            "start": 1245,
+            "end": 1257,
+            "text": "Donc on \u00e9tait au 15e si\u00e8cle de Rapha\u00ebl, c'\u00e9tait donc le 16e, 1508, et donc on reprend l'ordre chronologique, j'esp\u00e8re que vous voyez bien sur cette fen\u00eatre."
+        },
+        {
+            "start": 1257,
+            "end": 1267,
+            "text": "L\u00e0 aussi c'est au Vatican, et c'est Donato Cretti qui a peint plusieurs toiles, qui s'appellent Observations astronomiques, en pluriel."
+        },
+        {
+            "start": 1267,
+            "end": 1273,
+            "text": "Il y en a plusieurs que je vais vous montrer, j'esp\u00e8re que \u00e7a fonctionne, et il s'est fait conseiller par des astronomes."
+        },
+        {
+            "start": 1273,
+            "end": 1295,
+            "text": "Et donc voil\u00e0, l\u00e0 vous avez la Lune, je ne sais pas si vous arrivez \u00e0 voir en bas, oui, normalement vous arrivez \u00e0 voir en bas le titre, donc Donato Cretti, Observations astronomiques de la Lune, \u00e7a c'est de \u00e0 peu pr\u00e8s 1711, donc 18e si\u00e8cle, et que la reproduction, l'\u0153uvre est quand m\u00eame, oserais-je dire, assez r\u00e9aliste."
+        },
+        {
+            "start": 1295,
+            "end": 1305,
+            "text": "On voit bien le crat\u00e8re Copernicus, il y a vraiment une envie et une ambition de repr\u00e9senter le r\u00e9el qui est assez r\u00e9ussi."
+        },
+        {
+            "start": 1305,
+            "end": 1309,
+            "text": "Et puis vous avez une petite fen\u00eatre avec un astronome qui observe."
+        },
+        {
+            "start": 1309,
+            "end": 1310,
+            "text": "Donc \u00e7a c'\u00e9tait la Lune."
+        },
+        {
+            "start": 1310,
+            "end": 1329,
+            "text": "Vous avez Mercure, dont les astronomes \u00e0 l'\u00e9poque avaient pu observer avec des lunettes depuis un si\u00e8cle, la lune de Galil\u00e9e c'est 1609, l\u00e0 on est en 1711, les phases Mercure, parce que Mercure est d'une plan\u00e8te int\u00e9rieure, et donc selon sa position, on voit des phases, tout comme V\u00e9nus."
+        },
+        {
+            "start": 1329,
+            "end": 1331,
+            "text": "Donc l\u00e0 il repr\u00e9sente une des phases de Mercure."
+        },
+        {
+            "start": 1331,
+            "end": 1340,
+            "text": "Alors \u00e9videmment l'\u00e9chelle est \u00e0, j'allais dire g\u00e9om\u00e9trie variable, mais en tout cas \u00e7a repr\u00e9sente fid\u00e8lement ce que les astronomes observaient \u00e0 l'\u00e9poque."
+        },
+        {
+            "start": 1340,
+            "end": 1353,
+            "text": "Donc Mercure, V\u00e9nus, pareil, qui peut \u00eatre en tr\u00e8s fin croissant quand elle est en \u00e9longation mod\u00e9r\u00e9e mais qu'elle est proche de nous, \u00e7a c'est tout \u00e0 fait visible dans une lunette, elle est assez grande."
+        },
+        {
+            "start": 1353,
+            "end": 1367,
+            "text": "Mars, c'est peut-\u00eatre un petit peu too much, on peut la voir dans une phase gibbeuse, d'ailleurs elle commence, en ce moment si vous observez Mars, elle s'\u00e9loigne de l'opposition donc elle commence \u00e0 avoir une ombre."
+        },
+        {
+            "start": 1367,
+            "end": 1379,
+            "text": "Voil\u00e0, elle est repr\u00e9sent\u00e9e assez fid\u00e8lement, \u00e9videmment les lunettes de l'\u00e9poque ne permettaient pas de voir trop de d\u00e9tails mais c'est assez fid\u00e8le."
+        },
+        {
+            "start": 1379,
+            "end": 1414,
+            "text": "Jupiter, alors cette toile moi me touche particuli\u00e8rement parce qu'elle est extr\u00eamement fid\u00e8le, on voit les bandes de nuages sur le disque Jovien, on voit m\u00eame la grande t\u00e2che rouge dans les bandes \u00e9quatoriales de nuages, on voit trois de ces satellites, donc les satellites de M\u00e9dicis, Galil\u00e9e les avait nomm\u00e9s en leur honneur, donc il y en a quatre, Io, Europe, Galim\u00e9e, Callisto, maintenant on les appelle les satellites galil\u00e9ens, m\u00eame si on a une soixantaine, effectivement quatre sont relativement bien visibles m\u00eame avec des jumelles un peu puissantes."
+        },
+        {
+            "start": 1414,
+            "end": 1433,
+            "text": "Donc l\u00e0 c'est tr\u00e8s tr\u00e8s fid\u00e8le et il y a Saturne qui connaissait bien s\u00fbr d\u00e9j\u00e0 avec des anneaux, alors apr\u00e8s on peut se poser des questions sur la fid\u00e9lit\u00e9 de la repr\u00e9sentation des anneaux, mais en tout cas c'est assez bien fait avec \u00e0 chaque fois une petite sc\u00e8ne, puis je crois que c'est tout."
+        },
+        {
+            "start": 1433,
+            "end": 1453,
+            "text": "Il y a une com\u00e8te aussi, donc il y a toute une s\u00e9rie qui repr\u00e9sente les ph\u00e9nom\u00e8nes c\u00e9lestes les plus importants, je crois qu'il y a le Soleil aussi, bon alors l\u00e0 on esp\u00e8re qu'ils n'ont pas trop observ\u00e9 sans filtre parce que sinon ils deviennent vite aveugles, mais je ne sais pas si on voit une tache solaire, mais en tout cas c'est \u00e9galement tr\u00e8s fid\u00e8le."
+        },
+        {
+            "start": 1453,
+            "end": 1474,
+            "text": "Donc oui c'est tr\u00e8s inspirant, en tout cas pour moi, de repr\u00e9senter ces sc\u00e8nes un petit peu bucoliques, \u00e9ventuellement sylvestres, voire romantiques, et puis il y a une lecture terrestre et puis la lecture astronomique, elle est tr\u00e8s fid\u00e8le \u00e0 ce que les contemporains pouvaient regarder."
+        },
+        {
+            "start": 1474,
+            "end": 1477,
+            "text": "Donc \u00e7a c'\u00e9tait donc le 18e si\u00e8cle 1711."
+        },
+        {
+            "start": 1477,
+            "end": 1498,
+            "text": "On se rapproche de notre \u00e9poque avec la derni\u00e8re peinture que je vous propose, que vous pouvez voir dans la tr\u00e8s belle salle de l'Observatoire de Paris, donc \u00e0 Paris, dans le b\u00e2timent P\u00e9rou, dans la salle du conseil o\u00f9 j'ai la chance d'aller r\u00e9guli\u00e8rement pour des r\u00e9unions avec mes coll\u00e8gues, m\u00eame si je ne travaille pas \u00e0 l'Observatoire de Paris."
+        },
+        {
+            "start": 1498,
+            "end": 1504,
+            "text": "Et donc c'est V\u00e9nus passant devant le char du soleil par monsieur Dupin en 1886, donc 19e si\u00e8cle."
+        },
+        {
+            "start": 1504,
+            "end": 1526,
+            "text": "Donc on voit l'astronome en bas avec sa lunette, puis V\u00e9nus, \u00e9videmment cette belle dame alors nue, dans cette repr\u00e9sentation n\u00e9o-antique, enfin je ne sais plus comment, n\u00e9o-classique peut-\u00eatre, c'est le terme, m\u00eame si je ne suis absolument pas historien de l'art et je me d\u00e9fends de lui conna\u00eetre, peut-\u00eatre que quand j'aurai le temps."
+        },
+        {
+            "start": 1526,
+            "end": 1535,
+            "text": "Donc qui passe devant le char du soleil qui est \u00e0 gauche et puis voil\u00e0 \u00e7a c'est tr\u00e8s baroque comme repr\u00e9sentation et puis m\u00eame antique, le char du soleil."
+        },
+        {
+            "start": 1535,
+            "end": 1555,
+            "text": "Et effectivement il y a eu un passage de V\u00e9nus \u00e0 cette \u00e9poque-l\u00e0, je n'ai pu v\u00e9rifier la date, mais V\u00e9nus passe devant le soleil de temps en temps, relativement rarement, mais de temps en temps, et c'\u00e9tait pour repr\u00e9senter ce ph\u00e9nom\u00e8ne avec cette all\u00e9gorie que cette peinture de monsieur Dupin a \u00e9t\u00e9 faite et donc c'est vraiment au sommet de la salle du conseil de l'Observatoire de Paris."
+        },
+        {
+            "start": 1555,
+            "end": 1564,
+            "text": "Et effectivement quand on s'ennuie en r\u00e9union c'est tr\u00e8s agr\u00e9able de regarder le plafond et puis de songer \u00e0 V\u00e9nus, au soleil, puis aux astronomes de l'\u00e9poque."
+        },
+        {
+            "start": 1564,
+            "end": 1578,
+            "text": "Et puis je termine avec cette derni\u00e8re oeuvre qui est une photo mais qui m'a aussi beaucoup marqu\u00e9, vous reconnaissez peut-\u00eatre si vous \u00eates amateurs de photos contemporaines, en tout cas du XXe si\u00e8cle, Ansel Adams en 1941."
+        },
+        {
+            "start": 1578,
+            "end": 1586,
+            "text": "Le titre je l'ai not\u00e9 mais je ne l'ai plus l\u00e0, c'est en gros le lever de lune au Nouveau-Mexique."
+        },
+        {
+            "start": 1586,
+            "end": 1606,
+            "text": "Et Ansel Adams a vraiment cr\u00e9\u00e9 un courant artistique majeur avec une chambre photographique ferm\u00e9e \u00e0 11 ou 20 ou 30, pour ceux qui connaissent les objectifs photos, avec un ciel tr\u00e8s sombre, une composition \u00e9patante."
+        },
+        {
+            "start": 1606,
+            "end": 1616,
+            "text": "Et puis il a fait des images absolument inspirantes et magnifiques et uniques du sud-ouest am\u00e9ricain notamment, donc dans les ann\u00e9es 1940."
+        },
+        {
+            "start": 1616,
+            "end": 1626,
+            "text": "Donc cette image m'a toujours frapp\u00e9 et effectivement quand on va aux Etats-Unis dans le sud-ouest, ce sont des choses qu'on peut voir assez r\u00e9guli\u00e8rement."
+        },
+        {
+            "start": 1626,
+            "end": 1634,
+            "text": "Les \u00e9tendues sont tellement grandes, on voit tellement loin qu'on peut voir des orages au loin ou des nuages et puis voir des objets c\u00e9lestes avec un avant-plan."
+        },
+        {
+            "start": 1634,
+            "end": 1642,
+            "text": "Donc l\u00e0 c'est pris juste apr\u00e8s ou pendant le coucher du soleil et on voit un cimeti\u00e8re de cette petite ville du Nouveau-Mexique."
+        },
+        {
+            "start": 1642,
+            "end": 1649,
+            "text": "Et donc voil\u00e0 tr\u00e8s inspirant, noir et blanc, de tr\u00e8s tr\u00e8s beaux tirages."
+        },
+        {
+            "start": 1649,
+            "end": 1655,
+            "text": "Voil\u00e0 c'\u00e9tait la s\u00e9quence art de notre petite s\u00e9ance."
+        },
+        {
+            "start": 1655,
+            "end": 1675,
+            "text": "Je vous ai rappel\u00e9 ici les \u0153uvres que je vous ai propos\u00e9es, Tapestries de Bayeux, Tri\u00e2ge de J\u00e9sus de Berry, Uranie, Observations astronomiques, donc All\u00e9gorie de V\u00e9nus passant devant le char du soleil et puis Ansel Adams des ann\u00e9es 1940."
+        },
+        {
+            "start": 1675,
+            "end": 1685,
+            "text": "Nous allons passer \u00e0 la derni\u00e8re partie qui est donc la cosmologie avec l'expansion de l'univers."
+        },
+        {
+            "start": 1685,
+            "end": 1699,
+            "text": "Donc nous allons attaquer un peu de physique, un peu de calcul avec notamment les petites cartes que je vous ai pr\u00e9par\u00e9es pour essayer de mieux expliquer tous ces concepts int\u00e9ressants."
+        },
+        {
+            "start": 1699,
+            "end": 1701,
+            "text": "C'est parti !"
+        },
+        {
+            "start": 1701,
+            "end": 1717,
+            "text": "On attaque la partie cosmologie avec un plan d\u00e9taill\u00e9 j'esp\u00e8re."
+        },
+        {
+            "start": 1717,
+            "end": 1727,
+            "text": "Donc on va parler d'expansion de l'univers, on va rendre \u00e7a intelligible et explicite."
+        },
+        {
+            "start": 1727,
+            "end": 1733,
+            "text": "Tout d'abord dans la partie 1 on devra s'int\u00e9resser \u00e0 la m\u00e9trique de l'espace-temps."
+        },
+        {
+            "start": 1733,
+            "end": 1748,
+            "text": "C'est un gros mot pour expliquer juste la notion de distance dans un espace disons normal \u00e0 trois dimensions, cl\u00e9dien, puis \u00e0 quatre dimensions, puis dans un univers courbe et dans un univers en expansion."
+        },
+        {
+            "start": 1748,
+            "end": 1751,
+            "text": "La notion de distance est tr\u00e8s importante."
+        },
+        {
+            "start": 1751,
+            "end": 1757,
+            "text": "Ensuite on parlera du facteur d'\u00e9chelle aux observations parce qu'on introduira un petit facteur d'\u00e9chelle."
+        },
+        {
+            "start": 1757,
+            "end": 1759,
+            "text": "Vous allez voir toute la cl\u00e9 est l\u00e0."
+        },
+        {
+            "start": 1759,
+            "end": 1775,
+            "text": "Et donc on parlera de distance, de redshift, c'est \u00e0 dire de d\u00e9calage cosmologique vers le rouge, et puis de cette fameuse constante de Bell qu'on peut param\u00e9trer tout d'abord et puis on verra ensuite ce que \u00e7a donne."
+        },
+        {
+            "start": 1775,
+            "end": 1787,
+            "text": "Gr\u00e2ce \u00e0 ces deux parties d'introduction on peut aboutir aux parties 3 et 4 qui parlent vraiment de cosmologie, notamment de dynamique dans un univers en expansion."
+        },
+        {
+            "start": 1787,
+            "end": 1792,
+            "text": "La dynamique c'est ce qui mod\u00e9lise le fait que \u00e7a s'expande."
+        },
+        {
+            "start": 1792,
+            "end": 1794,
+            "text": "On va voir la loi de Hubble le mettre."
+        },
+        {
+            "start": 1794,
+            "end": 1807,
+            "text": "Et puis on va faire des consid\u00e9rations relativement simples d'\u00e9nergie cin\u00e9tique potentielle et totale, chose que normalement les \u00e9tudiants de Terminal et de L1 ma\u00eetrisent, l'\u00e9nergie m\u00e9canique tout simplement."
+        },
+        {
+            "start": 1807,
+            "end": 1811,
+            "text": "L\u00e0 c'est une approche simplifi\u00e9e que je prends \u00e9videmment."
+        },
+        {
+            "start": 1811,
+            "end": 1825,
+            "text": "Elles nous permettent d'estimer la densit\u00e9 critique de l'univers, les densit\u00e9s r\u00e9duites, les fameux param\u00e8tres om\u00e9ga mati\u00e8re, om\u00e9ga baryon, om\u00e9ga lambda pour l'\u00e9nergie sombre, etc."
+        },
+        {
+            "start": 1825,
+            "end": 1831,
+            "text": "Et puis l'\u00e9volution du param\u00e8tre de facteur d'\u00e9chelle."
+        },
+        {
+            "start": 1831,
+            "end": 1837,
+            "text": "Et puis \u00e0 la fin on attaque le mod\u00e8le Friedman-Robertson-Walker."
+        },
+        {
+            "start": 1837,
+            "end": 1842,
+            "text": "Donc pareil c'\u00e9tait \u00e9crit ici Robertson-Walker parce que j'\u00e9cris pas tout, en plus j'\u00e9cris mal."
+        },
+        {
+            "start": 1842,
+            "end": 1870,
+            "text": "Mais voil\u00e0 et donc on va regarder, alors l\u00e0 je vous balancerai les trois \u00e9quations, je ne la d\u00e9montrerai pas, mais on parlera un tout petit peu d'\u00e9quations d'\u00e9tat qui expliquent la dynamique de l'univers et en fonction de quelle composante cette dynamique est sous-tendue ou en tout cas domin\u00e9e, l'\u00e9volution de cette dynamique en fonction je crois du facteur d'\u00e9chelle, on va voir \u00e7a, et puis le r\u00f4le de la mati\u00e8re et du rayonnement dans ces \u00e9quations d'\u00e9tat et puis la dynamique totale."
+        },
+        {
+            "start": 1870,
+            "end": 1875,
+            "text": "Donc je vous laisse ce petit plan qu'on ne peut pas avoir en entier."
+        },
+        {
+            "start": 1875,
+            "end": 1883,
+            "text": "Vous avez parti 1, 2, 3, 4, vous pourrez y revenir si c'est un peu compliqu\u00e9 et puis on va parler donc d'expansion de l'univers."
+        },
+        {
+            "start": 1883,
+            "end": 1924,
+            "text": "Donc voil\u00e0 c'est parti, on part pour la partie 1, je mets le plan ici et pour cette partie 1, donc la m\u00e9trique de l'espace-temps, c'est des maths pour l'instant, donc c'est tout simplement une d\u00e9finition pour commencer, je vais vous le dire \u00e0 l'oral, en plus \u00e7a se refl\u00e8te, une d\u00e9finition simple de la m\u00e9trique, c'est un espace math\u00e9matique au sein duquel on d\u00e9finit une notion de distance entre deux \u00e9l\u00e9ments."
+        },
+        {
+            "start": 1924,
+            "end": 1937,
+            "text": "Alors \u00e7a para\u00eet b\u00eate de dire comme \u00e7a la distance, ok on le conna\u00eet, voil\u00e0 donc je suis un point A et je vais \u00e0 un point B, voil\u00e0 une distance, voil\u00e0 pourquoi on nous emb\u00eate avec un espace m\u00e9trique."
+        },
+        {
+            "start": 1937,
+            "end": 1954,
+            "text": "Alors d\u00e9j\u00e0 l\u00e0 on est \u00e0 une dimension, le point A et le point B, on est sur une ligne, on est \u00e9ventuellement \u00e0 deux dimensions si on est sur le plan de la feuille, on peut imaginer \u00eatre \u00e0 trois dimensions, la distance entre mes deux mains c'est une distance et il faut un espace m\u00e9trique pour le d\u00e9finir, donc l\u00e0 on est \u00e0 trois dimensions."
+        },
+        {
+            "start": 1954,
+            "end": 1968,
+            "text": "Imaginez maintenant comme mon jogging de ce matin o\u00f9 j'ai d'ailleurs couru, un petit marathon tranquillement dans les bois, voil\u00e0 j'ai fait un parcours qui ressemble de m\u00e9moire \u00e0 un truc qui ressemble \u00e0 \u00e7a, voil\u00e0."
+        },
+        {
+            "start": 1968,
+            "end": 1979,
+            "text": "Mon point A et mon point B, le point de d\u00e9part et le point d'arriv\u00e9e sont les m\u00eames, donc est-ce que la distance que j'ai parcouru est nulle ?"
+        },
+        {
+            "start": 1979,
+            "end": 1983,
+            "text": "On peut d\u00e9cider parce que je suis parti et je reviens au m\u00eame point."
+        },
+        {
+            "start": 1983,
+            "end": 2010,
+            "text": "Maintenant on peut d\u00e9finir aussi une distance qui est le long de mon chemin parcouru \u00e0 moi et donc il faut munir mon petit parcours d'une m\u00e9trique, alors je mets des tirets d'une mani\u00e8re assez r\u00e9guli\u00e8re m\u00eame s'il y a des c\u00f4tes etc, je vous passe les d\u00e9tails, mais pour montrer qu'en fait heureusement j'ai parcouru en l'occurrence un peu plus de 21 km alors que mon point de d\u00e9part et d'arriv\u00e9e sont les m\u00eames."
+        },
+        {
+            "start": 2010,
+            "end": 2016,
+            "text": "Donc voil\u00e0 la notion de distance ou en tout cas de l\u00e0, elle est d\u00e9finie selon mon parcours."
+        },
+        {
+            "start": 2016,
+            "end": 2029,
+            "text": "Donc vous voyez que m\u00eame une distance toute b\u00eate peut \u00eatre un petit peu plus rus\u00e9e que juste distance entre point A et point B. Imaginons maintenant une distance mais en temps."
+        },
+        {
+            "start": 2029,
+            "end": 2035,
+            "text": "T1 je me l\u00e8ve le matin, T2 je me couche le soir."
+        },
+        {
+            "start": 2035,
+            "end": 2040,
+            "text": "Je suis sur un axe du temps par exemple et je d\u00e9finis ma dur\u00e9e d'\u00e9veil."
+        },
+        {
+            "start": 2040,
+            "end": 2042,
+            "text": "Je vais la faire simple."
+        },
+        {
+            "start": 2042,
+            "end": 2046,
+            "text": "C'est une distance entre deux temps, une distance au point de vue math\u00e9matique."
+        },
+        {
+            "start": 2046,
+            "end": 2056,
+            "text": "C'est une diff\u00e9rence de temps donc \u00e7a sera exprim\u00e9 en secondes alors que dans cette premi\u00e8re partie c'\u00e9tait des distances spatiales, c'est exprim\u00e9 en m\u00e8tres, en kilom\u00e8tres, en ce qu'on veut."
+        },
+        {
+            "start": 2056,
+            "end": 2062,
+            "text": "Mais en tout cas c'\u00e9tait homog\u00e8ne \u00e0 une distance physique c'est \u00e0 dire une unit\u00e9 de longueur, l\u00e0 c'est une unit\u00e9 de temps."
+        },
+        {
+            "start": 2062,
+            "end": 2069,
+            "text": "Mais d'un point de vue math\u00e9matique c'est la m\u00eame chose, c'est ce qui s\u00e9pare deux points dans l'espace qu'on a d\u00e9fini."
+        },
+        {
+            "start": 2069,
+            "end": 2074,
+            "text": "Ici en bas c'est l'espace du temps, je vais faire une petite zone comme \u00e7a pour bien s\u00e9parer."
+        },
+        {
+            "start": 2074,
+            "end": 2079,
+            "text": "Mais vous voyez qu'il faut quand m\u00eame une notion de distance, soit de temps soit d'espace."
+        },
+        {
+            "start": 2079,
+            "end": 2083,
+            "text": "Maintenant on peut \u00eatre \u00e0 trois dimensions."
+        },
+        {
+            "start": 2083,
+            "end": 2085,
+            "text": "Je vais reprendre l'image."
+        },
+        {
+            "start": 2085,
+            "end": 2097,
+            "text": "La m\u00e9trique d\u00e9finit la distance toujours entre deux points mais on peut aussi d\u00e9finir la distance entre deux \u00e9v\u00e9nements."
+        },
+        {
+            "start": 2097,
+            "end": 2107,
+            "text": "Par exemple la station de RER le matin et le bureau quand j'arrive."
+        },
+        {
+            "start": 2107,
+            "end": 2118,
+            "text": "Si je mets RER ici et l'universit\u00e9 ici, il y a une distance disons physique mais il y a aussi un temps 1 et un temps 2."
+        },
+        {
+            "start": 2118,
+            "end": 2119,
+            "text": "Ce sont deux \u00e9v\u00e9nements."
+        },
+        {
+            "start": 2119,
+            "end": 2123,
+            "text": "Le premier \u00e9v\u00e9nement c'est quand je sors du RER, qui est le train."
+        },
+        {
+            "start": 2123,
+            "end": 2127,
+            "text": "Ceux qui ne connaissent pas le RER, c'est un train."
+        },
+        {
+            "start": 2127,
+            "end": 2138,
+            "text": "Donc l'instant o\u00f9 je sors du train et l'instant o\u00f9 j'arrive dans mon bureau \u00e0 l'universit\u00e9 Paris-Saclay dans un laboratoire qui s'appelle l'IAS."
+        },
+        {
+            "start": 2138,
+            "end": 2148,
+            "text": "On voit que ce sont deux \u00e9v\u00e9nements parce qu'il y a une position, on peut dire x, y, z, si on est en cart\u00e9sien, et puis un temps t1."
+        },
+        {
+            "start": 2148,
+            "end": 2152,
+            "text": "L\u00e0 j'ai une position x2, y2, z2."
+        },
+        {
+            "start": 2152,
+            "end": 2157,
+            "text": "Mes notations ne sont pas hyper logiques mais enfin c'est pas grave."
+        },
+        {
+            "start": 2157,
+            "end": 2169,
+            "text": "C'est un autre \u00e9v\u00e9nement et on peut d\u00e9finir une distance d'espace-temps entre ces deux \u00e9v\u00e9nements, m\u00eame si l\u00e0 ce n'est plus une distance physique, ce n'est plus un temps non plus, c'est un m\u00e9lange des deux parce qu'il y a quatre coordonn\u00e9es."
+        },
+        {
+            "start": 2169,
+            "end": 2174,
+            "text": "Premi\u00e8re coordonn\u00e9e, deuxi\u00e8me coordonn\u00e9e, troisi\u00e8me coordonn\u00e9e, quatri\u00e8me coordonn\u00e9e."
+        },
+        {
+            "start": 2174,
+            "end": 2185,
+            "text": "Pour d\u00e9finir tout \u00e7a il faut un espace m\u00e9trique qui nous d\u00e9finit une notion de distance entre les \u00e9v\u00e9nements."
+        },
+        {
+            "start": 2185,
+            "end": 2187,
+            "text": "C'est le d\u00e9but."
+        },
+        {
+            "start": 2187,
+            "end": 2204,
+            "text": "Alors maintenant si je reprends mon plan, il faut une m\u00e9trique, on va l'appliquer \u00e0 la cosmologie, on veut savoir ce que c'est que la m\u00e9trique de l'espace euclidien."
+        },
+        {
+            "start": 2204,
+            "end": 2212,
+            "text": "L'espace euclidien c'est l'espace \u00e0 trois dimensions habituelles."
+        },
+        {
+            "start": 2212,
+            "end": 2236,
+            "text": "On dit que la distance infinit\u00e9simale, c'est le tout petit \u00e9l\u00e9ment de distance tr\u00e8s court, on peut l'appeler d sigma carr\u00e9, c'est sigma la distance infinit\u00e9simale mais on la met au carr\u00e9, c'est plus simple."
+        },
+        {
+            "start": 2236,
+            "end": 2240,
+            "text": "On dit que c'est dx2 plus dy2 plus dz2."
+        },
+        {
+            "start": 2240,
+            "end": 2248,
+            "text": "C'est un peu comme la norme d'un vecteur, si vous connaissez les vecteurs, c'est la somme quadratique."
+        },
+        {
+            "start": 2248,
+            "end": 2260,
+            "text": "Donc le petit \u00e9l\u00e9ment de distance entre deux points de l'espace \u00e0 trois dimensions ici euclidien, c'est tout simplement la somme des dx, dy et dz."
+        },
+        {
+            "start": 2260,
+            "end": 2275,
+            "text": "Le d sigma 2, c'est donc un nombre qui est la somme quadratique des trois autres."
+        },
+        {
+            "start": 2275,
+            "end": 2283,
+            "text": "On peut avoir cette expression dans d'autres syst\u00e8mes de coordonn\u00e9es, coordonn\u00e9es sph\u00e9riques etc mais je ne vais pas me lancer l\u00e0 pour rester aussi simple que possible."
+        },
+        {
+            "start": 2283,
+            "end": 2287,
+            "text": "L\u00e0 j'essaie de me concentrer sur les id\u00e9es principales."
+        },
+        {
+            "start": 2287,
+            "end": 2292,
+            "text": "On en est dans l'espace m\u00e9trique, dans l'espace euclidien."
+        },
+        {
+            "start": 2292,
+            "end": 2305,
+            "text": "On peut s'amuser \u00e0 aller dans l'espace-temps euclidien."
+        },
+        {
+            "start": 2305,
+            "end": 2313,
+            "text": "C'est maintenant m\u00e9trique de l'espace-temps euclidien."
+        },
+        {
+            "start": 2313,
+            "end": 2316,
+            "text": "On rajoute le temps."
+        },
+        {
+            "start": 2316,
+            "end": 2319,
+            "text": "On peut simplifier."
+        },
+        {
+            "start": 2319,
+            "end": 2326,
+            "text": "L\u00e0 on est disons en physique classique."
+        },
+        {
+            "start": 2326,
+            "end": 2332,
+            "text": "Vous reconnaissez peut-\u00eatre notre s\u0153ur Isaac Newton."
+        },
+        {
+            "start": 2332,
+            "end": 2335,
+            "text": "Je me suis donn\u00e9 pour faire des petits cadres."
+        },
+        {
+            "start": 2335,
+            "end": 2336,
+            "text": "L\u00e0 on est en physique classique."
+        },
+        {
+            "start": 2336,
+            "end": 2342,
+            "text": "On est dans un univers statique, c'est \u00e0 dire qu'on est dans un univers quotidien."
+        },
+        {
+            "start": 2342,
+            "end": 2344,
+            "text": "C'est cool \u00e7a, \u00e7a tient sur le c\u00f4t\u00e9."
+        },
+        {
+            "start": 2344,
+            "end": 2345,
+            "text": "Univers statique."
+        },
+        {
+            "start": 2345,
+            "end": 2348,
+            "text": "J'ai mis des petites fleurs et puis un r\u00e9seau stable."
+        },
+        {
+            "start": 2348,
+            "end": 2353,
+            "text": "Un r\u00e9seau \u00e0 deux dimensions mais on peut le propager \u00e0 trois dimensions."
+        },
+        {
+            "start": 2353,
+            "end": 2355,
+            "text": "L\u00e0 tout marche bien, on a l'habitude."
+        },
+        {
+            "start": 2355,
+            "end": 2361,
+            "text": "On n'a pas encore besoin de l'hypoth\u00e8se d'homog\u00e9n\u00e9it\u00e9 et d'isotropie de l'univers mais \u00e7a ne va pas tarder."
+        },
+        {
+            "start": 2361,
+            "end": 2367,
+            "text": "Je la mets hors champ mais on va la sortir dans pas longtemps."
+        },
+        {
+            "start": 2367,
+            "end": 2371,
+            "text": "On continue, on rajoute le temps."
+        },
+        {
+            "start": 2371,
+            "end": 2375,
+            "text": "L\u00e0 vous voyez qu'on a affaire \u00e0 des \u00e9v\u00e9nements."
+        },
+        {
+            "start": 2375,
+            "end": 2380,
+            "text": "On a trois coordonn\u00e9es d'espace et une dimension de temps."
+        },
+        {
+            "start": 2380,
+            "end": 2383,
+            "text": "On appelle \u00e7a parfois un quadrivecteur."
+        },
+        {
+            "start": 2383,
+            "end": 2386,
+            "text": "Je ne vais pas vous sortir des gros mots."
+        },
+        {
+            "start": 2386,
+            "end": 2392,
+            "text": "La distance entre deux points de l'espace-temps, c'est la distance entre deux \u00e9v\u00e9nements."
+        },
+        {
+            "start": 2392,
+            "end": 2397,
+            "text": "On l'appelle ds\u00b2."
+        },
+        {
+            "start": 2397,
+            "end": 2405,
+            "text": "On est oblig\u00e9 de passer en relativit\u00e9 restreinte."
+        },
+        {
+            "start": 2405,
+            "end": 2411,
+            "text": "M. Newton peut aller se rhabiller un instant."
+        },
+        {
+            "start": 2411,
+            "end": 2422,
+            "text": "C'est c\u00b2dt\u00b2, le temps qui s\u00e9pare les deux \u00e9v\u00e9nements, moins ds\u00b2."
+        },
+        {
+            "start": 2422,
+            "end": 2428,
+            "text": "Je vais mettre le d\u00b2 en noir dans son petit nuage."
+        },
+        {
+            "start": 2428,
+            "end": 2430,
+            "text": "C'est le d\u00b2 qui est ici."
+        },
+        {
+            "start": 2430,
+            "end": 2436,
+            "text": "On a une partie que je vais mettre en rouge, temporelle."
+        },
+        {
+            "start": 2436,
+            "end": 2442,
+            "text": "Et ici une partie spatiale."
+        },
+        {
+            "start": 2442,
+            "end": 2446,
+            "text": "Et voil\u00e0 comment d\u00e9finir un \u00e9v\u00e9nement en relativit\u00e9 restreinte."
+        },
+        {
+            "start": 2446,
+            "end": 2452,
+            "text": "Ce concept est \u00e9minemment relativiste."
+        },
+        {
+            "start": 2452,
+            "end": 2459,
+            "text": "Il n'est pas en physique classique, m\u00eame si la notion d'\u00e9v\u00e9nement est pr\u00e9sente en physique classique."
+        },
+        {
+            "start": 2459,
+            "end": 2461,
+            "text": "Mais le temps s'\u00e9coute de la m\u00eame mani\u00e8re."
+        },
+        {
+            "start": 2461,
+            "end": 2468,
+            "text": "On passe d\u00e9j\u00e0 en physique un peu rigolote, m\u00eame si on est dans un univers statique."
+        },
+        {
+            "start": 2468,
+            "end": 2470,
+            "text": "Voil\u00e0 comment d\u00e9finir un \u00e9v\u00e9nement."
+        },
+        {
+            "start": 2470,
+            "end": 2492,
+            "text": "C'est le module de la distance dans un espace-temps euclidien entre deux \u00e9v\u00e9nements s\u00e9par\u00e9s du micro-instant dt et s\u00e9par\u00e9s spatialement de la micro-distance ds\u00b2 et le d\u00e9cimaneux \u00e9tait ici, c'\u00e9tait la diff\u00e9rence de coordonn\u00e9es spatiales entre les deux \u00e9v\u00e9nements."
+        },
+        {
+            "start": 2492,
+            "end": 2494,
+            "text": "Voyez, on met progressivement les choses en place."
+        },
+        {
+            "start": 2494,
+            "end": 2502,
+            "text": "On parle d'une m\u00e9trique qui nous permet de d\u00e9finir des distances \u00e0 4 dimensions en m\u00ealant le temps et l'espace."
+        },
+        {
+            "start": 2502,
+            "end": 2506,
+            "text": "Vous voyez d'ailleurs qu'il y a des signes, ce n'est pas que positif."
+        },
+        {
+            "start": 2506,
+            "end": 2510,
+            "text": "Donc en fait, vous voyez que \u00e7a se compense, il se passe des choses assez rigolotes."
+        },
+        {
+            "start": 2510,
+            "end": 2518,
+            "text": "Alors \u00e7a c'\u00e9tait l'espace statique, tranquille, 4 dimensions, tout va bien."
+        },
+        {
+            "start": 2518,
+            "end": 2526,
+            "text": "Maintenant on va s'amuser \u00e0... parce que \u00e7a ne veut rien dire, \u00e7a deviendrait trop compliqu\u00e9."
+        },
+        {
+            "start": 2526,
+            "end": 2531,
+            "text": "On va s'amuser \u00e0 regarder des choses un peu plus compliqu\u00e9es, mais on va imposer que l'univers est homog\u00e8ne et isotrope."
+        },
+        {
+            "start": 2531,
+            "end": 2533,
+            "text": "Alors c'est quoi homog\u00e8ne et isotrope ?"
+        },
+        {
+            "start": 2533,
+            "end": 2538,
+            "text": "Je vais essayer de le mettre... Ecoutez, il est statique l\u00e0, \u00e7a tient comme \u00e7a."
+        },
+        {
+            "start": 2538,
+            "end": 2540,
+            "text": "Il est homog\u00e8ne et isotrope."
+        },
+        {
+            "start": 2540,
+            "end": 2543,
+            "text": "Ecoutez, vous vous rappelez qu'il est l\u00e0, je vais le mettre comme \u00e7a."
+        },
+        {
+            "start": 2543,
+            "end": 2552,
+            "text": "Homog\u00e8ne, \u00e7a veut dire, en tout cas en cosmologie, \u00e7a veut dire invariant par translation."
+        },
+        {
+            "start": 2552,
+            "end": 2554,
+            "text": "Translation, vous savez, c'est se d\u00e9placer avec un vecteur."
+        },
+        {
+            "start": 2554,
+            "end": 2561,
+            "text": "Donc \u00e7a veut dire que votre univers est le m\u00eame partout si vous vous d\u00e9placez dans un certain vecteur."
+        },
+        {
+            "start": 2561,
+            "end": 2566,
+            "text": "Par exemple un mur de briques est homog\u00e8ne si vous vous d\u00e9placez dans le mur de briques."
+        },
+        {
+            "start": 2566,
+            "end": 2573,
+            "text": "Et isotrope, c'est invariant par rotation."
+        },
+        {
+            "start": 2573,
+            "end": 2583,
+            "text": "Donc un oignon, si vous \u00eates au centre, est invariant par rotation, en supposant qu'il est \u00e9videmment tout sph\u00e9rique, ou une \u00e9toile, etc."
+        },
+        {
+            "start": 2583,
+            "end": 2592,
+            "text": "Donc on suppose, parce que sinon on ne s'en sort pas simplement en cinq minutes, que l'univers est homog\u00e8ne et isotrope, m\u00eame si on sait qu'\u00e0 certaines \u00e9chelles ce n'est pas exactement le cas."
+        },
+        {
+            "start": 2592,
+            "end": 2599,
+            "text": "Donc avec ces hypoth\u00e8ses, on en est au D, si je ne me suis pas tromp\u00e9."
+        },
+        {
+            "start": 2599,
+            "end": 2602,
+            "text": "Voil\u00e0, c'est \u00e7a."
+        },
+        {
+            "start": 2602,
+            "end": 2611,
+            "text": "On en est au D et c'est m\u00e9trique de l'espace courbe."
+        },
+        {
+            "start": 2611,
+            "end": 2614,
+            "text": "Donc il faut cette hypoth\u00e8se d'homog\u00e9n\u00e9it\u00e9 et d'isotropie."
+        },
+        {
+            "start": 2614,
+            "end": 2618,
+            "text": "Et alors l\u00e0, on a quelque chose d'un petit peu plus souxe."
+        },
+        {
+            "start": 2618,
+            "end": 2621,
+            "text": "Qu'est-ce que je vais vous dire ?"
+        },
+        {
+            "start": 2621,
+            "end": 2625,
+            "text": "Parce que j'ai mes notes que j'avais \u00e9crites il y a quelques ann\u00e9es."
+        },
+        {
+            "start": 2625,
+            "end": 2632,
+            "text": "Alors l\u00e0 je vous balance, je vous sors du chapeau, parce que sinon je n'ai pas y arriv\u00e9, en un temps relativement court."
+        },
+        {
+            "start": 2632,
+            "end": 2637,
+            "text": "On d\u00e9finit, comme tout \u00e0 l'heure, une distance entre deux \u00e9v\u00e9nements."
+        },
+        {
+            "start": 2637,
+            "end": 2647,
+            "text": "Mais ici on est dans un espace qui n'est plus Euclidien, c'est-\u00e0-dire qu'il peut avoir de la courbure, des acc\u00e9l\u00e9rations des masses, etc."
+        },
+        {
+            "start": 2647,
+            "end": 2649,
+            "text": "On va voir \u00e7a juste apr\u00e8s."
+        },
+        {
+            "start": 2649,
+            "end": 2656,
+            "text": "Donc il y a une partie temporelle qui ressemble, mais c'est l\u00e0 o\u00f9 \u00e7a devient assez magique."
+        },
+        {
+            "start": 2656,
+            "end": 2658,
+            "text": "Je vais le mettre en noir."
+        },
+        {
+            "start": 2658,
+            "end": 2660,
+            "text": "Il y a un terme qui arrive."
+        },
+        {
+            "start": 2660,
+            "end": 2662,
+            "text": "D\u00e9sigma 2."
+        },
+        {
+            "start": 2662,
+            "end": 2664,
+            "text": "Alors, de quoi s'agit-il ?"
+        },
+        {
+            "start": 2664,
+            "end": 2671,
+            "text": "On fait aussi l'hypoth\u00e8se, que je n'ai pas \u00e9voqu\u00e9e, que les variables sont s\u00e9par\u00e9es entre le temps et l'espace."
+        },
+        {
+            "start": 2671,
+            "end": 2676,
+            "text": "Je vous l'avais fait vite, donc il y a plein de concepts un petit peu cach\u00e9s."
+        },
+        {
+            "start": 2676,
+            "end": 2683,
+            "text": "Mon parti pris, c'\u00e9tait de vous expliquer juste l'essence de toute cette d\u00e9marche."
+        },
+        {
+            "start": 2683,
+            "end": 2688,
+            "text": "Donc \u00e9videmment, s'il y a des sp\u00e9cialistes, j'esp\u00e8re que vous ne vous \u00e9tranglez pas."
+        },
+        {
+            "start": 2688,
+            "end": 2690,
+            "text": "Ou si c'est le cas, vous pouvez me le dire."
+        },
+        {
+            "start": 2690,
+            "end": 2699,
+            "text": "Donc voil\u00e0, la distance entre deux \u00e9v\u00e9nements dans un espace courbe, donc en relativit\u00e9 restreinte, toujours dans un univers statique, est homog\u00e8ne et isotrope."
+        },
+        {
+            "start": 2699,
+            "end": 2703,
+            "text": "Il y a une partie temporelle, comme tout \u00e0 l'heure, que j'avais mise en rouge."
+        },
+        {
+            "start": 2703,
+            "end": 2705,
+            "text": "Je mets temps."
+        },
+        {
+            "start": 2705,
+            "end": 2717,
+            "text": "Une partie spatiale, donc je mets espace, qui est la m\u00eame, le dsigma\u00b2, c'est le m\u00eame que tout \u00e0 l'heure dans la partie euclidienne."
+        },
+        {
+            "start": 2717,
+            "end": 2721,
+            "text": "Mais regardez ce qu'il y a. Il y a un a de t qui d\u00e9pend du temps."
+        },
+        {
+            "start": 2721,
+            "end": 2737,
+            "text": "C'est-\u00e0-dire que le a de t, il va vous dire, j'ai le droit de faire gonfler, c'est un facteur multiplicatif, j'ai le droit d'appliquer une multiplication pour que la partie spatiale augmente ou diminue."
+        },
+        {
+            "start": 2737,
+            "end": 2740,
+            "text": "\u00c7a, on verra apr\u00e8s de quoi il s'agit."
+        },
+        {
+            "start": 2740,
+            "end": 2749,
+            "text": "Et ce a de t, parfois on l'appelle R de t dans certains bouquins, c'est le facteur d'\u00e9chelle."
+        },
+        {
+            "start": 2749,
+            "end": 2784,
+            "text": "Et si vous arrivez \u00e0 intuiter, m\u00eame si vous ne comprenez pas forc\u00e9ment tout ce qui est l\u00e0, que les distances dans l'univers \u00e0 quatre dimensions, avec des hypoth\u00e8ses simples, ont une partie temporelle qui vit sa vie, une partie spatiale qui vit sa vie, mais qui a un facteur multiplicatif qui d\u00e9pend du temps o\u00f9 on est, de l'\u00e9poque cosmique, et donc qui est un facteur multiplicatif, qui peut devenir grand."
+        },
+        {
+            "start": 2784,
+            "end": 2787,
+            "text": "Genre, s'il est grand, il y a l'expansion."
+        },
+        {
+            "start": 2787,
+            "end": 2790,
+            "text": "Vous avez \u00e0 peu pr\u00e8s tout compris, on va le voir \u00e7a dans un instant."
+        },
+        {
+            "start": 2790,
+            "end": 2802,
+            "text": "L'expansion de l'univers, j'anticipe sur la suite bien s\u00fbr, c'est en fait l'impact de ce facteur qui est ici, toujours en faisant l'hypoth\u00e8se d'une s\u00e9paration des variables."
+        },
+        {
+            "start": 2802,
+            "end": 2813,
+            "text": "Une autre... j'anticipe sur le E, c'\u00e9tait le E \u00e7a, le petit facteur d'\u00e9chelle."
+        },
+        {
+            "start": 2813,
+            "end": 2816,
+            "text": "On voit aussi que ces \u00e9quations sont locales."
+        },
+        {
+            "start": 2816,
+            "end": 2818,
+            "text": "Et \u00e7a c'est super important."
+        },
+        {
+            "start": 2818,
+            "end": 2819,
+            "text": "Locales \u00e7a veut dire quoi ?"
+        },
+        {
+            "start": 2819,
+            "end": 2830,
+            "text": "\u00c7a veut dire que ce sont des diff\u00e9rences entre deux \u00e9v\u00e9nements qui sont \u00e0 une \u00e9chelle... Alors l\u00e0 c'est infinit\u00e9 simile, donc c'est cens\u00e9 \u00eatre petit, mais on voit que \u00e7a ne concerne pas tout l'univers dans son ensemble."
+        },
+        {
+            "start": 2830,
+            "end": 2836,
+            "text": "Donc souvent les gens pensent, \u00e0 juste titre, oui mais l'expansion de l'univers c'est dans quoi ?"
+        },
+        {
+            "start": 2836,
+            "end": 2837,
+            "text": "Regardez cette \u00e9quation."
+        },
+        {
+            "start": 2837,
+            "end": 2851,
+            "text": "Cette \u00e9quation, elle ne dit rien d'autre que je prends deux \u00e9v\u00e9nements, et je vois que si j'attends longtemps, dans l'hypoth\u00e8se d'une expansion, j'anticipe, et bien cette distance entre les deux \u00e9v\u00e9nements, cette distance spatio-temporelle, va augmenter."
+        },
+        {
+            "start": 2851,
+            "end": 2854,
+            "text": "Elle ne dit rien sur l'ext\u00e9rieur de l'univers, l'int\u00e9rieur, etc."
+        },
+        {
+            "start": 2854,
+            "end": 2858,
+            "text": "Elle est locale, et elle dit juste \u00e7a, que la m\u00e9trique s'\u00e9tend."
+        },
+        {
+            "start": 2858,
+            "end": 2860,
+            "text": "Juste \u00e7a."
+        },
+        {
+            "start": 2860,
+            "end": 2862,
+            "text": "\u00c7a c'est tr\u00e8s important."
+        },
+        {
+            "start": 2862,
+            "end": 2868,
+            "text": "Parce que nous les humains, c'est normal, on essaie d'interpr\u00e9ter cette notion d'expansion."
+        },
+        {
+            "start": 2868,
+            "end": 2874,
+            "text": "L'expansion, elle nous dit juste, b\u00eatement entre guillemets, regardez, c'est un facteur multiplicatif tout simple."
+        },
+        {
+            "start": 2874,
+            "end": 2875,
+            "text": "Et \u00e7a marche."
+        },
+        {
+            "start": 2875,
+            "end": 2877,
+            "text": "C'est \u00e7a qui est assez fascinant."
+        },
+        {
+            "start": 2877,
+            "end": 2880,
+            "text": "Parce que \u00e7a ne marcherait pas, on ne serait pas l\u00e0 pour en parler."
+        },
+        {
+            "start": 2880,
+            "end": 2890,
+            "text": "J'esp\u00e8re que \u00e7a vous a clarifi\u00e9 les choses, m\u00eame si c'\u00e9tait un peu formel, c'est que le d\u00e9but, de ce c\u00f4t\u00e9 expansion et facteur d'\u00e9chelle."
+        },
+        {
+            "start": 2890,
+            "end": 2900,
+            "text": "Dans un univers, on \u00e9tait plus statique, on passait un peu en expansion, j'ai mis des fl\u00e8ches, des paf, crac, boum, i, etc."
+        },
+        {
+            "start": 2900,
+            "end": 2905,
+            "text": "Donc on arrive dans un peu le dur."
+        },
+        {
+            "start": 2905,
+            "end": 2911,
+            "text": "On peut m\u00eame commencer \u00e0 avoir une petite transition vers la relativit\u00e9 g\u00e9n\u00e9rale, mais on n'y est pas encore formellement."
+        },
+        {
+            "start": 2911,
+            "end": 2920,
+            "text": "On va passer \u00e0 la partie 2, qui est du facteur d'\u00e9chelle, dont on vient de parler, aux observations."
+        },
+        {
+            "start": 2920,
+            "end": 2922,
+            "text": "Voil\u00e0, deuxi\u00e8me partie."
+        },
+        {
+            "start": 2922,
+            "end": 2929,
+            "text": "Le parti pris que j'ai pris ici, c'est d'\u00eatre tr\u00e8s simple, de ne pas tout d\u00e9montrer, et d'avoir un lien avec les observations."
+        },
+        {
+            "start": 2929,
+            "end": 2936,
+            "text": "On pourrait avoir une partie de ce cours de mani\u00e8re tout \u00e0 fait th\u00e9orique, \u00e0 partir de la relativit\u00e9 g\u00e9n\u00e9rale, etc."
+        },
+        {
+            "start": 2936,
+            "end": 2943,
+            "text": "J'ai des coll\u00e8gues qui le font tr\u00e8s bien, et \u00e7a serait plus pr\u00e9cis, plus rigoureux, mais j'ai pris un parti un peu plus simple."
+        },
+        {
+            "start": 2943,
+            "end": 2966,
+            "text": "J'ai oubli\u00e9 de vous dire dans la fois d'avant que l'on peut appeler \u00e7a... L\u00e0 je vous ai mis une forme tr\u00e8s g\u00e9n\u00e9rale, mais quand \u00e7a prend une forme particuli\u00e8re, que je ne vais pas vous \u00e9crire l\u00e0, parce qu'il y a des fonctions qui sont tr\u00e8s int\u00e9ressantes, c'est que l'on peut appeler \u00e7a la forme de la r\u00e9solution."
+        },
+        {
+            "start": 2966,
+            "end": 2985,
+            "text": "L\u00e0 je vous ai mis une forme tr\u00e8s g\u00e9n\u00e9rale, mais quand \u00e7a prend une forme particuli\u00e8re, que je ne vais pas vous \u00e9crire l\u00e0, parce qu'il y a des fonctions math\u00e9matiques un peu partout, on a la m\u00e9trique qu'on va utiliser, qui s'appelle la m\u00e9trique de Robertson-Walker."
+        },
+        {
+            "start": 2985,
+            "end": 2988,
+            "text": "Rw comme petit nom."
+        },
+        {
+            "start": 2988,
+            "end": 3003,
+            "text": "La m\u00e9trique de Robertson-Walker, parce que ces deux personnes ont ind\u00e9pendamment trouv\u00e9 cette m\u00e9trique, qu'elle correspondait bien aux probl\u00e8mes pos\u00e9s d'un univers en expansion."
+        },
+        {
+            "start": 3003,
+            "end": 3016,
+            "text": "Et donc quand on parlera de m\u00e9trique Robertson-Walker, on s'int\u00e9resserait \u00e0 une m\u00e9trique de l'espace courbe avec une forme particuli\u00e8re, que je ne vais pas d\u00e9tailler l\u00e0."
+        },
+        {
+            "start": 3016,
+            "end": 3020,
+            "text": "Et puis j'en profite parce que je relis les notes."
+        },
+        {
+            "start": 3020,
+            "end": 3028,
+            "text": "Nous en cosmologie, on sera int\u00e9ress\u00e9 \u00e0 des \u00e9v\u00e9nements qui sont non-simultan\u00e9s dans le temps, dans l'espace."
+        },
+        {
+            "start": 3028,
+            "end": 3030,
+            "text": "Enfin surtout dans le temps."
+        },
+        {
+            "start": 3030,
+            "end": 3044,
+            "text": "Par exemple quand on regarde une galaxie lointaine, on voit la lumi\u00e8re qui s'est propag\u00e9e depuis longtemps, donc en fait on voit une galaxie qui est non seulement loin de nous d'un point de vue distance, mais aussi en temps, parce qu'on la voit telle qu'elle \u00e9tait dans le pass\u00e9."
+        },
+        {
+            "start": 3044,
+            "end": 3048,
+            "text": "Donc en cosmologie, on sera surtout int\u00e9ress\u00e9 \u00e0 des \u00e9v\u00e9nements non-simultan\u00e9s."
+        },
+        {
+            "start": 3048,
+            "end": 3057,
+            "text": "Donc loin et dans le pass\u00e9, pour ce qu'on observe, des galaxies, le fond cosmologique, que sais-je, et puis nous on est l\u00e0 aujourd'hui."
+        },
+        {
+            "start": 3057,
+            "end": 3062,
+            "text": "Donc c'est pour \u00e7a que le temps est imbriqu\u00e9 \u00e0 l'espace, en tout cas pour la m\u00e9trique."
+        },
+        {
+            "start": 3062,
+            "end": 3065,
+            "text": "C'est pour \u00e7a que c'est important et que \u00e7a joue."
+        },
+        {
+            "start": 3065,
+            "end": 3071,
+            "text": "Il y a deux termes, il y a un terme de temps et un terme d'espace, c'est important."
+        },
+        {
+            "start": 3071,
+            "end": 3073,
+            "text": "Il n'y a pas un qui domine sur l'autre."
+        },
+        {
+            "start": 3073,
+            "end": 3079,
+            "text": "Alors, distance propre, qu'est-ce que j'ai mis comme distance propre ?"
+        },
+        {
+            "start": 3079,
+            "end": 3090,
+            "text": "La distance propre, c'est la distance spatiale qui s\u00e9pare deux \u00e9v\u00e9nements simultan\u00e9s."
+        },
+        {
+            "start": 3090,
+            "end": 3095,
+            "text": "Donc vous faites l'hypoth\u00e8se qu'ils se produisent au m\u00eame moment, puis vous prenez la distance."
+        },
+        {
+            "start": 3095,
+            "end": 3103,
+            "text": "Donc en fait, \u00e7a annule la partie temporelle."
+        },
+        {
+            "start": 3103,
+            "end": 3110,
+            "text": "Bon, on ne va pas l'utiliser, mais c'est pour fixer les id\u00e9es, parce qu'en fait, on pense souvent \u00e0 \u00e7a."
+        },
+        {
+            "start": 3110,
+            "end": 3114,
+            "text": "On a ce qu'on appelle aussi la distance commobile."
+        },
+        {
+            "start": 3114,
+            "end": 3125,
+            "text": "Commobile, \u00e7a veut dire qui bouge avec quelque chose qui bouge, en l'occurrence peut-\u00eatre l'expansion de l'univers."
+        },
+        {
+            "start": 3125,
+            "end": 3132,
+            "text": "Alors, j'aurais d\u00fb vous retrouver un dessin, je vais le faire, je vais retrouver le dessin, puis je vais vous le mettre."
+        },
+        {
+            "start": 3132,
+            "end": 3139,
+            "text": "Mais on va faire un petit peu de d\u00e9monstration."
+        },
+        {
+            "start": 3139,
+            "end": 3147,
+            "text": "Je vais vous le mettre, mais je vais vous le faire ici en direct."
+        },
+        {
+            "start": 3147,
+            "end": 3153,
+            "text": "Si je me mets un temps qui s'appelle T1, je vais mettre \u00e0 deux dimensions, sinon je ne vais pas y arriver."
+        },
+        {
+            "start": 3153,
+            "end": 3155,
+            "text": "Enfin, je pourrais, mais \u00e7a serait illisible."
+        },
+        {
+            "start": 3155,
+            "end": 3162,
+            "text": "Je vais mettre une galaxie A et une galaxie B. Pourquoi je parle de galaxie ?"
+        },
+        {
+            "start": 3162,
+            "end": 3171,
+            "text": "Parce que vous voyez que cette m\u00e9trique-l\u00e0, peut-\u00eatre que je vais l'appeler l'\u00e9quation 1, cette m\u00e9trique, elle concerne vraiment l'espace-temps de l'univers, en fait \u00e0 grande \u00e9chelle."
+        },
+        {
+            "start": 3171,
+            "end": 3175,
+            "text": "\u00c7a ne nous concerne pas, nous, humains ou terriens."
+        },
+        {
+            "start": 3175,
+            "end": 3180,
+            "text": "Je ne vais pas avoir mon ventre qui gonfle \u00e0 cause de ce facteur d'\u00e9chelle."
+        },
+        {
+            "start": 3180,
+            "end": 3187,
+            "text": "Si mon ventre gonfle, c'est plut\u00f4t parce que j'aurais pris trop de pains au chocolat ou de croissant le matin au petit-d\u00e9j, mais pas par l'expansion de l'univers."
+        },
+        {
+            "start": 3187,
+            "end": 3190,
+            "text": "Donc il y a d'autres forces physiques qui dominent."
+        },
+        {
+            "start": 3190,
+            "end": 3196,
+            "text": "La gravit\u00e9, les forces \u00e9lectromagn\u00e9tiques, les forces nucl\u00e9aires fortes et faibles, donc l\u00e0, il n'y a pas de soucis."
+        },
+        {
+            "start": 3196,
+            "end": 3200,
+            "text": "L'expansion ici, le facteur d'\u00e9chelle, joue tr\u00e8s tr\u00e8s peu."
+        },
+        {
+            "start": 3200,
+            "end": 3205,
+            "text": "Pareil, la distance Terre-Lune n'est absolument pas affect\u00e9e par cette expansion de l'univers."
+        },
+        {
+            "start": 3205,
+            "end": 3210,
+            "text": "Il se trouve que la distance Terre-Lune augmente un petit peu, mais c'est d\u00fb aux effets de mar\u00e9e, aux conditions \u00e9nerg\u00e9tiques, etc."
+        },
+        {
+            "start": 3210,
+            "end": 3215,
+            "text": "Pareil, dans une galaxie, ou m\u00eame dans un amas de galaxies, l'expansion de l'univers joue tr\u00e8s tr\u00e8s peu."
+        },
+        {
+            "start": 3215,
+            "end": 3227,
+            "text": "Par contre, c'est vraiment entre galaxies tr\u00e8s lointaines qui n'ont pas de causalit\u00e9 ou de force entre elles, l\u00e0, cet aspect d'espace-temps va jouer dans les \u00e9v\u00e9nements."
+        },
+        {
+            "start": 3227,
+            "end": 3229,
+            "text": "On pourrait d\u00e9tailler un peu plus."
+        },
+        {
+            "start": 3229,
+            "end": 3242,
+            "text": "Donc l\u00e0, je consid\u00e8re deux galaxies tr\u00e8s lointaines, qui sont d\u00e9j\u00e0 tr\u00e8s lointaines, et qui s'attirent tr\u00e8s tr\u00e8s tr\u00e8s peu, par rapport \u00e0, je ne sais pas, si il y a une galaxie C ici, les deux B et C s'attireront, il n'y a aucun souci."
+        },
+        {
+            "start": 3242,
+            "end": 3249,
+            "text": "Elles s'attireront, et un peu comme la Voie lact\u00e9e avec la galaxie d'Androm\u00e8de, \u00e7a s'attire, et ce n'est absolument pas contradictoire avec l'expansion de l'univers."
+        },
+        {
+            "start": 3249,
+            "end": 3253,
+            "text": "Ce qui est un peu compliqu\u00e9 en physique, c'est qu'il y a des domaines d'application."
+        },
+        {
+            "start": 3253,
+            "end": 3256,
+            "text": "Donc, voil\u00e0, un univers en expansion."
+        },
+        {
+            "start": 3256,
+            "end": 3267,
+            "text": "Donc, AT1, je suis comme \u00e7a, mais imaginons qu'AT2, je sois... Alors, je fais un autre dessin."
+        },
+        {
+            "start": 3267,
+            "end": 3270,
+            "text": "Mon espace-temps se soit dilat\u00e9."
+        },
+        {
+            "start": 3270,
+            "end": 3277,
+            "text": "Donc A sera l\u00e0, et B sera l\u00e0, et puis C sera peut-\u00eatre plus rapproch\u00e9, parce qu'entre-temps, il aurait \u00e9t\u00e9 attir\u00e9 par la gravit\u00e9."
+        },
+        {
+            "start": 3277,
+            "end": 3280,
+            "text": "Mais on voit que la distance entre les deux a augment\u00e9, m\u00eame si eux, ils n'ont rien fait."
+        },
+        {
+            "start": 3280,
+            "end": 3284,
+            "text": "A est rest\u00e9 tranquille dans sa coordonn\u00e9e."
+        },
+        {
+            "start": 3284,
+            "end": 3288,
+            "text": "C'est juste le syst\u00e8me de coordonn\u00e9es, donc la m\u00e9trique, donc l'espace-temps, qui s'est dilat\u00e9."
+        },
+        {
+            "start": 3288,
+            "end": 3291,
+            "text": "Donc, ils n'ont rien demand\u00e9, mais en ce moment, ils ont fait un petit d\u00e9tail."
+        },
+        {
+            "start": 3291,
+            "end": 3293,
+            "text": "C'est juste le syst\u00e8me de coordonn\u00e9es qui s'est dilat\u00e9."
+        },
+        {
+            "start": 3293,
+            "end": 3297,
+            "text": "Donc, ils n'ont rien demand\u00e9, mais entre A et B, la distance a augment\u00e9."
+        },
+        {
+            "start": 3297,
+            "end": 3300,
+            "text": "Et donc, on fait intervenir la distance co-mobile."
+        },
+        {
+            "start": 3300,
+            "end": 3303,
+            "text": "Il faut d'abord choisir une r\u00e9f\u00e9rence temporelle."
+        },
+        {
+            "start": 3303,
+            "end": 3305,
+            "text": "On dit que c'est T \u00e9gale aujourd'hui."
+        },
+        {
+            "start": 3305,
+            "end": 3306,
+            "text": "On appelle \u00e7a T0."
+        },
+        {
+            "start": 3306,
+            "end": 3314,
+            "text": "Donc, on dit, aujourd'hui, par exemple, les coordonn\u00e9es de A et B sont celles-ci."
+        },
+        {
+            "start": 3314,
+            "end": 3324,
+            "text": "Et puis, on d\u00e9finit un syst\u00e8me qui, finalement, est attach\u00e9 aux coordonn\u00e9es de l'espace-temps, ce qui nous \u00e9vite de prendre en compte l'expansion de l'univers."
+        },
+        {
+            "start": 3324,
+            "end": 3326,
+            "text": "Je vais vous d\u00e9tailler \u00e7a."
+        },
+        {
+            "start": 3326,
+            "end": 3353,
+            "text": "Je vais calculer la distance entre A et B. Je consid\u00e8re qu'il y a une distance r1 entre les deux, et puis que A \u00e9met un photon vers B. Je dis que la distance d1, on va dire que c'est aujourd'hui, m\u00eame si je l'ai appel\u00e9 0, que c'est le facteur d'\u00e9chelle correspondant au temps d'aujourd'hui, fois la distance r1, je vais la dessiner avec la t\u00eate en noir."
+        },
+        {
+            "start": 3353,
+            "end": 3362,
+            "text": "La distance d1, c'est r1 fois le facteur d'\u00e9chelle d'aujourd'hui, qui vaut, par exemple, 1."
+        },
+        {
+            "start": 3362,
+            "end": 3364,
+            "text": "Vu qu'on est aujourd'hui, il n'y a pas de souci."
+        },
+        {
+            "start": 3364,
+            "end": 3385,
+            "text": "Par contre, si je regarde \u00e0 un autre instant, l'instant T2, j'aurais la distance d2, qui serait le facteur d'\u00e9chelle \u00e0 un instant ult\u00e9rieur, mais toujours r1, puisque c'est un facteur multiplicatif."
+        },
+        {
+            "start": 3385,
+            "end": 3393,
+            "text": "Le r1 restera le m\u00eame, mais ce qu'il y a entre les deux, c'est le taux d'expansion, qui est le facteur A."
+        },
+        {
+            "start": 3393,
+            "end": 3410,
+            "text": "On pr\u00e9f\u00e8re exprimer les distances entre objets dans l'univers D de T, comme \u00e9tant le facteur d'\u00e9chelle \u00e0 l'instant T, fois la distance aujourd'hui, divis\u00e9 par le facteur d'\u00e9chelle aujourd'hui."
+        },
+        {
+            "start": 3410,
+            "end": 3414,
+            "text": "Donc \u00e7a, c'est la distance \u00e0 un instant T quelconque."
+        },
+        {
+            "start": 3414,
+            "end": 3420,
+            "text": "Et puis, je vais le mettre en rouge, \u00e7a c'est D aujourd'hui."
+        },
+        {
+            "start": 3420,
+            "end": 3422,
+            "text": "\u00c7a c'est le facteur d'\u00e9chelle aujourd'hui."
+        },
+        {
+            "start": 3422,
+            "end": 3424,
+            "text": "\u00c9tant pris comme z\u00e9ro."
+        },
+        {
+            "start": 3424,
+            "end": 3441,
+            "text": "Et donc, c'est beaucoup plus pratique de parler de distances comobiles, qui ne prennent pas en compte ce c\u00f4t\u00e9 expansion de l'univers, qui est quand m\u00eame plus g\u00eanant."
+        },
+        {
+            "start": 3441,
+            "end": 3446,
+            "text": "J'esp\u00e8re que je suis clair, parce que... Je relis mes choses."
+        },
+        {
+            "start": 3446,
+            "end": 3449,
+            "text": "On aurait pareil avec les volumes, on met au cube."
+        },
+        {
+            "start": 3449,
+            "end": 3458,
+            "text": "Tout peut se d\u00e9duire gr\u00e2ce au facteur d'\u00e9chelle dont on avait parl\u00e9 tout \u00e0 l'heure."
+        },
+        {
+            "start": 3458,
+            "end": 3462,
+            "text": "On est muni de ces distances comobiles."
+        },
+        {
+            "start": 3462,
+            "end": 3465,
+            "text": "On va passer au redshift."
+        },
+        {
+            "start": 3465,
+            "end": 3474,
+            "text": "Il para\u00eet qu'il y a le d\u00e9calage cosmologique vers le rouge, d\u00fb \u00e0 l'expansion de l'univers, vu que c'est rouge."
+        },
+        {
+            "start": 3474,
+            "end": 3476,
+            "text": "Je simplifie."
+        },
+        {
+            "start": 3476,
+            "end": 3478,
+            "text": "Il y a plusieurs d\u00e9finitions."
+        },
+        {
+            "start": 3478,
+            "end": 3484,
+            "text": "Je vous la fais courte, on pourrait lier \u00e7a de mani\u00e8re beaucoup plus fondamentale avec la th\u00e9orie, etc."
+        },
+        {
+            "start": 3484,
+            "end": 3492,
+            "text": "La restreinte c'est jouable, mais on est dans un univers en expansion, toujours, et toujours homog\u00e8ne, on est toujours bon avec nos petites cartes."
+        },
+        {
+            "start": 3492,
+            "end": 3495,
+            "text": "Il y a plusieurs d\u00e9finitions."
+        },
+        {
+            "start": 3495,
+            "end": 3505,
+            "text": "La premi\u00e8re, qui est vraiment observationnelle, le redshift, on l'appelle commun\u00e9ment z, petit z. Petit z, parce que grand z c'est la m\u00e9tallicit\u00e9."
+        },
+        {
+            "start": 3505,
+            "end": 3506,
+            "text": "Je le note."
+        },
+        {
+            "start": 3506,
+            "end": 3521,
+            "text": "Petit z, c'est \u00e9gal parfois \u00e0 la longueur d'onde re\u00e7ue au sol, sur Terre, par par exemple une galaxie tr\u00e8s lointaine qui s'\u00e9loigne, par rapport \u00e0 elle, la longueur d'onde qu'elle a \u00e9mise."
+        },
+        {
+            "start": 3521,
+            "end": 3525,
+            "text": "Parce que les deux longueurs d'ondes ne sont pas les m\u00eames \u00e0 cause de ce fameux facteur d'expansion."
+        },
+        {
+            "start": 3525,
+            "end": 3541,
+            "text": "Ce n'est pas vraiment celle-l\u00e0 qu'on va utiliser, mais on peut montrer, je vous le sors du chapeau, que 1 plus z c'est \u00e9gal au facteur d'\u00e9chelle aujourd'hui, sur le facteur d'\u00e9chelle \u00e0 l'instant t correspondant au redshift consid\u00e9r\u00e9."
+        },
+        {
+            "start": 3541,
+            "end": 3543,
+            "text": "Parce que le redshift c'est dans le pass\u00e9."
+        },
+        {
+            "start": 3543,
+            "end": 3547,
+            "text": "Aujourd'hui on est aujourd'hui, et puis l'univers pass\u00e9, il est pass\u00e9."
+        },
+        {
+            "start": 3547,
+            "end": 3555,
+            "text": "C'est \u00e7a qui va \u00eatre int\u00e9ressant de garder en m\u00e9moire, c'est que 1 plus le redshift, qui est une quantit\u00e9 mesurable, c'est le rapport des facteurs d'\u00e9chelle."
+        },
+        {
+            "start": 3555,
+            "end": 3570,
+            "text": "On voit que le redshift est sans dimension, et on voit que le redshift int\u00e8gre la notion de facteur d'\u00e9chelle, donc il est directement li\u00e9 \u00e0 l'\u00e9poque cosmique et au taux d'expansion de l'univers."
+        },
+        {
+            "start": 3570,
+            "end": 3576,
+            "text": "Alors on peut voir que... Je m'en remets un peu, mais c'est pas grave."
+        },
+        {
+            "start": 3576,
+            "end": 3584,
+            "text": "On peut montrer, on va faire plus simple, que finalement A2t est croissante."
+        },
+        {
+            "start": 3584,
+            "end": 3587,
+            "text": "Avec le temps."
+        },
+        {
+            "start": 3587,
+            "end": 3591,
+            "text": "Si A2t est croissante, \u00e7a veut dire que l'univers est en expansion."
+        },
+        {
+            "start": 3591,
+            "end": 3593,
+            "text": "Super important."
+        },
+        {
+            "start": 3593,
+            "end": 3598,
+            "text": "Donc le facteur d'\u00e9chelle, il augmente."
+        },
+        {
+            "start": 3598,
+            "end": 3600,
+            "text": "A2t augmente."
+        },
+        {
+            "start": 3600,
+            "end": 3614,
+            "text": "Et pour revenir \u00e0 l'\u00e9quation 1 de tout \u00e0 l'heure, le A2t c'est juste le facteur que l'on applique devant la partie spatiale de la m\u00e9trique, de la distance entre deux \u00e9v\u00e9nements."
+        },
+        {
+            "start": 3614,
+            "end": 3615,
+            "text": "Rien de plus."
+        },
+        {
+            "start": 3615,
+            "end": 3621,
+            "text": "C'est hyper profond \u00e9videmment, mais il n'y a pas de notion d'ext\u00e9rieur, d'univers."
+        },
+        {
+            "start": 3621,
+            "end": 3625,
+            "text": "Je parle juste de distance et d'\u00e9v\u00e9nements."
+        },
+        {
+            "start": 3625,
+            "end": 3631,
+            "text": "Et donc \u00e7a c'est assez lumineux j'esp\u00e8re."
+        },
+        {
+            "start": 3631,
+            "end": 3639,
+            "text": "Et donc on va pouvoir parler du param\u00e8tre de Hubble, qui a aussi une d\u00e9finition."
+        },
+        {
+            "start": 3639,
+            "end": 3644,
+            "text": "Je vous balance pour pouvoir d\u00e9montrer des choses."
+        },
+        {
+            "start": 3644,
+            "end": 3652,
+            "text": "Mais on peut dire que le param\u00e8tre de Hubble c'est A0.0 sur A0."
+        },
+        {
+            "start": 3652,
+            "end": 3657,
+            "text": "Alors si vous n'\u00eates pas trop fort en maths, c'est pas grave, vous n'\u00eates pas oblig\u00e9 de comprendre cette partie l\u00e0."
+        },
+        {
+            "start": 3657,
+            "end": 3666,
+            "text": "Mais en gros A0.0 c'est la d\u00e9riv\u00e9e temporelle de A sur la d\u00e9riv\u00e9e de A. Donc on peut r\u00e9\u00e9crire ici 1 sur A0."
+        },
+        {
+            "start": 3666,
+            "end": 3669,
+            "text": "A0 c'est le param\u00e8tre de Hubble, 0 c'est aujourd'hui."
+        },
+        {
+            "start": 3669,
+            "end": 3675,
+            "text": "Mais la constante de Hubble, qui n'est pas une constante, est d\u00e9finie \u00e0 n'importe quel instant."
+        },
+        {
+            "start": 3675,
+            "end": 3679,
+            "text": "Si je mettais un t ici, je serais en train de mettre un t aux autres."
+        },
+        {
+            "start": 3679,
+            "end": 3683,
+            "text": "Donc A0 c'est aujourd'hui."
+        },
+        {
+            "start": 3683,
+            "end": 3687,
+            "text": "Donc 1 sur A0, D de A0 sur Dt."
+        },
+        {
+            "start": 3687,
+            "end": 3692,
+            "text": "Si vous connaissez l'expression de la d\u00e9riv\u00e9e temporelle de A, c'est comme \u00e7a que \u00e7a s'\u00e9crit."
+        },
+        {
+            "start": 3692,
+            "end": 3694,
+            "text": "Voil\u00e0 la d\u00e9finition du param\u00e8tre de Hubble."
+        },
+        {
+            "start": 3694,
+            "end": 3710,
+            "text": "On voit que la constante de Hubble est directement reli\u00e9e \u00e0 la vitesse d'expansion renormalis\u00e9e par le facteur d'\u00e9chelle aujourd'hui."
+        },
+        {
+            "start": 3710,
+            "end": 3716,
+            "text": "On peut se convaincre que \u00e7a c'est homog\u00e8ne \u00e0 un temps moins 1."
+        },
+        {
+            "start": 3716,
+            "end": 3720,
+            "text": "Parce que la d\u00e9riv\u00e9e temporelle, il y a 1 sur t qui arrive."
+        },
+        {
+            "start": 3720,
+            "end": 3723,
+            "text": "Donc c'est homog\u00e8ne \u00e0 1 sur temps moins 1."
+        },
+        {
+            "start": 3723,
+            "end": 3731,
+            "text": "Et on l'exprime en g\u00e9n\u00e9ral en astrophysique, non pas en secondes moins 1, encore moins verte, mais en kilom\u00e8tres par seconde par m\u00e9gaparsec."
+        },
+        {
+            "start": 3731,
+            "end": 3734,
+            "text": "Donc c'est bien 1 temps moins 1 ici."
+        },
+        {
+            "start": 3734,
+            "end": 3738,
+            "text": "Mais \u00e7a c'est pour des raisons pratiques, parce que les mesures sont plus pratiques dans cette unit\u00e9-l\u00e0."
+        },
+        {
+            "start": 3738,
+            "end": 3744,
+            "text": "J'esp\u00e8re que pour ces deux premi\u00e8res parties, vous avez tous les \u00e9l\u00e9ments."
+        },
+        {
+            "start": 3744,
+            "end": 3747,
+            "text": "Je remets le petit plan qui me sert de guide aussi."
+        },
+        {
+            "start": 3747,
+            "end": 3755,
+            "text": "On a parl\u00e9 de ma\u00eetrise de l'espace-temps, qui est un concept math\u00e9matique, mais vous voyez \u00e0 quoi \u00e7a sert, parce qu'on a introduit le facteur d'\u00e9chelle."
+        },
+        {
+            "start": 3755,
+            "end": 3771,
+            "text": "Et puis ce facteur d'\u00e9chelle nous permet de parler de distance propre et commobile, bon l\u00e0 j'esp\u00e8re que je ne vous ai pas trop embrouill\u00e9, mais surtout de d\u00e9calage vers le rouge, et puis de param\u00e8tres de Hubble et de lien avec le A de t, dont on voit qu'il y a une fonction croissante avec le temps."
+        },
+        {
+            "start": 3771,
+            "end": 3798,
+            "text": "On a tous les \u00e9l\u00e9ments en main pour pouvoir parler maintenant de dynamique de l'univers et puis du mod\u00e8le Friedman-Robertson-Walker, qui m\u00e9lange la partie Robinson-Walker de la m\u00e9trique avec la partie physique de la relation des \u00e9quations de Friedman, qui est une solution des \u00e9quations d'Einstein, qui permet de rendre compte de la dynamique physique de l'expansion de l'univers."
+        },
+        {
+            "start": 3798,
+            "end": 3817,
+            "text": "Partie 3 Indigestion Alors vous savez quoi, je me rends compte que \u00e7a prend pas mal de temps, ce qui est chouette, mais j'ai peur que vous soyez un petit peu... non pas sous l'eau, mais qu'il y ait une petite indigestion, donc je propose de parler de la partie 3 et 4 la semaine prochaine."
+        },
+        {
+            "start": 3817,
+            "end": 3822,
+            "text": "Je vais l'enregistrer, mais j'ai peur que \u00e7a fasse trop pour une seule s\u00e9ance."
+        },
+        {
+            "start": 3822,
+            "end": 3825,
+            "text": "Je vais r\u00e9sumer ce qu'on a vu aujourd'hui."
+        },
+        {
+            "start": 3825,
+            "end": 3829,
+            "text": "D\u00e9sol\u00e9, j'improvise un peu, je vous le disais, c'est les conditions du direct."
+        },
+        {
+            "start": 3829,
+            "end": 3836,
+            "text": "Pour parler d'expansion de l'univers, on a parl\u00e9 de m\u00e9trique et de facteur d'\u00e9chelle, pour arriver jusqu'au param\u00e8tre de Hubble."
+        },
+        {
+            "start": 3836,
+            "end": 3875,
+            "text": "J'esp\u00e8re que \u00e7a sera \u00e0 peu pr\u00e8s clair, avec une \u00e9quation m\u00e8tre qui est la fameuse \u00e9quation 1, que j'aime bien remettre, qui est la distance s\u00e9parant deux \u00e9v\u00e9nements, distance au sens large, parce que \u00e7a m\u00e9lange le temps et l'espace, mais avec ce facteur d'\u00e9chelle qui est donc tr\u00e8s important, qui maintenant utilise la notion d'univers en expansion, de relativit\u00e9 restreinte pour l'instant, donc la physique classique, on la met dessous, et on a fait l'hypoth\u00e8se d'un univers homog\u00e8ne et isotrope."
+        },
+        {
+            "start": 3875,
+            "end": 3883,
+            "text": "Et puis les cartes que je garde pour la prochaine fois, c'est cartes relativit\u00e9 g\u00e9n\u00e9rale et univers statique."
+        },
+        {
+            "start": 3883,
+            "end": 3890,
+            "text": "Il nous restera \u00e0 sortir la carte majeure, qui est relat G, mais on garde \u00e7a pour la semaine prochaine."
+        },
+        {
+            "start": 3890,
+            "end": 3893,
+            "text": "J'esp\u00e8re que \u00e7a n'a pas \u00e9t\u00e9 trop difficile."
+        },
+        {
+            "start": 3893,
+            "end": 3898,
+            "text": "Je me suis bien amus\u00e9, m\u00eame si je red\u00e9couvrais certaines de mes notes."
+        },
+        {
+            "start": 3898,
+            "end": 3902,
+            "text": "J'ai mon excuse, mais c'est la vie."
+        },
+        {
+            "start": 3902,
+            "end": 3907,
+            "text": "Avant la bonne continuation, on va parler des livres."
+        },
+        {
+            "start": 3907,
+            "end": 3910,
+            "text": "Allons-y pour la s\u00e9quence livre."
+        },
+        {
+            "start": 3910,
+            "end": 3918,
+            "text": "Pour la s\u00e9quence livre, il y a des r\u00e9f\u00e9rences que j'aime beaucoup."
+        },
+        {
+            "start": 3918,
+            "end": 3924,
+            "text": "Je vais vous pr\u00e9senter les principales qui servent \u00e0 faire ce que j'ai \u00e9voqu\u00e9 \u00e0 l'instant."
+        },
+        {
+            "start": 3924,
+            "end": 3934,
+            "text": "La Bible de la cosmologie de Jim Peebles, dont je vous rappelle qu'il a pris Nobel de physique l'ann\u00e9e derni\u00e8re, 2019."
+        },
+        {
+            "start": 3934,
+            "end": 3939,
+            "text": "Principles of Physical Cosmology, chez Princeton."
+        },
+        {
+            "start": 3939,
+            "end": 3941,
+            "text": "Il y a un peu tout l\u00e0-dedans."
+        },
+        {
+            "start": 3941,
+            "end": 3944,
+            "text": "J'ai toutes mes notes, etc."
+        },
+        {
+            "start": 3944,
+            "end": 3948,
+            "text": "C'est niveau avanc\u00e9, fin de licence."
+        },
+        {
+            "start": 3948,
+            "end": 3954,
+            "text": "Il y a un livre d'introduction que j'aime beaucoup, le R\u00e9unement cosmologique, de Marc Lachaiseret."
+        },
+        {
+            "start": 3954,
+            "end": 3959,
+            "text": "J'ai une \u00e9dition un peu ancienne, mais je pense que ce livre a \u00e9t\u00e9 r\u00e9\u00e9dit\u00e9."
+        },
+        {
+            "start": 3959,
+            "end": 3966,
+            "text": "J'ai tout un tas de marque-pages, parce qu'il y a plein de choses sympathiques."
+        },
+        {
+            "start": 3966,
+            "end": 3978,
+            "text": "Le livre que je pourrais conseiller \u00e0 tous les \u00e9tudiants, \u00e9ventuellement lyc\u00e9ens, mais en tout cas \u00e9tudiants, qui sont int\u00e9ress\u00e9s par la astrophysique, c'est Astrophysical Concepts de Martin Harwit, avec Grande Classe."
+        },
+        {
+            "start": 3978,
+            "end": 3989,
+            "text": "Vous ne le voyez peut-\u00eatre pas, mais j'ai la d\u00e9dicace de mon ami Martin Harwit, qui est un tr\u00e8s grand scientifique, qui est quelqu'un absolument d'\u00e9patante, extraordinaire, d'une humilit\u00e9."
+        },
+        {
+            "start": 3989,
+            "end": 3994,
+            "text": "Mes rencontres avec lui me restent grav\u00e9es dans ma petite m\u00e9moire."
+        },
+        {
+            "start": 3994,
+            "end": 3996,
+            "text": "Il y a aussi plein de notes."
+        },
+        {
+            "start": 3996,
+            "end": 4007,
+            "text": "L'avantage de Astrophysical Concepts, \u00e7a ne parle pas que de cosmologie, \u00e7a parle vraiment de physique simple, de tout l'univers, donc des \u00e9toiles, des plan\u00e8tes, etc."
+        },
+        {
+            "start": 4007,
+            "end": 4011,
+            "text": "Il parle m\u00eame, je crois, d'exobiologie."
+        },
+        {
+            "start": 4011,
+            "end": 4014,
+            "text": "Est-ce que c'est dans cette \u00e9dition ?"
+        },
+        {
+            "start": 4014,
+            "end": 4016,
+            "text": "Life in the Universe, oui c'est \u00e7a."
+        },
+        {
+            "start": 4016,
+            "end": 4017,
+            "text": "Il parle de la thermodynamique."
+        },
+        {
+            "start": 4017,
+            "end": 4023,
+            "text": "C'est en anglais, je ne pense pas que c'\u00e9tait traduible, mais bon, je pense qu'on peut y arriver."
+        },
+        {
+            "start": 4023,
+            "end": 4028,
+            "text": "Et donc, il parle de cosmologie, de gaz, d'\u00e9toiles, de comment tout se forme."
+        },
+        {
+            "start": 4028,
+            "end": 4036,
+            "text": "C'est vraiment une r\u00e9f\u00e9rence absolument incontournable pour ceux qui veulent comprendre un peu la physique de l'univers."
+        },
+        {
+            "start": 4036,
+            "end": 4052,
+            "text": "Donc l\u00e0, j'ai volontairement un petit peu mont\u00e9 le niveau pour une conf\u00e9rence de grand public, puisque finalement, cette derni\u00e8re partie n'\u00e9tait pas de tr\u00e8s grand public, mais elle \u00e9tait \u00e0 destination en particulier de mes \u00e9tudiants de l1, que j'ai crois\u00e9s r\u00e9cemment et pour lesquels je n'ai pas pu finir tous mes cours."
+        },
+        {
+            "start": 4052,
+            "end": 4055,
+            "text": "Donc voil\u00e0, c'est un peu d\u00e9di\u00e9 \u00e0 eux."
+        },
+        {
+            "start": 4055,
+            "end": 4056,
+            "text": "J'esp\u00e8re que \u00e7a leur plaira."
+        },
+        {
+            "start": 4056,
+            "end": 4076,
+            "text": "Et puis rendez-vous \u00e0 la semaine prochaine pour parler de la fin de cette belle s\u00e9ance de cosmologie, partie 3 et 4, et puis du JWST, parce que je vais vous parler quand m\u00eame de ce qui m'a occup\u00e9, moi et de nombreux autres coll\u00e8gues astrophysiciens de par le monde ces derniers temps."
+        },
+        {
+            "start": 4076,
+            "end": 4081,
+            "text": "Donc le t\u00e9lescope spatial JWST de la NASA, de l'Agence spatiale europ\u00e9enne et de l'Agence canadienne."
+        },
+        {
+            "start": 4081,
+            "end": 4090,
+            "text": "Portez-vous bien, bonne continuation, et \u00e0 mercredi prochain pour une autre conf\u00e9rence confin\u00e9e, m\u00eame si le confinement commence \u00e0 \u00eatre un petit peu plus flou, mais \u00e9coutez, c'est pas grave."
+        },
+        {
+            "start": 4090,
+            "end": 4095,
+            "text": "J'ai envie de continuer, donc \u00e7a ne durera peut-\u00eatre pas \u00e9ternellement, mais profitons-en."
+        },
+        {
+            "start": 4095,
+            "end": 4098,
+            "text": "Bonne apr\u00e8s-midi et bonne continuation."
+        },
+        {
+            "start": 4098,
+            "end": 4099,
+            "text": "Ciao, ciao."
+        }
+    ],
+    "text": "2, 1, 0, et lift off ! Le dernier lift off de l'Atlantique ! Showmaster de Space Shuttle ! Le dernier lift off de l'Atlantique ! Le dernier lift off de l'Atlantique ! Showmaster de Space Shuttle ! Conf\u00e9rence confin\u00e9e ASTRO Bonjour, bienvenue \u00e0 cette conf\u00e9rence confin\u00e9e num\u00e9ro 11 du 2 d\u00e9cembre 2020. Le confinement semble toucher \u00e0 sa fin. N\u00e9anmoins, les conf\u00e9rences confin\u00e9es continuent, parce que d'abord \u00e7a m'amuse, et puis j'ai l'impression que \u00e7a amuse certains d'entre vous, en tout cas \u00e7a int\u00e9resse certains d'entre vous, et certaines, donc nous allons continuer. Alors aujourd'hui, au programme, parce que la semaine derni\u00e8re il n'y a pas eu de conf\u00e9rence confin\u00e9e, et je m'en excuse parce qu'on y reviendra peut-\u00eatre la semaine prochaine finalement, j'\u00e9tais tr\u00e8s impliqu\u00e9 dans la partie scientifique du nouveau satellite observatoire JWST, de la NASA, de l'ESA et de la CSA, donc am\u00e9ricain pour faire simple, europ\u00e9en et canadien, c'est un grand t\u00e9lescope qui sera lanc\u00e9 dans \u00e0 peu pr\u00e8s un an par une fus\u00e9e Ariane 5, et donc les programmes scientifiques \u00e9taient dus mercredi matin dernier, donc c'est pour \u00e7a que je n'ai pas pu avoir une semaine de conf\u00e9rences confin\u00e9es astro avec vous la semaine derni\u00e8re. Alors aujourd'hui un programme int\u00e9ressant, voil\u00e0, je reprends ma petite feuille, parce que finalement c'est ce qu'il y a de plus pratique, nous allons parler de quatre choses aujourd'hui, tout d'abord des conseils pour peut-\u00eatre les \u00e9tudiants et les lyc\u00e9ens qui nous \u00e9coutent, et qui sont pour certains en confinement, en tout cas s'agissant de l'universit\u00e9 malheureusement, m\u00eame si on d\u00e9ploie tous les efforts \u00e0 tous les niveaux pour que les universit\u00e9s ouvrent de nouveau, beaucoup plus t\u00f4t que ce qui est annonc\u00e9, donc si possible en janvier, mais voil\u00e0 c'est en cours. Mais en attendant, certains d'entre vous sont en distanciel, peut-\u00eatre aussi pour les lyc\u00e9es en partie, donc voil\u00e0 quelques conseils d'un prof d'universit\u00e9 qui a affaire \u00e0 quelques \u00e9tudiants, donc ce sera relativement court. Deuxi\u00e8mement, on va parler un tout petit peu de la Station Spatiale Internationale, parce qu'on la voit tr\u00e8s tr\u00e8s bien en ce moment le soir depuis la France m\u00e9tropolitaine, donc c'est vraiment le moment pour la voir, surtout qu'en g\u00e9n\u00e9ral il fait \u00e0 peu pr\u00e8s beau, enfin \u00e7a d\u00e9pend de votre r\u00e9gion, mais l\u00e0 \u00e7a sera court. On parlera un petit peu d'art dans ce monde de brut, parce que l'art et la culture \u00e7a nous nourrit, tout comme la science, donc on parlera un peu d'art, et puis on passera au plein de r\u00e9sistance, qui est la cosmologie, l'expansion de l'univers. Donc l\u00e0 c'est tir\u00e9 d'un cours que je donnais en premi\u00e8re ann\u00e9e d'universit\u00e9 \u00e0 M\u00e9lun, alors que je ne donne plus parce que j'avais, bref, j'avais plus assez de s\u00e9ances, mais le niveau est \u00e0 peu pr\u00e8s du, disons, terminale, premi\u00e8re ann\u00e9e d'universit\u00e9, donc \u00e7a sera un petit peu technique, c'est pour \u00e7a qu'il y aura des \u00e9quations, c'est pour \u00e7a que j'ai pris le papier, c'est pas hyper compliqu\u00e9, s'il y a des petits aspects que vous ne comprenez pas, c'est pas tr\u00e8s g\u00eanant, d'abord vous pouvez me poser des questions en chat, et puis ce qui compte c'est vraiment le raisonnement g\u00e9n\u00e9ral, apr\u00e8s les d\u00e9tails techniques, les calculs, \u00e7a c'est pas g\u00eanant, \u00e7a vous trouverez le moment pour les comprendre, ou l'ann\u00e9e d'apr\u00e8s, \u00e7a c'est pas g\u00eanant, mais la logique globale, vous verrez, elle est relativement simple. Donc, on y va, on commence par les conseils pour les, disons, terminale, premi\u00e8re ann\u00e9e, deuxi\u00e8me ann\u00e9e d'universit\u00e9, pour passer cette p\u00e9riode o\u00f9 il y a du cours en distanciel et comment essayer de pr\u00e9parer la suite de l'ann\u00e9e universitaire pour \u00eatre d'attaque. Et bien c'est parti ! Alors mes conseils sont les suivants, bas\u00e9s sur un petit peu d'exp\u00e9rience. Le premier conseil que je pourrais donner aux \u00e9tudiants, c'est de travailler en groupe, \u00e7a c'est tr\u00e8s important, pour r\u00e9viser, pour se questionner mutuellement, pour r\u00e9pondre, parce que tout seul c'est difficile, alors m\u00eame si vous \u00eates \u00e0 distance, vous pouvez communiquer, il y a plein d'outils qui existent, \u00e7a va de WhatsApp, etc. Mais bon, quand m\u00eame avoir du temps de parole, plus que juste du texte, c'est important. Alors pourquoi c'est important ? Parce qu'en g\u00e9n\u00e9ral, on n'a pas tout compris d'un cours ou d'un concept, et le travail tout seul, \u00e7a peut \u00eatre difficile, surtout si on est \u00e0 distance, qu'on est seul, et que la motivation est difficile. Le fait d'\u00eatre en groupe vous permet de poser des questions aux autres, les autres ont en g\u00e9n\u00e9ral la r\u00e9ponse, la r\u00e9ciproque \u00e9tant vraie, c'est-\u00e0-dire que vous pourrez certainement avoir des r\u00e9ponses aux questions que se posent vos copains. Et mine de rien, penser \u00e0 des questions et penser \u00e0 des r\u00e9ponses, \u00e7a permet de faire travailler la r\u00e9flexion, et \u00e7a permet de mieux structurer son savoir et ses comp\u00e9tences. Et donc \u00e7a va au-del\u00e0 juste de l'aide ponctuelle, qui est d\u00e9j\u00e0 tr\u00e8s bienvenue, et tr\u00e8s utile, et tr\u00e8s sympathique, et tr\u00e8s agr\u00e9able, \u00e7a permet en plus de vraiment bien int\u00e9grer, de se faire une r\u00e9flexion vraiment personnelle sur un sujet ou un concept. Donc vous verrez, \u00e7a marche tr\u00e8s tr\u00e8s bien. Donc \u00e7a c'est le conseil que je donne. Certains \u00e9tudiants restent toujours un petit peu seuls, etc. C'est peut-\u00eatre un choix, mais \u00e0 mon avis ce n'est pas un choix id\u00e9al. Donc travaillez en groupe quand vous pouvez, les outils existent. Le deuxi\u00e8me conseil, c'est poser des questions \u00e0 votre enseignant. Pour cela je propose plusieurs choses. D'abord c'est bien formuler vos questions, surtout si vous \u00eates \u00e0 distance avec une interface genre Zoom, Collaborate, etc. Ou parfois le son passe mal, si vous dites \u00ab Monsieur, j'ai pas compris l'\u00e9quation 4 \u00bb ou \u00ab Madame, j'ai pas compris l'\u00e9quation 4 \u00bb D\u00e9j\u00e0 le temps que votre micro se r\u00e9veille, on n'entend rien. Donc plut\u00f4t que de faire une question vraiment en mode onomatop\u00e9e, je sugg\u00e8re de dire, voil\u00e0, de lever la main selon l'outil, dire \u00ab Monsieur, Madame, l'\u00e9quation 4, il y a des choses que je ne comprends pas, notamment le terme bidule ou le terme machin, vous pouvez r\u00e9expliquer pourquoi ce terme, qu'est-ce qu'il fait, etc \u00bb Donc, poser des questions, bien formuler vos questions, m\u00eame si \u00e9videmment vous ne comprenez pas parce que vous posez une question. Et c'est normal, il faut poser des questions. Si vous \u00eates en cours, c'est qu'a priori, il y a des choses que vous ne connaissez pas. Et c'est absolument pas honteux de poser des questions, au contraire. Et l'enseignant se trouvera confort\u00e9 dans son cours si vous posez des questions. Et puis il parle dans le vide, et puis en g\u00e9n\u00e9ral le niveau part un petit peu en live. Enfin, \u00e7a d\u00e9pend des profs, bien s\u00fbr. Et donc, c'est un peu difficile. Donc, poser des questions, formuler les bien, et puis parler distinctement. Peut-\u00eatre que je peux passer \u00e0 mon conseil num\u00e9ro 4. Tester votre micro, parce que vous avez peut-\u00eatre un ordinateur qui n'est peut-\u00eatre pas de derni\u00e8re g\u00e9n\u00e9ration, et donc peut-\u00eatre que le micro ne marche pas tr\u00e8s bien. Et donc si en plus, vous posez une question tr\u00e8s tr\u00e8s courte, le temps que le micro s'active, nous derri\u00e8re, on n'entend rien. Donc, tester votre micro avant. \u00c9ventuellement, prenez un t\u00e9l\u00e9phone si vous avez un aboiement avec appel illimit\u00e9. En g\u00e9n\u00e9ral, c'est le cas. Vous pouvez acc\u00e9der normalement aux cours, aux t\u00e9l\u00e9conf\u00e9rences, en voix, avec un num\u00e9ro de t\u00e9l\u00e9phone. Et vous pouvez avoir la partie visio \u00e0 c\u00f4t\u00e9. Surtout si vous avez une connexion Internet qui n'est pas extraordinaire, vous pouvez passer pour la voix par la partie t\u00e9l\u00e9phone. Et \u00e7a marche tr\u00e8s tr\u00e8s bien. Moi, j'ai des coll\u00e8gues qui font \u00e7a, qui mettent leur t\u00e9l\u00e9phone pour juste \u00e9couter et parler, et puis ils mettent sur leur \u00e9cran juste la partie vid\u00e9o. Et comme \u00e7a, il n'y a pas de souci de micro. Donc, posez des questions, formulez bien vos questions si vous pouvez, donc plus que 5 secondes, c'est mon conseil. Faites une phrase un petit peu... ou quelques phrases un peu longues. Et puis si jamais il y a un ou des profs qui vous disent que votre question est idiote, etc., passez \u00e0 votre chemin, parce que les mauvais profs, il y en a heureusement tr\u00e8s peu, effectivement, tensent \u00e9ventuellement les \u00e9l\u00e8ves ou les \u00e9tudiants \u00e0 cause de mauvaises questions. Mais \u00e7a, heureusement, c'est tr\u00e8s rare. Donc en fait, toutes les questions sont bonnes, et \u00e7a permet un dialogue, et \u00e7a permet d'illustrer des concepts. Et puis figurez-vous que si vous avez une question, \u00e0 95% de chance, il y en a d'autres qui se posent la m\u00eame question. Donc ne serait-ce que pour \u00e7a, n'h\u00e9sitez pas. Et puis pour les profs, c'est beaucoup plus agr\u00e9able, je peux vous le dire en tant qu'ensignant-chercheur, avoir des \u00e9tudiants qui interagissent avec nous via l'\u00e9cran, parce qu'\u00e9videmment, quand on est en classe, c'est beaucoup plus facile, c'est beaucoup plus agr\u00e9able et beaucoup plus dynamique. Et puis troisi\u00e8mement, \u00eatre \u00e0 l'aise avec les outils num\u00e9riques. \u00c7a, vous pouvez le tester sans \u00eatre en cours. Je pense aux interfaces de visioconf\u00e9rence, aux messageries instantan\u00e9es de type Slack, aux documents en ligne de type Framapad, \u00e9videmment, il y a Google, Legafa, mais enfin, si on peut \u00e9viter, ce n'est pas plus mal. Enfin, Slack, \u00e7a fait aussi partie de Google, mais enfin, il y a d'autres outils qui existent. Parce que pendant ce temps un peu, soit de confinement, soit de post-confinement, c'est une occasion unique, un peu impos\u00e9e, mais de devenir tr\u00e8s \u00e0 l'aise avec ces outils, parce qu'apr\u00e8s, quand on reviendra au pr\u00e9sentiel, et puis qu'il y aura, je ne sais pas, des t\u00e9l\u00e9conf\u00e9rences ou des interactions \u00e0 avoir de mani\u00e8re num\u00e9rique, si en plus ces outils vous sont un peu \u00e9trangers, l\u00e0, c'est un peu la double peine et c'est dommage. Donc, formez-vous \u00e0 tous ces outils de partage de documents, de messagerie instantan\u00e9e mais structur\u00e9e, comme Slack ou les parties open source qui existent. Pareil, sur les plateformes de visioconf\u00e9rence que vous utilisez, il y a des outils int\u00e9gr\u00e9s, que ce soit pour poser des questions en chat, pour prendre la parole ou pour mettre des \u00e9motions, des questionnements, des bravos, etc. Et plus vous serez \u00e0 l'aise l\u00e0-dedans, plus \u00e7a sera simple ensuite de passer sur le fond. Voil\u00e0, donc mes trois conseils, un peu, si vous \u00eates \u00e0 l'universit\u00e9 ou en distanciel, pour des cours, alors la p\u00e9riode n'est pas facile, heureusement je crois que c'est en voie de se terminer pour cette phase-l\u00e0, en tout cas. Travaillez en groupe, posez des questions, et puis bien les formuler, mais m\u00eame si ce n'est pas clair dans votre t\u00eate, ce qui est normal, au moins prenez le temps de dire ce que vous ne comprenez pas et de l'objet de votre question. Parce que si la question est trop courte, d\u00e9j\u00e0 le micro, \u00e7a ne passe pas, et en plus, nous derri\u00e8re, on se demande, mais c'est quoi la question ? Donc pr\u00e9cisez, et \u00e7a \u00e9vite des \u00ab mais alors, c'est quoi que tu n'as pas compris ? \u00bb et puis de parler au m\u00eame moment, etc. Donc \u00e7a \u00e9vite de faire perdre cinq minutes \u00e0 tout le monde, et puis c'est beaucoup plus agr\u00e9able. \u00catre \u00e0 l'aise avec les outils, et puis tester votre syst\u00e8me pour \u00eatre vraiment bien entendu, ce qui est quand m\u00eame plus agr\u00e9able pour tout le monde, si c'est possible. Et bien voil\u00e0, on passe \u00e0 la deuxi\u00e8me partie ... Nous allons passer \u00e0 la deuxi\u00e8me partie, qui concerne la Station Spatiale Internationale. Et l\u00e0, je vais vous mettre le site web que je pr\u00e9f\u00e8re, qui s'appelle HeavensAbove. Vous avez l'adresse, je ne sais pas si on voit la souris, je ne crois pas trop, bon bref. Heavens-above.com, vous mettez votre ville, votre endroit g\u00e9ographique, il y a une petite carte si vous voulez, et puis vous cliquez sur ISS, il y a un menu, et l\u00e0 vous avez les prochains passages pour Paris, mais en France, vous mettez votre ville, et vous avez la date des passages, et vous voyez que tous les soirs, en ce moment, il y a des passages. Alors on peut aller au-del\u00e0 du 8 d\u00e9cembre. Donc le 2 d\u00e9cembre, par exemple, le jour de notre conf\u00e9rence confin\u00e9e, \u00e0 18h15, d\u00e9but d'un passage, maximum \u00e0 18h18, c'est-\u00e0-dire l\u00e0 o\u00f9 l'ISS sera le plus haut dans le ciel, et puis fin \u00e0 18h20. Je vous en ai parl\u00e9 il y a une ou deux s\u00e9ances de ce site, mais l\u00e0, \u00e7a vaut vraiment le coup, parce que tous les soirs, il se passe quelque chose. Et puis je vous conseille, si vous avez le choix, de regarder les passages dont la magnitude est la plus brillante, c'est-\u00e0-dire le chiffre le plus n\u00e9gatif, le plus petit, parce que la magnitude, c'est une \u00e9chelle log inverse, enfin, moins log, donc plus c'est n\u00e9gatif, mieux c'est. Et donc on voit qu'une magnitude de moins 3,5, donc mercredi soir, je clique, et puis pour Paris, c'est relativement simple. Vous avez une carte du ciel, \u00e0 droite, c'est l'Ouest, alors normalement, il y a Jupiter et Saturne qui se rapprochent, d'ailleurs, qui sont tr\u00e8s tr\u00e8s beaux \u00e0 voir durant tous, au moins, donc je vous conseille, si vous avez des jumelles ou un t\u00e9lescope, elles sont tr\u00e8s tr\u00e8s basses sur l'horizon, mais vous regardez plein Ouest, et puis vous verrez un point qui avance, comme \u00e7a, vous voyez, vous avez les minutes, et puis qui passe rapproche du p\u00f4le Nord, c\u00e9leste, avec la petite ours, et puis qui s'\u00e9teindra juste apr\u00e8s d'en percer, et \u00e7a met plusieurs minutes, et c'est tr\u00e8s tr\u00e8s sympa \u00e0 voir. Donc c'est la bonne saison, s'il fait beau chez vous, profitez-en pour regarder la Station Spatiale Internationale. C'est le moment, depuis sa fen\u00eatre, il n'y a aucun souci, et puis il suffit que vous ayez le c\u00f4t\u00e9 Ouest ou le c\u00f4t\u00e9 Est, selon quel c\u00f4t\u00e9 vous regarderez, pour pouvoir la visualiser. Voil\u00e0, et bien, bonnes observations ! On va passer \u00e0 un peu d'art. Voil\u00e0, un peu d'art pour dans ce monde de brut. Alors je vais remettre cette fen\u00eatre, que j'ai pr\u00e9par\u00e9e, et donc je vais vous montrer un, deux, trois, quatre, cinq, six, six \u0153uvres qui m'ont inspir\u00e9, voil\u00e0, c'est compl\u00e8tement subjectif, donc voil\u00e0, c'est le choix du chef, des \u0153uvres embl\u00e9matiques, certaines ont \u00e0 peu pr\u00e8s mille ans, et puis je vais aller vers des p\u00e9riodes croissantes, de plus en plus proches de nous. Alors ici je prends mes antis\u00e8ches, m\u00eame si je connais, mais c'est pour ne pas vous dire trop de b\u00eatises, c'est la tapisserie de Bayeux, qui se trouve \u00e0 Bayeux, qui \u00e9tait cousue, qui repose sur une table, qui \u00e9tait cousue, qui repr\u00e9sente sur des dizaines de m\u00e8tres, toute une histoire, donc, onzi\u00e8me si\u00e8cle, vers \u00e0 peu pr\u00e8s 1080, et puis vous voyez en haut, tout en haut, au milieu, au-dessus de la tour, une sorte d'\u00e9toile avec une tra\u00een\u00e9e, c'est une com\u00e8te, la com\u00e8te de Halley, qui a \u00e9t\u00e9 observ\u00e9e \u00e0 cette \u00e9poque-l\u00e0, et qui annon\u00e7ait un destin funeste, les com\u00e8tes \u00e9taient annonciateurs de nouvelles terrifiantes, en tout cas c'\u00e9tait la croyance de l'\u00e9poque, et donc effectivement, le roi en question avait du souci \u00e0 se faire, et je crois qu'il a eu des soucis ensuite. C'est pour \u00e7a que la com\u00e8te a \u00e9t\u00e9 signifi\u00e9e, et cousue, et notifi\u00e9e, dans cette tapisserie absolument extraordinaire, qui est un t\u00e9moignage de ce qui se passait, il y a presque 1000 ans, dans un \u00e9tat de conservation \u00e9patant, et donc, c'est de l'histoire, mais c'est de l'art aussi, et puis c'est un petit peu d'astronomie. Donc voil\u00e0, aussi longtemps que l'humain existe, il a probablement lev\u00e9 les yeux au ciel. Donc c'\u00e9tait un petit incis de la tapisserie de Bayeux, qui est toujours agr\u00e9able \u00e0 voir, et qu'on peut voir en France. Cette mosa\u00efque est extraordinaire, celle-ci est du 16e si\u00e8cle, \u00e0 peu pr\u00e8s 1508, donc il y a \u00e0 peu pr\u00e8s 512 ans, quelque chose comme \u00e7a, et c'est le peintre Rapha\u00ebl, enfin l'artiste Rapha\u00ebl, parce que l\u00e0 il n'y a pas que de la peinture, c'est au Vatican, o\u00f9 il repr\u00e9sente Uranie, donc l'une des muses du quadrivium, et qui repr\u00e9sente l'univers tel qu'il est con\u00e7u \u00e0 l'\u00e9poque, avec la Terre au centre, et puis la sph\u00e8re des fixes, avec les \u00e9toiles, toutes dor\u00e9es, toutes brillantes. Donc voil\u00e0 comment la conception de l'univers, et l'astronomie, inspire l'un des artistes les plus renomm\u00e9s de son \u00e9poque, dans un endroit de pouvoir important, qui \u00e9tait le Vatican au 16e si\u00e8cle. Alors \u00e9videmment, Rapha\u00ebl, on pourrait y passer des heures, regarder la finesse, les couleurs, surtout quand on pense \u00e0 l'\u00e9poque lointaine \u00e0 laquelle \u00e7a a \u00e9t\u00e9 con\u00e7u. On passe \u00e0 une autre \u0153uvre, j'esp\u00e8re que tout \u00e7a vous pla\u00eet, les traits r\u00e9gisseurs du Duc de B\u00e9ryd, je me suis tromp\u00e9, \u00e7a devait \u00eatre avant, c'est au 15e si\u00e8cle, vers 1411. Elles sont conserv\u00e9es au ch\u00e2teau de Chantilly, si vous avez la chance de les voir, moi j'ai eu la chance de les voir il y a quelques ann\u00e9es, et donc vous avez 12 mois, c'est un ouvrage dans l'huminure absolument magnifique, avec notamment un calendrier, donc 12 mois, de janvier en haut \u00e0 d\u00e9cembre en bas \u00e0 droite, et puis en haut, comme c'est un calendrier, vous voyez que vous avez des \u00e9toiles, la position du Soleil, et donc un calendrier, et puis la position du Soleil dans les constellations du Zodiac, parce que le Zodiac a une r\u00e9alit\u00e9 astronomique et scientifique, m\u00eame si apr\u00e8s les astrologues en ont fait des \u00e2neries avec, n'emp\u00eache que le Zodiac est une bande de 13 constellations, de taille et de dur\u00e9e non homog\u00e8nes, vous pouvez vous renseigner sur \u00e7a, et donc on peut voir ce calendrier avec ses couleurs, ce bleu \u00e9patant du 15e si\u00e8cle, les constellations, et puis \u00e9videmment, ces tr\u00e8s r\u00e9gisseurs du Luc du Berry nous renseignent sur la vie \u00e0 l'\u00e9poque, avec les semences au mois d'octobre, les vendanges au mois de septembre, je fais en sens inverse, les moissons en juin-juillet, et puis au mois de f\u00e9vrier, avec la neige, les semailles au mois de mars, et donc m\u00eame si l'astronomie n'est peut-\u00eatre pas l'inspiratrice, la premi\u00e8re de cette \u0153uvre majeure que sont les tr\u00e8s riches \u0153uvres du Luc du Berry, on voit n\u00e9anmoins qu'il y a une part non n\u00e9gligeable qui est consacr\u00e9e au ph\u00e9nom\u00e8ne c\u00e9leste. Donc on \u00e9tait au 15e si\u00e8cle de Rapha\u00ebl, c'\u00e9tait donc le 16e, 1508, et donc on reprend l'ordre chronologique, j'esp\u00e8re que vous voyez bien sur cette fen\u00eatre. L\u00e0 aussi c'est au Vatican, et c'est Donato Cretti qui a peint plusieurs toiles, qui s'appellent Observations astronomiques, en pluriel. Il y en a plusieurs que je vais vous montrer, j'esp\u00e8re que \u00e7a fonctionne, et il s'est fait conseiller par des astronomes. Et donc voil\u00e0, l\u00e0 vous avez la Lune, je ne sais pas si vous arrivez \u00e0 voir en bas, oui, normalement vous arrivez \u00e0 voir en bas le titre, donc Donato Cretti, Observations astronomiques de la Lune, \u00e7a c'est de \u00e0 peu pr\u00e8s 1711, donc 18e si\u00e8cle, et que la reproduction, l'\u0153uvre est quand m\u00eame, oserais-je dire, assez r\u00e9aliste. On voit bien le crat\u00e8re Copernicus, il y a vraiment une envie et une ambition de repr\u00e9senter le r\u00e9el qui est assez r\u00e9ussi. Et puis vous avez une petite fen\u00eatre avec un astronome qui observe. Donc \u00e7a c'\u00e9tait la Lune. Vous avez Mercure, dont les astronomes \u00e0 l'\u00e9poque avaient pu observer avec des lunettes depuis un si\u00e8cle, la lune de Galil\u00e9e c'est 1609, l\u00e0 on est en 1711, les phases Mercure, parce que Mercure est d'une plan\u00e8te int\u00e9rieure, et donc selon sa position, on voit des phases, tout comme V\u00e9nus. Donc l\u00e0 il repr\u00e9sente une des phases de Mercure. Alors \u00e9videmment l'\u00e9chelle est \u00e0, j'allais dire g\u00e9om\u00e9trie variable, mais en tout cas \u00e7a repr\u00e9sente fid\u00e8lement ce que les astronomes observaient \u00e0 l'\u00e9poque. Donc Mercure, V\u00e9nus, pareil, qui peut \u00eatre en tr\u00e8s fin croissant quand elle est en \u00e9longation mod\u00e9r\u00e9e mais qu'elle est proche de nous, \u00e7a c'est tout \u00e0 fait visible dans une lunette, elle est assez grande. Mars, c'est peut-\u00eatre un petit peu too much, on peut la voir dans une phase gibbeuse, d'ailleurs elle commence, en ce moment si vous observez Mars, elle s'\u00e9loigne de l'opposition donc elle commence \u00e0 avoir une ombre. Voil\u00e0, elle est repr\u00e9sent\u00e9e assez fid\u00e8lement, \u00e9videmment les lunettes de l'\u00e9poque ne permettaient pas de voir trop de d\u00e9tails mais c'est assez fid\u00e8le. Jupiter, alors cette toile moi me touche particuli\u00e8rement parce qu'elle est extr\u00eamement fid\u00e8le, on voit les bandes de nuages sur le disque Jovien, on voit m\u00eame la grande t\u00e2che rouge dans les bandes \u00e9quatoriales de nuages, on voit trois de ces satellites, donc les satellites de M\u00e9dicis, Galil\u00e9e les avait nomm\u00e9s en leur honneur, donc il y en a quatre, Io, Europe, Galim\u00e9e, Callisto, maintenant on les appelle les satellites galil\u00e9ens, m\u00eame si on a une soixantaine, effectivement quatre sont relativement bien visibles m\u00eame avec des jumelles un peu puissantes. Donc l\u00e0 c'est tr\u00e8s tr\u00e8s fid\u00e8le et il y a Saturne qui connaissait bien s\u00fbr d\u00e9j\u00e0 avec des anneaux, alors apr\u00e8s on peut se poser des questions sur la fid\u00e9lit\u00e9 de la repr\u00e9sentation des anneaux, mais en tout cas c'est assez bien fait avec \u00e0 chaque fois une petite sc\u00e8ne, puis je crois que c'est tout. Il y a une com\u00e8te aussi, donc il y a toute une s\u00e9rie qui repr\u00e9sente les ph\u00e9nom\u00e8nes c\u00e9lestes les plus importants, je crois qu'il y a le Soleil aussi, bon alors l\u00e0 on esp\u00e8re qu'ils n'ont pas trop observ\u00e9 sans filtre parce que sinon ils deviennent vite aveugles, mais je ne sais pas si on voit une tache solaire, mais en tout cas c'est \u00e9galement tr\u00e8s fid\u00e8le. Donc oui c'est tr\u00e8s inspirant, en tout cas pour moi, de repr\u00e9senter ces sc\u00e8nes un petit peu bucoliques, \u00e9ventuellement sylvestres, voire romantiques, et puis il y a une lecture terrestre et puis la lecture astronomique, elle est tr\u00e8s fid\u00e8le \u00e0 ce que les contemporains pouvaient regarder. Donc \u00e7a c'\u00e9tait donc le 18e si\u00e8cle 1711. On se rapproche de notre \u00e9poque avec la derni\u00e8re peinture que je vous propose, que vous pouvez voir dans la tr\u00e8s belle salle de l'Observatoire de Paris, donc \u00e0 Paris, dans le b\u00e2timent P\u00e9rou, dans la salle du conseil o\u00f9 j'ai la chance d'aller r\u00e9guli\u00e8rement pour des r\u00e9unions avec mes coll\u00e8gues, m\u00eame si je ne travaille pas \u00e0 l'Observatoire de Paris. Et donc c'est V\u00e9nus passant devant le char du soleil par monsieur Dupin en 1886, donc 19e si\u00e8cle. Donc on voit l'astronome en bas avec sa lunette, puis V\u00e9nus, \u00e9videmment cette belle dame alors nue, dans cette repr\u00e9sentation n\u00e9o-antique, enfin je ne sais plus comment, n\u00e9o-classique peut-\u00eatre, c'est le terme, m\u00eame si je ne suis absolument pas historien de l'art et je me d\u00e9fends de lui conna\u00eetre, peut-\u00eatre que quand j'aurai le temps. Donc qui passe devant le char du soleil qui est \u00e0 gauche et puis voil\u00e0 \u00e7a c'est tr\u00e8s baroque comme repr\u00e9sentation et puis m\u00eame antique, le char du soleil. Et effectivement il y a eu un passage de V\u00e9nus \u00e0 cette \u00e9poque-l\u00e0, je n'ai pu v\u00e9rifier la date, mais V\u00e9nus passe devant le soleil de temps en temps, relativement rarement, mais de temps en temps, et c'\u00e9tait pour repr\u00e9senter ce ph\u00e9nom\u00e8ne avec cette all\u00e9gorie que cette peinture de monsieur Dupin a \u00e9t\u00e9 faite et donc c'est vraiment au sommet de la salle du conseil de l'Observatoire de Paris. Et effectivement quand on s'ennuie en r\u00e9union c'est tr\u00e8s agr\u00e9able de regarder le plafond et puis de songer \u00e0 V\u00e9nus, au soleil, puis aux astronomes de l'\u00e9poque. Et puis je termine avec cette derni\u00e8re oeuvre qui est une photo mais qui m'a aussi beaucoup marqu\u00e9, vous reconnaissez peut-\u00eatre si vous \u00eates amateurs de photos contemporaines, en tout cas du XXe si\u00e8cle, Ansel Adams en 1941. Le titre je l'ai not\u00e9 mais je ne l'ai plus l\u00e0, c'est en gros le lever de lune au Nouveau-Mexique. Et Ansel Adams a vraiment cr\u00e9\u00e9 un courant artistique majeur avec une chambre photographique ferm\u00e9e \u00e0 11 ou 20 ou 30, pour ceux qui connaissent les objectifs photos, avec un ciel tr\u00e8s sombre, une composition \u00e9patante. Et puis il a fait des images absolument inspirantes et magnifiques et uniques du sud-ouest am\u00e9ricain notamment, donc dans les ann\u00e9es 1940. Donc cette image m'a toujours frapp\u00e9 et effectivement quand on va aux Etats-Unis dans le sud-ouest, ce sont des choses qu'on peut voir assez r\u00e9guli\u00e8rement. Les \u00e9tendues sont tellement grandes, on voit tellement loin qu'on peut voir des orages au loin ou des nuages et puis voir des objets c\u00e9lestes avec un avant-plan. Donc l\u00e0 c'est pris juste apr\u00e8s ou pendant le coucher du soleil et on voit un cimeti\u00e8re de cette petite ville du Nouveau-Mexique. Et donc voil\u00e0 tr\u00e8s inspirant, noir et blanc, de tr\u00e8s tr\u00e8s beaux tirages. Voil\u00e0 c'\u00e9tait la s\u00e9quence art de notre petite s\u00e9ance. Je vous ai rappel\u00e9 ici les \u0153uvres que je vous ai propos\u00e9es, Tapestries de Bayeux, Tri\u00e2ge de J\u00e9sus de Berry, Uranie, Observations astronomiques, donc All\u00e9gorie de V\u00e9nus passant devant le char du soleil et puis Ansel Adams des ann\u00e9es 1940. Nous allons passer \u00e0 la derni\u00e8re partie qui est donc la cosmologie avec l'expansion de l'univers. Donc nous allons attaquer un peu de physique, un peu de calcul avec notamment les petites cartes que je vous ai pr\u00e9par\u00e9es pour essayer de mieux expliquer tous ces concepts int\u00e9ressants. C'est parti ! On attaque la partie cosmologie avec un plan d\u00e9taill\u00e9 j'esp\u00e8re. Donc on va parler d'expansion de l'univers, on va rendre \u00e7a intelligible et explicite. Tout d'abord dans la partie 1 on devra s'int\u00e9resser \u00e0 la m\u00e9trique de l'espace-temps. C'est un gros mot pour expliquer juste la notion de distance dans un espace disons normal \u00e0 trois dimensions, cl\u00e9dien, puis \u00e0 quatre dimensions, puis dans un univers courbe et dans un univers en expansion. La notion de distance est tr\u00e8s importante. Ensuite on parlera du facteur d'\u00e9chelle aux observations parce qu'on introduira un petit facteur d'\u00e9chelle. Vous allez voir toute la cl\u00e9 est l\u00e0. Et donc on parlera de distance, de redshift, c'est \u00e0 dire de d\u00e9calage cosmologique vers le rouge, et puis de cette fameuse constante de Bell qu'on peut param\u00e9trer tout d'abord et puis on verra ensuite ce que \u00e7a donne. Gr\u00e2ce \u00e0 ces deux parties d'introduction on peut aboutir aux parties 3 et 4 qui parlent vraiment de cosmologie, notamment de dynamique dans un univers en expansion. La dynamique c'est ce qui mod\u00e9lise le fait que \u00e7a s'expande. On va voir la loi de Hubble le mettre. Et puis on va faire des consid\u00e9rations relativement simples d'\u00e9nergie cin\u00e9tique potentielle et totale, chose que normalement les \u00e9tudiants de Terminal et de L1 ma\u00eetrisent, l'\u00e9nergie m\u00e9canique tout simplement. L\u00e0 c'est une approche simplifi\u00e9e que je prends \u00e9videmment. Elles nous permettent d'estimer la densit\u00e9 critique de l'univers, les densit\u00e9s r\u00e9duites, les fameux param\u00e8tres om\u00e9ga mati\u00e8re, om\u00e9ga baryon, om\u00e9ga lambda pour l'\u00e9nergie sombre, etc. Et puis l'\u00e9volution du param\u00e8tre de facteur d'\u00e9chelle. Et puis \u00e0 la fin on attaque le mod\u00e8le Friedman-Robertson-Walker. Donc pareil c'\u00e9tait \u00e9crit ici Robertson-Walker parce que j'\u00e9cris pas tout, en plus j'\u00e9cris mal. Mais voil\u00e0 et donc on va regarder, alors l\u00e0 je vous balancerai les trois \u00e9quations, je ne la d\u00e9montrerai pas, mais on parlera un tout petit peu d'\u00e9quations d'\u00e9tat qui expliquent la dynamique de l'univers et en fonction de quelle composante cette dynamique est sous-tendue ou en tout cas domin\u00e9e, l'\u00e9volution de cette dynamique en fonction je crois du facteur d'\u00e9chelle, on va voir \u00e7a, et puis le r\u00f4le de la mati\u00e8re et du rayonnement dans ces \u00e9quations d'\u00e9tat et puis la dynamique totale. Donc je vous laisse ce petit plan qu'on ne peut pas avoir en entier. Vous avez parti 1, 2, 3, 4, vous pourrez y revenir si c'est un peu compliqu\u00e9 et puis on va parler donc d'expansion de l'univers. Donc voil\u00e0 c'est parti, on part pour la partie 1, je mets le plan ici et pour cette partie 1, donc la m\u00e9trique de l'espace-temps, c'est des maths pour l'instant, donc c'est tout simplement une d\u00e9finition pour commencer, je vais vous le dire \u00e0 l'oral, en plus \u00e7a se refl\u00e8te, une d\u00e9finition simple de la m\u00e9trique, c'est un espace math\u00e9matique au sein duquel on d\u00e9finit une notion de distance entre deux \u00e9l\u00e9ments. Alors \u00e7a para\u00eet b\u00eate de dire comme \u00e7a la distance, ok on le conna\u00eet, voil\u00e0 donc je suis un point A et je vais \u00e0 un point B, voil\u00e0 une distance, voil\u00e0 pourquoi on nous emb\u00eate avec un espace m\u00e9trique. Alors d\u00e9j\u00e0 l\u00e0 on est \u00e0 une dimension, le point A et le point B, on est sur une ligne, on est \u00e9ventuellement \u00e0 deux dimensions si on est sur le plan de la feuille, on peut imaginer \u00eatre \u00e0 trois dimensions, la distance entre mes deux mains c'est une distance et il faut un espace m\u00e9trique pour le d\u00e9finir, donc l\u00e0 on est \u00e0 trois dimensions. Imaginez maintenant comme mon jogging de ce matin o\u00f9 j'ai d'ailleurs couru, un petit marathon tranquillement dans les bois, voil\u00e0 j'ai fait un parcours qui ressemble de m\u00e9moire \u00e0 un truc qui ressemble \u00e0 \u00e7a, voil\u00e0. Mon point A et mon point B, le point de d\u00e9part et le point d'arriv\u00e9e sont les m\u00eames, donc est-ce que la distance que j'ai parcouru est nulle ? On peut d\u00e9cider parce que je suis parti et je reviens au m\u00eame point. Maintenant on peut d\u00e9finir aussi une distance qui est le long de mon chemin parcouru \u00e0 moi et donc il faut munir mon petit parcours d'une m\u00e9trique, alors je mets des tirets d'une mani\u00e8re assez r\u00e9guli\u00e8re m\u00eame s'il y a des c\u00f4tes etc, je vous passe les d\u00e9tails, mais pour montrer qu'en fait heureusement j'ai parcouru en l'occurrence un peu plus de 21 km alors que mon point de d\u00e9part et d'arriv\u00e9e sont les m\u00eames. Donc voil\u00e0 la notion de distance ou en tout cas de l\u00e0, elle est d\u00e9finie selon mon parcours. Donc vous voyez que m\u00eame une distance toute b\u00eate peut \u00eatre un petit peu plus rus\u00e9e que juste distance entre point A et point B. Imaginons maintenant une distance mais en temps. T1 je me l\u00e8ve le matin, T2 je me couche le soir. Je suis sur un axe du temps par exemple et je d\u00e9finis ma dur\u00e9e d'\u00e9veil. Je vais la faire simple. C'est une distance entre deux temps, une distance au point de vue math\u00e9matique. C'est une diff\u00e9rence de temps donc \u00e7a sera exprim\u00e9 en secondes alors que dans cette premi\u00e8re partie c'\u00e9tait des distances spatiales, c'est exprim\u00e9 en m\u00e8tres, en kilom\u00e8tres, en ce qu'on veut. Mais en tout cas c'\u00e9tait homog\u00e8ne \u00e0 une distance physique c'est \u00e0 dire une unit\u00e9 de longueur, l\u00e0 c'est une unit\u00e9 de temps. Mais d'un point de vue math\u00e9matique c'est la m\u00eame chose, c'est ce qui s\u00e9pare deux points dans l'espace qu'on a d\u00e9fini. Ici en bas c'est l'espace du temps, je vais faire une petite zone comme \u00e7a pour bien s\u00e9parer. Mais vous voyez qu'il faut quand m\u00eame une notion de distance, soit de temps soit d'espace. Maintenant on peut \u00eatre \u00e0 trois dimensions. Je vais reprendre l'image. La m\u00e9trique d\u00e9finit la distance toujours entre deux points mais on peut aussi d\u00e9finir la distance entre deux \u00e9v\u00e9nements. Par exemple la station de RER le matin et le bureau quand j'arrive. Si je mets RER ici et l'universit\u00e9 ici, il y a une distance disons physique mais il y a aussi un temps 1 et un temps 2. Ce sont deux \u00e9v\u00e9nements. Le premier \u00e9v\u00e9nement c'est quand je sors du RER, qui est le train. Ceux qui ne connaissent pas le RER, c'est un train. Donc l'instant o\u00f9 je sors du train et l'instant o\u00f9 j'arrive dans mon bureau \u00e0 l'universit\u00e9 Paris-Saclay dans un laboratoire qui s'appelle l'IAS. On voit que ce sont deux \u00e9v\u00e9nements parce qu'il y a une position, on peut dire x, y, z, si on est en cart\u00e9sien, et puis un temps t1. L\u00e0 j'ai une position x2, y2, z2. Mes notations ne sont pas hyper logiques mais enfin c'est pas grave. C'est un autre \u00e9v\u00e9nement et on peut d\u00e9finir une distance d'espace-temps entre ces deux \u00e9v\u00e9nements, m\u00eame si l\u00e0 ce n'est plus une distance physique, ce n'est plus un temps non plus, c'est un m\u00e9lange des deux parce qu'il y a quatre coordonn\u00e9es. Premi\u00e8re coordonn\u00e9e, deuxi\u00e8me coordonn\u00e9e, troisi\u00e8me coordonn\u00e9e, quatri\u00e8me coordonn\u00e9e. Pour d\u00e9finir tout \u00e7a il faut un espace m\u00e9trique qui nous d\u00e9finit une notion de distance entre les \u00e9v\u00e9nements. C'est le d\u00e9but. Alors maintenant si je reprends mon plan, il faut une m\u00e9trique, on va l'appliquer \u00e0 la cosmologie, on veut savoir ce que c'est que la m\u00e9trique de l'espace euclidien. L'espace euclidien c'est l'espace \u00e0 trois dimensions habituelles. On dit que la distance infinit\u00e9simale, c'est le tout petit \u00e9l\u00e9ment de distance tr\u00e8s court, on peut l'appeler d sigma carr\u00e9, c'est sigma la distance infinit\u00e9simale mais on la met au carr\u00e9, c'est plus simple. On dit que c'est dx2 plus dy2 plus dz2. C'est un peu comme la norme d'un vecteur, si vous connaissez les vecteurs, c'est la somme quadratique. Donc le petit \u00e9l\u00e9ment de distance entre deux points de l'espace \u00e0 trois dimensions ici euclidien, c'est tout simplement la somme des dx, dy et dz. Le d sigma 2, c'est donc un nombre qui est la somme quadratique des trois autres. On peut avoir cette expression dans d'autres syst\u00e8mes de coordonn\u00e9es, coordonn\u00e9es sph\u00e9riques etc mais je ne vais pas me lancer l\u00e0 pour rester aussi simple que possible. L\u00e0 j'essaie de me concentrer sur les id\u00e9es principales. On en est dans l'espace m\u00e9trique, dans l'espace euclidien. On peut s'amuser \u00e0 aller dans l'espace-temps euclidien. C'est maintenant m\u00e9trique de l'espace-temps euclidien. On rajoute le temps. On peut simplifier. L\u00e0 on est disons en physique classique. Vous reconnaissez peut-\u00eatre notre s\u0153ur Isaac Newton. Je me suis donn\u00e9 pour faire des petits cadres. L\u00e0 on est en physique classique. On est dans un univers statique, c'est \u00e0 dire qu'on est dans un univers quotidien. C'est cool \u00e7a, \u00e7a tient sur le c\u00f4t\u00e9. Univers statique. J'ai mis des petites fleurs et puis un r\u00e9seau stable. Un r\u00e9seau \u00e0 deux dimensions mais on peut le propager \u00e0 trois dimensions. L\u00e0 tout marche bien, on a l'habitude. On n'a pas encore besoin de l'hypoth\u00e8se d'homog\u00e9n\u00e9it\u00e9 et d'isotropie de l'univers mais \u00e7a ne va pas tarder. Je la mets hors champ mais on va la sortir dans pas longtemps. On continue, on rajoute le temps. L\u00e0 vous voyez qu'on a affaire \u00e0 des \u00e9v\u00e9nements. On a trois coordonn\u00e9es d'espace et une dimension de temps. On appelle \u00e7a parfois un quadrivecteur. Je ne vais pas vous sortir des gros mots. La distance entre deux points de l'espace-temps, c'est la distance entre deux \u00e9v\u00e9nements. On l'appelle ds\u00b2. On est oblig\u00e9 de passer en relativit\u00e9 restreinte. M. Newton peut aller se rhabiller un instant. C'est c\u00b2dt\u00b2, le temps qui s\u00e9pare les deux \u00e9v\u00e9nements, moins ds\u00b2. Je vais mettre le d\u00b2 en noir dans son petit nuage. C'est le d\u00b2 qui est ici. On a une partie que je vais mettre en rouge, temporelle. Et ici une partie spatiale. Et voil\u00e0 comment d\u00e9finir un \u00e9v\u00e9nement en relativit\u00e9 restreinte. Ce concept est \u00e9minemment relativiste. Il n'est pas en physique classique, m\u00eame si la notion d'\u00e9v\u00e9nement est pr\u00e9sente en physique classique. Mais le temps s'\u00e9coute de la m\u00eame mani\u00e8re. On passe d\u00e9j\u00e0 en physique un peu rigolote, m\u00eame si on est dans un univers statique. Voil\u00e0 comment d\u00e9finir un \u00e9v\u00e9nement. C'est le module de la distance dans un espace-temps euclidien entre deux \u00e9v\u00e9nements s\u00e9par\u00e9s du micro-instant dt et s\u00e9par\u00e9s spatialement de la micro-distance ds\u00b2 et le d\u00e9cimaneux \u00e9tait ici, c'\u00e9tait la diff\u00e9rence de coordonn\u00e9es spatiales entre les deux \u00e9v\u00e9nements. Voyez, on met progressivement les choses en place. On parle d'une m\u00e9trique qui nous permet de d\u00e9finir des distances \u00e0 4 dimensions en m\u00ealant le temps et l'espace. Vous voyez d'ailleurs qu'il y a des signes, ce n'est pas que positif. Donc en fait, vous voyez que \u00e7a se compense, il se passe des choses assez rigolotes. Alors \u00e7a c'\u00e9tait l'espace statique, tranquille, 4 dimensions, tout va bien. Maintenant on va s'amuser \u00e0... parce que \u00e7a ne veut rien dire, \u00e7a deviendrait trop compliqu\u00e9. On va s'amuser \u00e0 regarder des choses un peu plus compliqu\u00e9es, mais on va imposer que l'univers est homog\u00e8ne et isotrope. Alors c'est quoi homog\u00e8ne et isotrope ? Je vais essayer de le mettre... Ecoutez, il est statique l\u00e0, \u00e7a tient comme \u00e7a. Il est homog\u00e8ne et isotrope. Ecoutez, vous vous rappelez qu'il est l\u00e0, je vais le mettre comme \u00e7a. Homog\u00e8ne, \u00e7a veut dire, en tout cas en cosmologie, \u00e7a veut dire invariant par translation. Translation, vous savez, c'est se d\u00e9placer avec un vecteur. Donc \u00e7a veut dire que votre univers est le m\u00eame partout si vous vous d\u00e9placez dans un certain vecteur. Par exemple un mur de briques est homog\u00e8ne si vous vous d\u00e9placez dans le mur de briques. Et isotrope, c'est invariant par rotation. Donc un oignon, si vous \u00eates au centre, est invariant par rotation, en supposant qu'il est \u00e9videmment tout sph\u00e9rique, ou une \u00e9toile, etc. Donc on suppose, parce que sinon on ne s'en sort pas simplement en cinq minutes, que l'univers est homog\u00e8ne et isotrope, m\u00eame si on sait qu'\u00e0 certaines \u00e9chelles ce n'est pas exactement le cas. Donc avec ces hypoth\u00e8ses, on en est au D, si je ne me suis pas tromp\u00e9. Voil\u00e0, c'est \u00e7a. On en est au D et c'est m\u00e9trique de l'espace courbe. Donc il faut cette hypoth\u00e8se d'homog\u00e9n\u00e9it\u00e9 et d'isotropie. Et alors l\u00e0, on a quelque chose d'un petit peu plus souxe. Qu'est-ce que je vais vous dire ? Parce que j'ai mes notes que j'avais \u00e9crites il y a quelques ann\u00e9es. Alors l\u00e0 je vous balance, je vous sors du chapeau, parce que sinon je n'ai pas y arriv\u00e9, en un temps relativement court. On d\u00e9finit, comme tout \u00e0 l'heure, une distance entre deux \u00e9v\u00e9nements. Mais ici on est dans un espace qui n'est plus Euclidien, c'est-\u00e0-dire qu'il peut avoir de la courbure, des acc\u00e9l\u00e9rations des masses, etc. On va voir \u00e7a juste apr\u00e8s. Donc il y a une partie temporelle qui ressemble, mais c'est l\u00e0 o\u00f9 \u00e7a devient assez magique. Je vais le mettre en noir. Il y a un terme qui arrive. D\u00e9sigma 2. Alors, de quoi s'agit-il ? On fait aussi l'hypoth\u00e8se, que je n'ai pas \u00e9voqu\u00e9e, que les variables sont s\u00e9par\u00e9es entre le temps et l'espace. Je vous l'avais fait vite, donc il y a plein de concepts un petit peu cach\u00e9s. Mon parti pris, c'\u00e9tait de vous expliquer juste l'essence de toute cette d\u00e9marche. Donc \u00e9videmment, s'il y a des sp\u00e9cialistes, j'esp\u00e8re que vous ne vous \u00e9tranglez pas. Ou si c'est le cas, vous pouvez me le dire. Donc voil\u00e0, la distance entre deux \u00e9v\u00e9nements dans un espace courbe, donc en relativit\u00e9 restreinte, toujours dans un univers statique, est homog\u00e8ne et isotrope. Il y a une partie temporelle, comme tout \u00e0 l'heure, que j'avais mise en rouge. Je mets temps. Une partie spatiale, donc je mets espace, qui est la m\u00eame, le dsigma\u00b2, c'est le m\u00eame que tout \u00e0 l'heure dans la partie euclidienne. Mais regardez ce qu'il y a. Il y a un a de t qui d\u00e9pend du temps. C'est-\u00e0-dire que le a de t, il va vous dire, j'ai le droit de faire gonfler, c'est un facteur multiplicatif, j'ai le droit d'appliquer une multiplication pour que la partie spatiale augmente ou diminue. \u00c7a, on verra apr\u00e8s de quoi il s'agit. Et ce a de t, parfois on l'appelle R de t dans certains bouquins, c'est le facteur d'\u00e9chelle. Et si vous arrivez \u00e0 intuiter, m\u00eame si vous ne comprenez pas forc\u00e9ment tout ce qui est l\u00e0, que les distances dans l'univers \u00e0 quatre dimensions, avec des hypoth\u00e8ses simples, ont une partie temporelle qui vit sa vie, une partie spatiale qui vit sa vie, mais qui a un facteur multiplicatif qui d\u00e9pend du temps o\u00f9 on est, de l'\u00e9poque cosmique, et donc qui est un facteur multiplicatif, qui peut devenir grand. Genre, s'il est grand, il y a l'expansion. Vous avez \u00e0 peu pr\u00e8s tout compris, on va le voir \u00e7a dans un instant. L'expansion de l'univers, j'anticipe sur la suite bien s\u00fbr, c'est en fait l'impact de ce facteur qui est ici, toujours en faisant l'hypoth\u00e8se d'une s\u00e9paration des variables. Une autre... j'anticipe sur le E, c'\u00e9tait le E \u00e7a, le petit facteur d'\u00e9chelle. On voit aussi que ces \u00e9quations sont locales. Et \u00e7a c'est super important. Locales \u00e7a veut dire quoi ? \u00c7a veut dire que ce sont des diff\u00e9rences entre deux \u00e9v\u00e9nements qui sont \u00e0 une \u00e9chelle... Alors l\u00e0 c'est infinit\u00e9 simile, donc c'est cens\u00e9 \u00eatre petit, mais on voit que \u00e7a ne concerne pas tout l'univers dans son ensemble. Donc souvent les gens pensent, \u00e0 juste titre, oui mais l'expansion de l'univers c'est dans quoi ? Regardez cette \u00e9quation. Cette \u00e9quation, elle ne dit rien d'autre que je prends deux \u00e9v\u00e9nements, et je vois que si j'attends longtemps, dans l'hypoth\u00e8se d'une expansion, j'anticipe, et bien cette distance entre les deux \u00e9v\u00e9nements, cette distance spatio-temporelle, va augmenter. Elle ne dit rien sur l'ext\u00e9rieur de l'univers, l'int\u00e9rieur, etc. Elle est locale, et elle dit juste \u00e7a, que la m\u00e9trique s'\u00e9tend. Juste \u00e7a. \u00c7a c'est tr\u00e8s important. Parce que nous les humains, c'est normal, on essaie d'interpr\u00e9ter cette notion d'expansion. L'expansion, elle nous dit juste, b\u00eatement entre guillemets, regardez, c'est un facteur multiplicatif tout simple. Et \u00e7a marche. C'est \u00e7a qui est assez fascinant. Parce que \u00e7a ne marcherait pas, on ne serait pas l\u00e0 pour en parler. J'esp\u00e8re que \u00e7a vous a clarifi\u00e9 les choses, m\u00eame si c'\u00e9tait un peu formel, c'est que le d\u00e9but, de ce c\u00f4t\u00e9 expansion et facteur d'\u00e9chelle. Dans un univers, on \u00e9tait plus statique, on passait un peu en expansion, j'ai mis des fl\u00e8ches, des paf, crac, boum, i, etc. Donc on arrive dans un peu le dur. On peut m\u00eame commencer \u00e0 avoir une petite transition vers la relativit\u00e9 g\u00e9n\u00e9rale, mais on n'y est pas encore formellement. On va passer \u00e0 la partie 2, qui est du facteur d'\u00e9chelle, dont on vient de parler, aux observations. Voil\u00e0, deuxi\u00e8me partie. Le parti pris que j'ai pris ici, c'est d'\u00eatre tr\u00e8s simple, de ne pas tout d\u00e9montrer, et d'avoir un lien avec les observations. On pourrait avoir une partie de ce cours de mani\u00e8re tout \u00e0 fait th\u00e9orique, \u00e0 partir de la relativit\u00e9 g\u00e9n\u00e9rale, etc. J'ai des coll\u00e8gues qui le font tr\u00e8s bien, et \u00e7a serait plus pr\u00e9cis, plus rigoureux, mais j'ai pris un parti un peu plus simple. J'ai oubli\u00e9 de vous dire dans la fois d'avant que l'on peut appeler \u00e7a... L\u00e0 je vous ai mis une forme tr\u00e8s g\u00e9n\u00e9rale, mais quand \u00e7a prend une forme particuli\u00e8re, que je ne vais pas vous \u00e9crire l\u00e0, parce qu'il y a des fonctions qui sont tr\u00e8s int\u00e9ressantes, c'est que l'on peut appeler \u00e7a la forme de la r\u00e9solution. L\u00e0 je vous ai mis une forme tr\u00e8s g\u00e9n\u00e9rale, mais quand \u00e7a prend une forme particuli\u00e8re, que je ne vais pas vous \u00e9crire l\u00e0, parce qu'il y a des fonctions math\u00e9matiques un peu partout, on a la m\u00e9trique qu'on va utiliser, qui s'appelle la m\u00e9trique de Robertson-Walker. Rw comme petit nom. La m\u00e9trique de Robertson-Walker, parce que ces deux personnes ont ind\u00e9pendamment trouv\u00e9 cette m\u00e9trique, qu'elle correspondait bien aux probl\u00e8mes pos\u00e9s d'un univers en expansion. Et donc quand on parlera de m\u00e9trique Robertson-Walker, on s'int\u00e9resserait \u00e0 une m\u00e9trique de l'espace courbe avec une forme particuli\u00e8re, que je ne vais pas d\u00e9tailler l\u00e0. Et puis j'en profite parce que je relis les notes. Nous en cosmologie, on sera int\u00e9ress\u00e9 \u00e0 des \u00e9v\u00e9nements qui sont non-simultan\u00e9s dans le temps, dans l'espace. Enfin surtout dans le temps. Par exemple quand on regarde une galaxie lointaine, on voit la lumi\u00e8re qui s'est propag\u00e9e depuis longtemps, donc en fait on voit une galaxie qui est non seulement loin de nous d'un point de vue distance, mais aussi en temps, parce qu'on la voit telle qu'elle \u00e9tait dans le pass\u00e9. Donc en cosmologie, on sera surtout int\u00e9ress\u00e9 \u00e0 des \u00e9v\u00e9nements non-simultan\u00e9s. Donc loin et dans le pass\u00e9, pour ce qu'on observe, des galaxies, le fond cosmologique, que sais-je, et puis nous on est l\u00e0 aujourd'hui. Donc c'est pour \u00e7a que le temps est imbriqu\u00e9 \u00e0 l'espace, en tout cas pour la m\u00e9trique. C'est pour \u00e7a que c'est important et que \u00e7a joue. Il y a deux termes, il y a un terme de temps et un terme d'espace, c'est important. Il n'y a pas un qui domine sur l'autre. Alors, distance propre, qu'est-ce que j'ai mis comme distance propre ? La distance propre, c'est la distance spatiale qui s\u00e9pare deux \u00e9v\u00e9nements simultan\u00e9s. Donc vous faites l'hypoth\u00e8se qu'ils se produisent au m\u00eame moment, puis vous prenez la distance. Donc en fait, \u00e7a annule la partie temporelle. Bon, on ne va pas l'utiliser, mais c'est pour fixer les id\u00e9es, parce qu'en fait, on pense souvent \u00e0 \u00e7a. On a ce qu'on appelle aussi la distance commobile. Commobile, \u00e7a veut dire qui bouge avec quelque chose qui bouge, en l'occurrence peut-\u00eatre l'expansion de l'univers. Alors, j'aurais d\u00fb vous retrouver un dessin, je vais le faire, je vais retrouver le dessin, puis je vais vous le mettre. Mais on va faire un petit peu de d\u00e9monstration. Je vais vous le mettre, mais je vais vous le faire ici en direct. Si je me mets un temps qui s'appelle T1, je vais mettre \u00e0 deux dimensions, sinon je ne vais pas y arriver. Enfin, je pourrais, mais \u00e7a serait illisible. Je vais mettre une galaxie A et une galaxie B. Pourquoi je parle de galaxie ? Parce que vous voyez que cette m\u00e9trique-l\u00e0, peut-\u00eatre que je vais l'appeler l'\u00e9quation 1, cette m\u00e9trique, elle concerne vraiment l'espace-temps de l'univers, en fait \u00e0 grande \u00e9chelle. \u00c7a ne nous concerne pas, nous, humains ou terriens. Je ne vais pas avoir mon ventre qui gonfle \u00e0 cause de ce facteur d'\u00e9chelle. Si mon ventre gonfle, c'est plut\u00f4t parce que j'aurais pris trop de pains au chocolat ou de croissant le matin au petit-d\u00e9j, mais pas par l'expansion de l'univers. Donc il y a d'autres forces physiques qui dominent. La gravit\u00e9, les forces \u00e9lectromagn\u00e9tiques, les forces nucl\u00e9aires fortes et faibles, donc l\u00e0, il n'y a pas de soucis. L'expansion ici, le facteur d'\u00e9chelle, joue tr\u00e8s tr\u00e8s peu. Pareil, la distance Terre-Lune n'est absolument pas affect\u00e9e par cette expansion de l'univers. Il se trouve que la distance Terre-Lune augmente un petit peu, mais c'est d\u00fb aux effets de mar\u00e9e, aux conditions \u00e9nerg\u00e9tiques, etc. Pareil, dans une galaxie, ou m\u00eame dans un amas de galaxies, l'expansion de l'univers joue tr\u00e8s tr\u00e8s peu. Par contre, c'est vraiment entre galaxies tr\u00e8s lointaines qui n'ont pas de causalit\u00e9 ou de force entre elles, l\u00e0, cet aspect d'espace-temps va jouer dans les \u00e9v\u00e9nements. On pourrait d\u00e9tailler un peu plus. Donc l\u00e0, je consid\u00e8re deux galaxies tr\u00e8s lointaines, qui sont d\u00e9j\u00e0 tr\u00e8s lointaines, et qui s'attirent tr\u00e8s tr\u00e8s tr\u00e8s peu, par rapport \u00e0, je ne sais pas, si il y a une galaxie C ici, les deux B et C s'attireront, il n'y a aucun souci. Elles s'attireront, et un peu comme la Voie lact\u00e9e avec la galaxie d'Androm\u00e8de, \u00e7a s'attire, et ce n'est absolument pas contradictoire avec l'expansion de l'univers. Ce qui est un peu compliqu\u00e9 en physique, c'est qu'il y a des domaines d'application. Donc, voil\u00e0, un univers en expansion. Donc, AT1, je suis comme \u00e7a, mais imaginons qu'AT2, je sois... Alors, je fais un autre dessin. Mon espace-temps se soit dilat\u00e9. Donc A sera l\u00e0, et B sera l\u00e0, et puis C sera peut-\u00eatre plus rapproch\u00e9, parce qu'entre-temps, il aurait \u00e9t\u00e9 attir\u00e9 par la gravit\u00e9. Mais on voit que la distance entre les deux a augment\u00e9, m\u00eame si eux, ils n'ont rien fait. A est rest\u00e9 tranquille dans sa coordonn\u00e9e. C'est juste le syst\u00e8me de coordonn\u00e9es, donc la m\u00e9trique, donc l'espace-temps, qui s'est dilat\u00e9. Donc, ils n'ont rien demand\u00e9, mais en ce moment, ils ont fait un petit d\u00e9tail. C'est juste le syst\u00e8me de coordonn\u00e9es qui s'est dilat\u00e9. Donc, ils n'ont rien demand\u00e9, mais entre A et B, la distance a augment\u00e9. Et donc, on fait intervenir la distance co-mobile. Il faut d'abord choisir une r\u00e9f\u00e9rence temporelle. On dit que c'est T \u00e9gale aujourd'hui. On appelle \u00e7a T0. Donc, on dit, aujourd'hui, par exemple, les coordonn\u00e9es de A et B sont celles-ci. Et puis, on d\u00e9finit un syst\u00e8me qui, finalement, est attach\u00e9 aux coordonn\u00e9es de l'espace-temps, ce qui nous \u00e9vite de prendre en compte l'expansion de l'univers. Je vais vous d\u00e9tailler \u00e7a. Je vais calculer la distance entre A et B. Je consid\u00e8re qu'il y a une distance r1 entre les deux, et puis que A \u00e9met un photon vers B. Je dis que la distance d1, on va dire que c'est aujourd'hui, m\u00eame si je l'ai appel\u00e9 0, que c'est le facteur d'\u00e9chelle correspondant au temps d'aujourd'hui, fois la distance r1, je vais la dessiner avec la t\u00eate en noir. La distance d1, c'est r1 fois le facteur d'\u00e9chelle d'aujourd'hui, qui vaut, par exemple, 1. Vu qu'on est aujourd'hui, il n'y a pas de souci. Par contre, si je regarde \u00e0 un autre instant, l'instant T2, j'aurais la distance d2, qui serait le facteur d'\u00e9chelle \u00e0 un instant ult\u00e9rieur, mais toujours r1, puisque c'est un facteur multiplicatif. Le r1 restera le m\u00eame, mais ce qu'il y a entre les deux, c'est le taux d'expansion, qui est le facteur A. On pr\u00e9f\u00e8re exprimer les distances entre objets dans l'univers D de T, comme \u00e9tant le facteur d'\u00e9chelle \u00e0 l'instant T, fois la distance aujourd'hui, divis\u00e9 par le facteur d'\u00e9chelle aujourd'hui. Donc \u00e7a, c'est la distance \u00e0 un instant T quelconque. Et puis, je vais le mettre en rouge, \u00e7a c'est D aujourd'hui. \u00c7a c'est le facteur d'\u00e9chelle aujourd'hui. \u00c9tant pris comme z\u00e9ro. Et donc, c'est beaucoup plus pratique de parler de distances comobiles, qui ne prennent pas en compte ce c\u00f4t\u00e9 expansion de l'univers, qui est quand m\u00eame plus g\u00eanant. J'esp\u00e8re que je suis clair, parce que... Je relis mes choses. On aurait pareil avec les volumes, on met au cube. Tout peut se d\u00e9duire gr\u00e2ce au facteur d'\u00e9chelle dont on avait parl\u00e9 tout \u00e0 l'heure. On est muni de ces distances comobiles. On va passer au redshift. Il para\u00eet qu'il y a le d\u00e9calage cosmologique vers le rouge, d\u00fb \u00e0 l'expansion de l'univers, vu que c'est rouge. Je simplifie. Il y a plusieurs d\u00e9finitions. Je vous la fais courte, on pourrait lier \u00e7a de mani\u00e8re beaucoup plus fondamentale avec la th\u00e9orie, etc. La restreinte c'est jouable, mais on est dans un univers en expansion, toujours, et toujours homog\u00e8ne, on est toujours bon avec nos petites cartes. Il y a plusieurs d\u00e9finitions. La premi\u00e8re, qui est vraiment observationnelle, le redshift, on l'appelle commun\u00e9ment z, petit z. Petit z, parce que grand z c'est la m\u00e9tallicit\u00e9. Je le note. Petit z, c'est \u00e9gal parfois \u00e0 la longueur d'onde re\u00e7ue au sol, sur Terre, par par exemple une galaxie tr\u00e8s lointaine qui s'\u00e9loigne, par rapport \u00e0 elle, la longueur d'onde qu'elle a \u00e9mise. Parce que les deux longueurs d'ondes ne sont pas les m\u00eames \u00e0 cause de ce fameux facteur d'expansion. Ce n'est pas vraiment celle-l\u00e0 qu'on va utiliser, mais on peut montrer, je vous le sors du chapeau, que 1 plus z c'est \u00e9gal au facteur d'\u00e9chelle aujourd'hui, sur le facteur d'\u00e9chelle \u00e0 l'instant t correspondant au redshift consid\u00e9r\u00e9. Parce que le redshift c'est dans le pass\u00e9. Aujourd'hui on est aujourd'hui, et puis l'univers pass\u00e9, il est pass\u00e9. C'est \u00e7a qui va \u00eatre int\u00e9ressant de garder en m\u00e9moire, c'est que 1 plus le redshift, qui est une quantit\u00e9 mesurable, c'est le rapport des facteurs d'\u00e9chelle. On voit que le redshift est sans dimension, et on voit que le redshift int\u00e8gre la notion de facteur d'\u00e9chelle, donc il est directement li\u00e9 \u00e0 l'\u00e9poque cosmique et au taux d'expansion de l'univers. Alors on peut voir que... Je m'en remets un peu, mais c'est pas grave. On peut montrer, on va faire plus simple, que finalement A2t est croissante. Avec le temps. Si A2t est croissante, \u00e7a veut dire que l'univers est en expansion. Super important. Donc le facteur d'\u00e9chelle, il augmente. A2t augmente. Et pour revenir \u00e0 l'\u00e9quation 1 de tout \u00e0 l'heure, le A2t c'est juste le facteur que l'on applique devant la partie spatiale de la m\u00e9trique, de la distance entre deux \u00e9v\u00e9nements. Rien de plus. C'est hyper profond \u00e9videmment, mais il n'y a pas de notion d'ext\u00e9rieur, d'univers. Je parle juste de distance et d'\u00e9v\u00e9nements. Et donc \u00e7a c'est assez lumineux j'esp\u00e8re. Et donc on va pouvoir parler du param\u00e8tre de Hubble, qui a aussi une d\u00e9finition. Je vous balance pour pouvoir d\u00e9montrer des choses. Mais on peut dire que le param\u00e8tre de Hubble c'est A0.0 sur A0. Alors si vous n'\u00eates pas trop fort en maths, c'est pas grave, vous n'\u00eates pas oblig\u00e9 de comprendre cette partie l\u00e0. Mais en gros A0.0 c'est la d\u00e9riv\u00e9e temporelle de A sur la d\u00e9riv\u00e9e de A. Donc on peut r\u00e9\u00e9crire ici 1 sur A0. A0 c'est le param\u00e8tre de Hubble, 0 c'est aujourd'hui. Mais la constante de Hubble, qui n'est pas une constante, est d\u00e9finie \u00e0 n'importe quel instant. Si je mettais un t ici, je serais en train de mettre un t aux autres. Donc A0 c'est aujourd'hui. Donc 1 sur A0, D de A0 sur Dt. Si vous connaissez l'expression de la d\u00e9riv\u00e9e temporelle de A, c'est comme \u00e7a que \u00e7a s'\u00e9crit. Voil\u00e0 la d\u00e9finition du param\u00e8tre de Hubble. On voit que la constante de Hubble est directement reli\u00e9e \u00e0 la vitesse d'expansion renormalis\u00e9e par le facteur d'\u00e9chelle aujourd'hui. On peut se convaincre que \u00e7a c'est homog\u00e8ne \u00e0 un temps moins 1. Parce que la d\u00e9riv\u00e9e temporelle, il y a 1 sur t qui arrive. Donc c'est homog\u00e8ne \u00e0 1 sur temps moins 1. Et on l'exprime en g\u00e9n\u00e9ral en astrophysique, non pas en secondes moins 1, encore moins verte, mais en kilom\u00e8tres par seconde par m\u00e9gaparsec. Donc c'est bien 1 temps moins 1 ici. Mais \u00e7a c'est pour des raisons pratiques, parce que les mesures sont plus pratiques dans cette unit\u00e9-l\u00e0. J'esp\u00e8re que pour ces deux premi\u00e8res parties, vous avez tous les \u00e9l\u00e9ments. Je remets le petit plan qui me sert de guide aussi. On a parl\u00e9 de ma\u00eetrise de l'espace-temps, qui est un concept math\u00e9matique, mais vous voyez \u00e0 quoi \u00e7a sert, parce qu'on a introduit le facteur d'\u00e9chelle. Et puis ce facteur d'\u00e9chelle nous permet de parler de distance propre et commobile, bon l\u00e0 j'esp\u00e8re que je ne vous ai pas trop embrouill\u00e9, mais surtout de d\u00e9calage vers le rouge, et puis de param\u00e8tres de Hubble et de lien avec le A de t, dont on voit qu'il y a une fonction croissante avec le temps. On a tous les \u00e9l\u00e9ments en main pour pouvoir parler maintenant de dynamique de l'univers et puis du mod\u00e8le Friedman-Robertson-Walker, qui m\u00e9lange la partie Robinson-Walker de la m\u00e9trique avec la partie physique de la relation des \u00e9quations de Friedman, qui est une solution des \u00e9quations d'Einstein, qui permet de rendre compte de la dynamique physique de l'expansion de l'univers. Partie 3 Indigestion Alors vous savez quoi, je me rends compte que \u00e7a prend pas mal de temps, ce qui est chouette, mais j'ai peur que vous soyez un petit peu... non pas sous l'eau, mais qu'il y ait une petite indigestion, donc je propose de parler de la partie 3 et 4 la semaine prochaine. Je vais l'enregistrer, mais j'ai peur que \u00e7a fasse trop pour une seule s\u00e9ance. Je vais r\u00e9sumer ce qu'on a vu aujourd'hui. D\u00e9sol\u00e9, j'improvise un peu, je vous le disais, c'est les conditions du direct. Pour parler d'expansion de l'univers, on a parl\u00e9 de m\u00e9trique et de facteur d'\u00e9chelle, pour arriver jusqu'au param\u00e8tre de Hubble. J'esp\u00e8re que \u00e7a sera \u00e0 peu pr\u00e8s clair, avec une \u00e9quation m\u00e8tre qui est la fameuse \u00e9quation 1, que j'aime bien remettre, qui est la distance s\u00e9parant deux \u00e9v\u00e9nements, distance au sens large, parce que \u00e7a m\u00e9lange le temps et l'espace, mais avec ce facteur d'\u00e9chelle qui est donc tr\u00e8s important, qui maintenant utilise la notion d'univers en expansion, de relativit\u00e9 restreinte pour l'instant, donc la physique classique, on la met dessous, et on a fait l'hypoth\u00e8se d'un univers homog\u00e8ne et isotrope. Et puis les cartes que je garde pour la prochaine fois, c'est cartes relativit\u00e9 g\u00e9n\u00e9rale et univers statique. Il nous restera \u00e0 sortir la carte majeure, qui est relat G, mais on garde \u00e7a pour la semaine prochaine. J'esp\u00e8re que \u00e7a n'a pas \u00e9t\u00e9 trop difficile. Je me suis bien amus\u00e9, m\u00eame si je red\u00e9couvrais certaines de mes notes. J'ai mon excuse, mais c'est la vie. Avant la bonne continuation, on va parler des livres. Allons-y pour la s\u00e9quence livre. Pour la s\u00e9quence livre, il y a des r\u00e9f\u00e9rences que j'aime beaucoup. Je vais vous pr\u00e9senter les principales qui servent \u00e0 faire ce que j'ai \u00e9voqu\u00e9 \u00e0 l'instant. La Bible de la cosmologie de Jim Peebles, dont je vous rappelle qu'il a pris Nobel de physique l'ann\u00e9e derni\u00e8re, 2019. Principles of Physical Cosmology, chez Princeton. Il y a un peu tout l\u00e0-dedans. J'ai toutes mes notes, etc. C'est niveau avanc\u00e9, fin de licence. Il y a un livre d'introduction que j'aime beaucoup, le R\u00e9unement cosmologique, de Marc Lachaiseret. J'ai une \u00e9dition un peu ancienne, mais je pense que ce livre a \u00e9t\u00e9 r\u00e9\u00e9dit\u00e9. J'ai tout un tas de marque-pages, parce qu'il y a plein de choses sympathiques. Le livre que je pourrais conseiller \u00e0 tous les \u00e9tudiants, \u00e9ventuellement lyc\u00e9ens, mais en tout cas \u00e9tudiants, qui sont int\u00e9ress\u00e9s par la astrophysique, c'est Astrophysical Concepts de Martin Harwit, avec Grande Classe. Vous ne le voyez peut-\u00eatre pas, mais j'ai la d\u00e9dicace de mon ami Martin Harwit, qui est un tr\u00e8s grand scientifique, qui est quelqu'un absolument d'\u00e9patante, extraordinaire, d'une humilit\u00e9. Mes rencontres avec lui me restent grav\u00e9es dans ma petite m\u00e9moire. Il y a aussi plein de notes. L'avantage de Astrophysical Concepts, \u00e7a ne parle pas que de cosmologie, \u00e7a parle vraiment de physique simple, de tout l'univers, donc des \u00e9toiles, des plan\u00e8tes, etc. Il parle m\u00eame, je crois, d'exobiologie. Est-ce que c'est dans cette \u00e9dition ? Life in the Universe, oui c'est \u00e7a. Il parle de la thermodynamique. C'est en anglais, je ne pense pas que c'\u00e9tait traduible, mais bon, je pense qu'on peut y arriver. Et donc, il parle de cosmologie, de gaz, d'\u00e9toiles, de comment tout se forme. C'est vraiment une r\u00e9f\u00e9rence absolument incontournable pour ceux qui veulent comprendre un peu la physique de l'univers. Donc l\u00e0, j'ai volontairement un petit peu mont\u00e9 le niveau pour une conf\u00e9rence de grand public, puisque finalement, cette derni\u00e8re partie n'\u00e9tait pas de tr\u00e8s grand public, mais elle \u00e9tait \u00e0 destination en particulier de mes \u00e9tudiants de l1, que j'ai crois\u00e9s r\u00e9cemment et pour lesquels je n'ai pas pu finir tous mes cours. Donc voil\u00e0, c'est un peu d\u00e9di\u00e9 \u00e0 eux. J'esp\u00e8re que \u00e7a leur plaira. Et puis rendez-vous \u00e0 la semaine prochaine pour parler de la fin de cette belle s\u00e9ance de cosmologie, partie 3 et 4, et puis du JWST, parce que je vais vous parler quand m\u00eame de ce qui m'a occup\u00e9, moi et de nombreux autres coll\u00e8gues astrophysiciens de par le monde ces derniers temps. Donc le t\u00e9lescope spatial JWST de la NASA, de l'Agence spatiale europ\u00e9enne et de l'Agence canadienne. Portez-vous bien, bonne continuation, et \u00e0 mercredi prochain pour une autre conf\u00e9rence confin\u00e9e, m\u00eame si le confinement commence \u00e0 \u00eatre un petit peu plus flou, mais \u00e9coutez, c'est pas grave. J'ai envie de continuer, donc \u00e7a ne durera peut-\u00eatre pas \u00e9ternellement, mais profitons-en. Bonne apr\u00e8s-midi et bonne continuation. Ciao, ciao."
+}

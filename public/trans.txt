@@ -1,0 +1,891 @@
+00:00
+Bonjour, on attaque aujourd'hui la deuxième partie du cours d'apprentissage pour la recherche d'information.
+00:07
+Je vais rapidement commencer par un rêve récapitulatif des notions introduites la dernière fois.
+00:14
+La dernière fois, j'ai présenté un nouveau paradigme pour la recherche d'information qui est un paradigme basé sur de l'apprentissage qui s'appelle « Learning to Rank » où on a un jeu de données d'apprentissage qui est composé principalement de paires requêtes, documents, décrits caractérisés avec un vecteur caractéristique qu'il faut construire et puis des données de sortie, des labels qui sont des valeurs de pertinence.
+00:49
+A partir de ces données d'apprentissage, on apprend une fonction qui va être une fonction d'ordonnancement ou un critère et puis cette fonction d'ordonnancement apprise, on l'utilise ensuite sur des données de test ou des données de production qui consistent uniquement en des données non labellisées.
+01:10
+Bien sûr, on n'a pas la vérité de terrain pour ces données.
+01:13
+Et puis sur ces données de test, on utilise la fonction F apprise pour prédire la pertinence et classer les résultats.
+01:23
+En sortie, on obtient bien toujours une liste ordonnée de documents.
+01:26
+Ce principe d'apprentissage pour l'AERI repose sur deux concepts principaux qui sont la notation des données et la représentation des couples requêtes-documents dans l'espace des caractéristiques.
+01:40
+C'est vraiment une étape très importante qu'on appelle l'étape de description.
+01:45
+Et puis la partie apprentissage en tant que telle avec une structure d'apprentissage classique en deux étapes.
+01:52
+Une étape d'apprentissage de la fonction d'ordonnancement F, puis l'étape de test de production sur de nouvelles requêtes.
+01:58
+On peut bien sûr aussi rajouter à ça une étape de validation qui, par exemple, pourrait consister à choisir les hyperparamètres du modèle.
+02:11
+La dernière fois, il avait été aussi introduit le fait qu'il existait trois grandes familles d'approches dans ce paradigm learning to rank.
+02:21
+L'approche par points, dont on a parlé la dernière fois, où les documents sont considérés de manière indépendante.
+02:28
+L'approche par paire, dont on va parler aujourd'hui.
+02:33
+Et l'approche par liste, qui va être aussi rapidement évoquée aujourd'hui.
+02:38
+L'approche par points, c'est une approche qui consiste à transformer le problème de classement en un problème soit de classification, soit de régression, soit de régression ordinale.
+02:49
+Selon le type des valeurs de pertinence qu'on a à disposition.
+02:55
+Typiquement, si on a des valeurs de pertinence qui sont des nombres réels, on va se ramener à un problème de régression.
+03:03
+Si on a des valeurs de pertinence qui sont des catégories, on va se ramener à un problème de classification.
+03:07
+Et enfin, si on a des catégories ordonnées, on va se ramener à un problème de régression ordinaire.
+03:12
+Donc voilà, on a notre vecteur caractéristique.
+03:19
+Trois types de problèmes selon le type de valeur de sortie.
+03:23
+On en déduit la fonction f2x, on apprend la fonction f2x, qui va être une fonction de classement.
+03:30
+Ça c'est la phase d'apprentissage.
+03:32
+Et pour la phase de classement en tant que telle, on a nos données qui sont décrites selon le même schéma de description.
+03:40
+Et puis on va ordonner les vecteurs, les données, selon le score de cette fonction f. On va aujourd'hui introduire l'approche par paire, qui est une approche très développée, très utilisée dans le paradigme learning to rank, notamment parce qu'on va pouvoir facilement créer des jeux de données d'apprentissage, notamment pour les collections de type web.
+04:13
+L'idée principale de l'approche par paire, c'est de travailler sur des paires de préférences.
+04:21
+Cette idée, elle se base sur le fait que la notion de pertinence n'est pas une notion absolue.
+04:28
+Plusieurs fois, tout au long du cours, on a évoqué cette difficulté à caractériser correctement, à définir correctement cette notion de pertinence, avec notamment d'ailleurs des définitions qui sont très dépendantes des modèles de recherche.
+04:42
+Binaires pour le modèle booléen, probabilistes pour le modèle probabiliste, etc.
+04:51
+Quand on a parlé de la partie évaluation des modèles de recherche, on a aussi évoqué le fait qu'il était difficile de juger de la pertinence d'un document, mais par contre qu'il était plus facile de juger de la pertinence relative de deux documents.
+05:13
+Étant donné le résultat d'une recherche, la réponse d'un moteur de recherche à un besoin d'information, pour moi utilisateur, il va être plus facile de dire si le document N qui m'a été retourné est plus pertinent que le document N plus 1, que de juger de la pertinence de chacun des documents.
+05:36
+C'est vraiment cette idée-là qui va être mise en œuvre dans l'approche par paire.
+05:42
+On va travailler avec ce qu'on va appeler des jugements par préférence, et donc avec la notion de paire de préférence.
+05:49
+Typiquement, ces paires de préférence vont exprimer le fait qu'un document va être préféré à un autre pour une requête donnée, pour un besoin d'information donnée.
+05:58
+Ces jugements de préférence vont toujours être conditionnés par un contexte qui est la requête qu'on a soumise au moteur de recherche.
+06:09
+Le principe, c'est de partir sur cette idée que les jugements par paire sont des jugements qui sont plus généraux, et donc d'exprimer ce jugement comme une préférence d'un document par rapport à un autre.
+06:22
+Étant donné une requête Q, à chaque paire de documents DI, DJ, on va associer une valeur de préférence YIJ qui va être à valeur dans le moins 1.
+06:33
+Et typiquement, on va dire que YIJ va être égal à 1 si XI est préféré à XJ pour la requête Q. Cette relation de préférence, on va la noter de cette manière-là, et donc typiquement, il faut lire cette équation comme XI est préféré à XJ pour la requête Q, toujours étant donné un contexte donné qui est ici notre requête Q. Voilà.
+06:59
+Et donc, dans l'approche par paire, on va chercher à déterminer non plus le score de pertinence, mais quel document est plus pertinent qu'un autre.
+07:08
+On va essayer de déterminer la préférence d'un document par rapport à un autre.
+07:13
+Regardons de manière un peu plus détaillée comment on va pouvoir mettre ce principe en œuvre.
+07:19
+L'élément fondamental, ça reste toujours ce couple, ou cette paire document-requête qu'on appelle XI, et donc on considère qu'on a N couples, N échantillons de paire document-requête.
+07:37
+Ça, c'est notre ensemble d'apprentissage.
+07:40
+Et ce qu'on souhaite trouver, c'est une fonction d'ordonnancement, c'est-à-dire qu'on souhaite trouver une fonction f qui va respecter l'ordre des X. Donc si XJ est préféré à XI, alors f de XJ doit être supérieur à f de XI.
+08:01
+Donc, pour simplifier le développement, je vais considérer ici f qui est une fonction de classement linéaire, et donc que je vais pouvoir écrire comme ça.
+08:10
+Ça, c'est le produit Scalar.
+08:12
+En pratique, f, ça peut être tout type de fonction, mais vraiment pour plus facilement vous expliquer ce développement-là, on va considérer que f, c'est une fonction de classement linéaire.
+08:22
+Pour f linéaire, j'ai donc, si f de XI est supérieur à f de XJ, alors j'ai bien cette relation d'équivalence.
+08:32
+Donc ma fonction de classement linéaire, elle est positive dans ce cas-là pour la différence XI moins XJ.
+08:41
+Donc pour f linéaire, j'ai bien cette relation d'équivalence.
+08:46
+Je peux donc transformer mon problème de classement en un problème de classification binaire sur la différence des XI moins XJ.
+08:54
+Et c'est comme ça, en fait, que va fonctionner l'approche par paire.
+09:00
+Et ça, c'est ce qu'on appelle la transformation par paire.
+09:03
+C'est-à-dire qu'on va former, à partir de nos données, des exemples d'apprentissage sous la forme de paires étiquetées en utilisant la différence entre deux couples, donc XI moins XJ.
+09:17
+Et les étiquettes que je vais donner, typiquement, elles vont être binaires et je vais donner à une différence XI moins XJ la valeur de 1 si XI est préféré à XJ pour la requête Q.
+09:41
+Et puis sinon, je lui donne la valeur moins 1.
+09:44
+Voilà, donc j'ai bien ces relations d'équivalence, c'est-à-dire que si XI est préféré à XJ, alors YIJ est égal à plus 1.
+09:55
+Et donc, j'ai bien ramené comme ça mon problème de classement en un problème de classification binaire.
+10:01
+Donc, on va rapidement illustrer le principe de cette transformation par paire sur un petit exemple.
+10:09
+Donc, on considère ici qu'on a deux requêtes.
+10:14
+Donc ça, c'est les données qui correspondent à la requête 1 et ça, c'est les données qui correspondent à la requête 2.
+10:21
+On a donc des données qui sont classées et qui sont classées selon une fonction de classement qu'on voit être linéaire.
+10:30
+Voilà, typiquement, si on projette les données sur cette droite linéaire, sur cet hyperplan linéaire, on voit qu'on peut effectivement l'utiliser comme une fonction de classement.
+10:45
+A partir de ces données, je vais donc appliquer ma transformée par paire en prenant donc l'ensemble des données associées à un contexte donné, donc à une requête donnée, et qui ont des rangs différents et en effectuant les différences par paire.
+11:02
+Et donc là, typiquement, si je prends la paire X1, X2, alors je vais labelliser X1, X2 en plus 1 parce que X1 est préféré à X2 pour cette requête avec cette fonction de classement.
+11:18
+Et de même, X2 va être préféré à X3 pour cette requête avec cette fonction de classement et donc je vais étiqueter X2 moins X3 à plus 1.
+11:30
+Si maintenant je prends la paire X3, X1, je lui donnerai le label moins 1 parce que X3 n'est pas préféré à X1 pour cette requête avec cette fonction de classement.
+11:43
+Et donc en appliquant cette fonction de transformation par paire à l'ensemble des données qui appartiennent à des rangs différents et à un même contexte, alors je transforme effectivement mon problème en un problème de classification binaire.
+12:02
+Donc on voit ici, pour les mêmes données, le résultat de l'application de cette transformation.
+12:11
+Donc on a bien ici nos instances positives et on a bien ici nos instances négatives et on voit sur cet exemple qu'on doit très certainement pouvoir trouver une solution à ce problème de classification en utilisant une technique de classification et notamment par exemple en utilisant des séparateurs linéaires.
+12:31
+Voilà, donc juste des petites remarques, dans la constitution du jeu de données, on ne considère que les données d'un même groupe qui sont prises en compte pour les paires de différence et bien sûr, seules les données de rang différent dans ce même groupe sont prises en compte.
+12:49
+Je ne fais pas, je ne construis pas de paire de différence en prenant des données qui sont de groupe différent, ça n'aurait pas de sens, c'est des données qui sont non comparables.
+12:59
+Voilà, donc je vais juste terminer pour cette présentation de l'approche par paire en présentant une approche qui s'appelle Ranking SVM et qui se base sur les séparateurs à vaste marge pour proposer une solution à ce problème d'ordonnancement à l'aide de cette transformée par paire.
+13:18
+Rapidement avant cela, je vais vous présenter ce que sont les séparateurs à vaste marge linéaires.
+13:26
+J'avais rapidement commencé à présenter les SVM dans le cours précédent, notamment en présentant ces méthodes comme des méthodes de classification dites discriminantes.
+13:38
+Donc on a des données d'apprentissage labellisées, donc X, Y et on va se placer dans un cadre de classification binaire, donc avec des labels qui peuvent prendre les valeurs moins 1 et plus 1.
+13:52
+Et je cherche à construire à partir de cet ensemble d'apprentissage, donc une fonction de décision qui va donc de l'espace de représentation de mes données à moins 1 plus 1 et qui va permettre de prédire la classe moins 1 ou plus 1 d'un point X qui appartient à X, n'importe quel point X qui appartient à X. Voilà, ma fonction de décision, elle va de Rd dans R, Rd étant l'espace de description de mes données d'entrée.
+14:26
+Et puis je peux utiliser le signe de cette fonction pour classer mes données.
+14:34
+Donc typiquement, je vais affecter X à la classe moins 1 si f2x est inférieur à 0 et à la classe plus 1 si le signe de ma fonction de décision est supérieur à 0, appliqué à X bien sûr.
+14:51
+Si on fait un bref rappel à la manière dont je vous ai présenté la théorie de l'apprentissage supervisé, j'avais évoqué le fait qu'on avait une classe d'hypothèses pour notre fonction f. Ici, cette classe d'hypothèses, c'est qu'on a des fonctions de décision qui sont linéaires et donc qui vont prendre cette forme analytique.
+15:10
+Et ce que je vais chercher à déterminer, ce sont les paramètres de cette fonction, c'est-à-dire le vecteur W et B. Voilà, prenons un exemple simple, plaçons-nous dans R2 et prenons donc un problème de classification linéaire.
+15:29
+Donc on a effectivement deux classes qui sont caractérisées ici par les croix rouges et les ronds bleus et je cherche effectivement une fonction de séparation dans cet espace R2 qui soit linéaire.
+15:51
+On voit ici que les données, que le plan, je peux le séparer en deux par un hyperplan dont l'équation est WTX plus B. Si je prends le signe de cet hyperplan, ça me permet d'avoir une fonction qui va me permettre de classer mes différents points selon le signe que prend cette fonction quand je l'applique à mes données X. Ce qu'il est intéressant de voir, c'est que la distance d'un point à cet hyperplan, on peut l'exprimer avec cette équation.
+16:34
+Notamment, on verra l'importance de cette notion-là un peu plus tard.
+16:39
+Et puis la distance de l'hyperplan à l'origine, c'est la valeur absolue de B sur la norme de W. Si je reprends mon problème de séparation binaire dans un espace à deux dimensions, on voit qu'en fait j'ai plusieurs hyperplans qui sont possibles, plusieurs séparateurs qui peuvent être possibles.
+17:02
+C'est-à-dire que cette droite-là va effectivement me permettre de séparer correctement mes données, celle-ci aussi et celle-ci aussi.
+17:09
+Donc la question qu'il faut se poser ici, c'est quel est le séparateur qui va être optimal ?
+17:15
+Le séparateur optimal, l'hyperplan optimal, ça va être celui qui va classifier correctement les données et qui se trouve le plus loin possible de tous les exemples.
+17:26
+Et ça, c'est à des fins de généralisation.
+17:28
+Cet hyperplan optimal, c'est l'hyperplan de marge maximale.
+17:34
+La marge étant la distance minimale entre un exemple et l'hyperplan, et donc la surface de séparation.
+17:41
+C'est donc cet hyperplan optimal que je vais chercher à déterminer.
+17:45
+Voilà, juste quelques définitions.
+17:50
+On parle de séparateur linéaire, donc il est nécessaire de définir ce que sont les données qui sont séparables linéairement.
+17:57
+Et typiquement, on va dire que les couples XYI vont être linéairement séparables s'il existe un hyperplan qui permet de discriminer correctement cet ensemble de données.
+18:09
+Dans le cas contraire, on va parler d'exemples qui ne sont pas séparables.
+18:13
+Pour limiter l'espace des possibilités, on va considérer que les points les plus proches de l'hyperplan séparateur sont situés sur des hyperplans qu'on va appeler canoniques et qui sont définis par cette équation.
+18:29
+L'équation WTX plus B est égale à 1 et WTX plus B est égale à moins 1.
+18:37
+Dans ce cas, la marge, on peut la définir comme étant 2 sur la norme de W. Et d'autre part, les points vont être bien classés si, quels que soient I, donc pour tous les points de mon ensemble d'apprentissage, j'ai Y fois F de XI qui est supérieur à 1.
+19:00
+Ça, c'est des contraintes, des conditions qui m'expriment que chaque point est bien classé par ma fonction F. Et en utilisant cette simplification, je peux cette fois-ci définir de manière beaucoup plus formelle ce que c'est que mon séparateur à vaste marge.
+19:19
+Donc, étant donné un ensemble de points linéairement séparables et tiquetés, donc mon ensemble d'apprentissage qui contient N échantillons, l'objectif va être de trouver un hyperplan qui maximise la marge et qui discrimine correctement les points de D. Donc, la formulation mathématique du SVM, c'est celle-ci.
+19:43
+Je cherche à minimiser selon WB 1 demi de la norme de W².
+19:51
+Donc ça, c'est typiquement ce qui exprime le fait que je cherche à maximiser ma marge sous contrainte que l'ensemble de mes points de mon ensemble d'apprentissage soit bien classé.
+20:03
+C'est ce qu'on exprime avec cette équation-là.
+20:06
+Ça, c'est la formulation classique des séparateurs à vaste marge.
+20:12
+Voilà, on a donc ici un problème de minimisation sous contrainte qu'on peut résoudre par des approches numériques comme de la programmation quadratique, par exemple en minimisant le carré de la norme.
+20:24
+Je ne vais pas rentrer dans les détails de résolution de ce type de problème d'optimisation.
+20:31
+Ce que je peux vous dire, c'est qu'en fait pour les SVM, on va faire un passage au lacrangé, c'est-à-dire qu'on va utiliser la forme duale de ce problème d'optimisation précédent.
+20:43
+On sait qu'un problème d'optimisation, il possède une forme duale si la fonction objectif et les contraintes sont strictement convexes et alors dans ce cas là la solution du problème dual est la solution du problème original.
+20:54
+Donc on utilise cette propriété là pour la résolution des séparateurs à vaste marge.
+20:59
+Et notamment on va donc passer au lagrangien, en introduisant dans le problème d'optimisation des multiplicateurs de Lagrange αi qui sont donc associés aux différentes contraintes d'inégalité qui expriment que l'ensemble des points de mon ensemble d'apprentissage doivent être bien classés.
+21:16
+Donc du coup j'introduis dans mon problème, dans la formulation de mon problème, n paramètres αi.
+21:23
+Et donc la formulation de mon problème en passant au lagrangien ça devient celle-ci.
+21:28
+Donc j'ai cette fonction objectif qui devient celle-ci avec donc les paramètres, le paramètre W, B, α et donc cette fonction objectif ici qui est donc je cherche à maximiser ma marge avec donc les contraintes que l'ensemble des données de mon ensemble d'apprentissage doivent être bien classées.
+21:50
+J'exprime exactement la même chose.
+21:52
+Donc j'ai une nouvelle formulation du problème en fait où la contrainte elle est directement intégrée dans la fonction objectif et donc ça devient intéressant.
+22:01
+Voilà, pour la résolution des SVM il est important d'introduire des vecteurs particuliers qui sont ce qu'on appelle des vecteurs supports.
+22:11
+Donc W1 je peux le définir comme étant la somme sur l'ensemble de mes données d'apprentissage de αi, yi, xi.
+22:19
+Je sais que αi est nulle si yi fois Wtxi plus B est supérieur à 1.
+22:28
+Donc W il n'est défini que par les points tels que j'ai cette équation là qui est égale à 1.
+22:36
+Et ces points là c'est mes vecteurs supports, ce sont ces points là.
+22:40
+Ces points qui finalement appartiennent au plan canonique qu'on a introduit plus en avant.
+22:49
+Voilà, donc en pratique les SVM on calcule W, on cherche finalement les valeurs, on estime W en utilisant les données d'apprentissage pour résoudre le dual, donc le Lagrangien.
+23:04
+Et en faisant ça on obtient les paramètres αi.
+23:07
+A partir des αi j'en déduis donc l'estimation de mon vecteur W avec cette équation là.
+23:13
+La somme pour l'ensemble de mes données d'apprentissage de αi, xi, yi, xi.
+23:18
+Puis je peux du coup calculer B en prenant en compte le fait que les αi qui sont supérieurs à 0 correspondent aux points supports qui vérifient donc cette relation.
+23:28
+Et donc je peux en déduire comme ça la valeur de B.
+23:31
+En pratique je fais la moyenne de ces termes pour l'ensemble des vecteurs supports SV pour obtenir une valeur numérique qui est stable.
+23:40
+Et donc j'obtiens ma fonction de décision que je peux exprimer comme ça, qui est donc la somme pour l'ensemble des vecteurs supports de αi, xi, xi, t, x. J'ai ici un produit scalaire en fait, je pourrais aussi l'exprimer avec l'autre notation des produits scalaires, plus B. Donc tout ce qu'on a vu c'est assez joli, mais ça ne marche que si on a des données qui sont séparables linéairement.
+24:11
+Or dans la vraie vie les données elles sont rarement séparables linéairement.
+24:16
+Il n'y a pas de raison qui fait que les données sont séparables linéairement pour énormément de problèmes.
+24:23
+Et donc on va voir comment on peut étendre les séparateurs à basse de marge au cas non séparable.
+24:32
+Donc typiquement comment on va pouvoir modifier la formulation quand justement l'hypothèse de séparabilité linéaire des points n'est pas vérifiée ?
+24:43
+Voilà, typiquement dans ce genre de cas là, les points blancs qui sont ici et les carrés verts qui sont ici font qu'on n'a pas des données qui sont séparables linéairement.
+24:57
+Dans ce cas là, on va relâcher les contraintes qui expriment le fait que les points sont bien classés.
+25:06
+Donc ces contraintes là, et on va rajouter dans ces contraintes des variables de relâchement εi.
+25:15
+Et puis bien sûr on va pénaliser ces relâchements dans la fonction objectif.
+25:20
+Et donc on obtient une nouvelle formulation des SVM dans le cas non séparable qui est celle-ci.
+25:26
+Donc on cherche toujours à maximiser notre marge, à trouver les valeurs des paramètres W et B qui maximisent notre marge, sous contrainte relâchée que les points sont bien classés.
+25:42
+Donc là on introduit nos variables de relâchement qu'on pénalise dans la fonction objectif, ici.
+25:50
+Et donc ce C là, c'est une contrainte de régularisation justement liée à cette pénalisation des variables de relâchement, qui est un hyperparamètre des SVM.
+26:05
+Et puis on a encore un cas qui est un peu plus compliqué, qui est le cas où la séparation n'est pas linéaire.
+26:14
+Et donc on voit bien qu'ici la droite qui sépare, la fonction qui sépare nos points, qui sont séparables, mais cette fonction là n'est clairement pas linéaire.
+26:29
+Comment on peut traiter ce cas ?
+26:32
+Donc on va prendre un exemple aussi joué, un exemple synthétique qui est celui-là.
+26:37
+On voit qu'effectivement on a des données qui sont dans un espace en deux dimensions, qui ne sont pas séparables linéairement.
+26:44
+Et pour traiter ce problème-là, avec les SVM, on va utiliser une astuce qu'on appelle l'astuce des noyaux.
+26:53
+Typiquement, on va étendre notre problème à un cas où les données vont être séparables linéairement.
+27:02
+Ça c'est une extension justement des SVM à des séparateurs non linéaires.
+27:06
+Et pour ça, on va transposer les données dans un autre espace, dans lequel les données vont être cette fois-ci linéairement séparables.
+27:15
+Donc on va appliquer à nos données une transformation qui va de Rd dans H, un espace de Hilbert.
+27:22
+Cette transformation, c'est le phi ici, qui est telle qu'on part d'un espace de départ dans lequel les données ne sont pas séparables linéairement, vers un espace d'arrivée où elles le sont.
+27:35
+Voilà, si on revient à notre exemple, on a bien un espace initial à deux dimensions dans lequel il n'est pas possible de séparer linéairement nos données.
+27:46
+Et donc je dois choisir une transformation phi qui doit permettre une séparation linéaire dans un nouvel espace H. Ici, je peux par exemple prendre cette transformation phi, qui dépend donc de X1 et X2, et qui transforme mes données dans un espace à trois dimensions, avec X1, X2 et X1² plus X2².
+28:06
+Si je trace mes données dans ce nouvel espace, qui est un espace à trois dimensions, qui est un espace de plus grande dimension que l'espace original, on voit qu'ici j'ai effectivement une possibilité de séparer mes données par un séparateur linéaire.
+28:23
+On voit qu'on a effectivement un hyper-séparateur.
+28:25
+C'est vraiment cette idée-là qu'on veut mettre en place pour utiliser les séparateurs à vaste marge quand on a des cas de séparation non linéaire.
+28:35
+Ce qui est compliqué, c'est finalement le choix de cette transformation, le changement de représentation, comment je peux faire.
+28:44
+On souhaite avoir un changement de représentation qui va permettre une séparation linéaire entre nos deux classes, tout en respectant bien sûr la vraie similarité entre les données.
+28:52
+En général, ça veut dire que je dois trouver ce qu'on appelle un espace de redescription de plus grande dimension.
+29:00
+Les questions, c'est comment je peux faire ça ?
+29:03
+Je peux faire ça par exemple par un séparateur linéaire, je dois trouver ce qu'on appelle un espace de redescription de plus grande dimension.
+29:12
+Les questions, c'est comment je peux trouver cet espace de redescription et comment je peux garantir la réalisation des calculs ?
+29:20
+Pour ça, c'est là qu'il y a vraiment l'astuce des fonctions noyaux, qui fait qu'on va éviter de calculer explicitement la transformation Φ, et on va plutôt s'appuyer sur des fonctions particulières qui sont des fonctions noyaux.
+29:35
+Plutôt qu'appliquer la transformation de changement de représentation, on va définir une fonction noyau K, telle que K de XI, XJ, c'est égal au produit scalaire de la transformée de XI et de la transformée de XJ.
+29:53
+Ce produit scalaire dans l'espace de redescription.
+29:57
+Je cherche une fonction K qui correspond au produit scalaire dans mon espace H, qui est mon espace de redescription.
+30:04
+Il y a des travaux théoriques qui prouvent que de telles fonctions existent.
+30:10
+C'est notamment le théorème de Mercer qui dit qu'une fonction noyau K continue symétrique et semi-définie positive peut s'exprimer comme un produit scalaire dans un espace de plus grande dimension.
+30:20
+En utilisant cette fonction noyau, la fonction de décision dans l'espace d'origine devient celle-ci.
+30:27
+La somme pour Y qui appartient au vecteur support de αI, YI, la fonction noyau appliquée à XI, X, plus P. On appelle la fonction noyau toute fonction K, qui va de mon espace originelle dans R, et qui peut être interprétée comme un produit scalaire dans un plongement Φ.
+30:56
+Le gros avantage, c'est qu'on peut maintenant appliquer tous les algorithmes qu'on a vus précédemment de séparation optimale avec marge souple ou dure, donc avec les contraintes de relâchement, en remplaçant le produit scalaire entre XI et XJ par la fonction noyau K de XI, XJ.
+31:18
+J'obtiens ainsi un classifieur exprimé comme ça, et qui est lui linéaire dans l'espace de plongement.
+31:26
+Il existe énormément de travaux sur des fonctions noyaux, il existe énormément de fonctions noyaux, par exemple les noyaux polynomials, le noyau gaussien, le noyau sigmoïde, etc.
+31:36
+Le choix du noyau est très important dans la mise en œuvre des SVM, parce qu'il doit maximiser les chances d'être dans le bon espace.
+31:47
+Ça fait aussi partie des hyper paramètres des SVM, le choix du noyau.
+31:54
+Enfin, si je veux en finir avec les SVM, je dois parler du cas où on a plusieurs classes.
+32:02
+On n'a parlé ici que des SVM dans le cadre binaire, c'est un problème de classification binaire.
+32:08
+Comment transformer tout ce qu'on a vu précédemment, ou comment l'adapter à un cas où j'ai plusieurs classes ?
+32:17
+Ici, je n'ai plus deux classes, mais j'ai ces classes CI, et donc typiquement, telle que c'est, et plus grande que 2.
+32:24
+Il y a plusieurs stratégies pour appliquer les SVM au cadre multiclasse.
+32:29
+Il y a une stratégie qui s'appelle le one versus all.
+32:32
+Ça consiste à prendre pour une classe CI ses exemples positifs, et de ramener un problème de classification binaire en prenant tous les exemples des autres classes CI différents de I qui valent moins 1.
+32:57
+Je me ramène ainsi un problème de classification binaire.
+33:00
+Je vais apprendre ces classifiers binaires.
+33:03
+Pour faire mon classement, je vais retenir la classe qui a le plus fort score comme classe pour mes données.
+33:13
+Une autre stratégie s'appelle le one versus one.
+33:17
+Cette fois-ci, je vais prendre les exemples positifs d'une classe I1 et les exemples négatifs d'une classe I2.
+33:26
+Je vais apprendre de cette manière ces fois-ci moins 1 sur 2 classifiers binaires.
+33:31
+Il faut bien sûr que je fasse s'affronter mes différents classifiers.
+33:36
+Je vais mettre en place un processus de tournoi et je vais voter pour chaque classifier.
+33:42
+Une classe va gagner à chaque fois.
+33:44
+En agrégeant mes votes, je vais obtenir le vainqueur et la classe que je vais pouvoir affecter à mes données.
+33:54
+Un petit bilan sur les SVM.
+33:57
+C'est une approche d'apprentissage qui est relativement puissante et qui est capable de trouver des motifs non linéaires.
+34:02
+C'est intéressant avec deux idées principales.
+34:05
+Cette maximisation de la marge entre la frontière de décision et les exemples les plus proches, qui sont les vecteurs supports.
+34:11
+Et puis l'astuce des noyaux avec une redescription des observations dans un nouvel espace où une séparation linéaire sera possible dans le cas où elle ne l'est pas dans l'espace originel.
+34:23
+Et puis pour finir, une extension facile au cas multiclasse.
+34:27
+Après cette grosse parenthèse sur les SVM, je peux revenir à mon problème d'ordonnancement avec l'approche de transformer par paire.
+34:37
+Et donc vous présenter la méthode ranking SVM.
+34:40
+Typiquement, je peux directement utiliser cette méthode des SVM pour trouver un hyperplan séparateur de mes données générées en appliquant la transformée par paire.
+34:53
+Mes données d'apprentissage, c'est ppaire x1, x2, labellisées comme présentées précédemment.
+35:02
+La formulation de ce problème en utilisant les SVM devient celle-là.
+35:10
+Je cherche à maximiser ma marge.
+35:14
+Ici, c'est la formulation avec des marges souples, avec mes contraintes de relâchement.
+35:21
+Sous contrainte que mes ppaires d'apprentissage, exprimées comme la différence de mes paires originelles, soient bien classées, avec mes contraintes de relâchement, etc.
+35:41
+Je sais résoudre ce type de problème avec des techniques d'optimisation.
+35:49
+La solution du problème me donne une solution optimale, qui est finalement l'estimation de W. Comment je peux classer ?
+36:02
+Je sais que x' est préféré à x si et seulement si le signe du classifiaire est négatif.
+36:15
+Si le signe de W étoile x-x' est négatif.
+36:22
+Je pourrais classer en utilisant cette équation et ce mécanisme.
+36:30
+On va directement utiliser le score du modèle qu'on vient d'apprendre.
+36:36
+Cela répond aussi à la deuxième question, qui est comment trier les documents pour de nouvelles requêtes.
+36:41
+Pour chaque requête, je vais considérer mon x' qui vaut le vecteur nul, et je vais trier le document sur le score obtenu directement par la fonction W étoile x-x'.
+36:57
+Ce score obtenu est celui-là, avec x qui est toujours une paire document requête.
+37:05
+Cela ne change pas, c'est toujours l'élément principal de ces approches Learning to Rank.
+37:11
+Il y a bien sûr plein d'autres approches pour faire des stratégies Learning to Rank à partir de l'approche par paire, que je ne présenterai pas ici, mais juste pour résumer l'approche par paire.
+37:24
+On a des données d'entrée qui sont des données ordonnées, mais de paire de vecteurs.
+37:33
+On considère les documents par paire et pas les documents indépendamment comme dans l'approche par point.
+37:40
+Je me ramène à un problème de classification binaire avec l'approche de transformer par paire.
+37:48
+J'apprends ce classifieur qui, en utilisant son score, va me permettre de faire le classement.
+37:57
+J'ai ici une fonction de coût paireoise de classification.
+38:06
+Pour le classement, j'ai juste à trier les valeurs de sortie de mon classifieur.
+38:13
+Je peux donc proposer à l'utilisateur une liste ordonnée de documents, que j'évalue avec les mesures d'évaluation classique d'ordonnancement.
+38:25
+La dernière approche possible pour l'apprentissage par ordonnancement, c'est l'approche par liste.
+38:34
+Le principe est simple, c'est de traiter directement les listes triées comme des exemples d'apprentissage.
+38:40
+Directement d'apprendre à partir de listes triées.
+38:43
+Pour ça, il y a deux types d'approches.
+38:46
+Il y a des approches qui ont dans leur fonction objectif des éléments liés aux mesures d'évaluation.
+38:53
+Par exemple, il y a une approche qui s'appelle SVM Map, qui utilise des vecteurs SVM.
+39:00
+La fonction objectif est la borne supérieure de la mesure d'évaluation Map, le mean average precision, dont on a parlé pendant le cours d'évaluation.
+39:14
+Il y a aussi des fonctions objectives qui sont directement définies sur des listes de documents.
+39:19
+C'est compliqué ces mesures-là, parce qu'en général, on est sur des mesures d'évaluation non continues.
+39:25
+On rentre dans des problématiques de différenciabilité et ça devient un peu compliqué.
+39:31
+Je ne présenterai pas d'approche très détaillée sur cette approche par liste, parce que chaque approche nécessiterait de gros développements.
+39:43
+Le petit bilan sur les approches par liste, avec un même mécanisme pour l'apprentissage et le classement.
+39:50
+On fait une permutation sur cette fonction F, et on a donc une fonction de coût qui est la même pour l'apprentissage et le classement.
+40:05
+Parce que typiquement, on s'appuie sur les mesures d'évaluation de classement pour construire cette fonction de coût.
+40:12
+On a vu que quand on est dans des approches à base d'apprentissage, il est nécessaire d'avoir des données d'apprentissage.
+40:20
+La question c'est, quelles sont les données d'apprentissage à disposition pour mettre en œuvre ce type d'approche ?
+40:26
+Il existe un certain nombre de données de benchmark qui sont disponibles.
+40:32
+Il y a des données qui sont annotées pour plusieurs collections, notamment les collections TREC, qui sont les challenges classiques en évaluation dans la recherche d'informations, clé pour tout ce qui est multilinguisme.
+40:44
+NTCIR, c'est plutôt des données médicales.
+40:47
+Les TOR, qui sont vraiment des données qui ont été mises à disposition pour les paradigmes Learning to Rank.
+40:53
+Et puis, il y a Yahoo qui a aussi mis à disposition beaucoup de données.
+40:58
+Pour les entreprises, c'est un peu plus compliqué parce qu'on n'a pas de telles données en général, et il faut pouvoir les constituer.
+41:06
+Dans le cas du web, c'est un petit peu différent parce qu'on a une information très riche qui provient du clic des utilisateurs.
+41:16
+Et à partir de cette information de clic, on peut inférer des préférences entre documents, et donc on peut inférer très facilement des paires de préférences.
+41:25
+C'est pour ça que l'approche par paire est très développée dans les approches d'apprentissage pour l'ARI, et notamment dans le contexte du web.
+41:36
+Alors, il faut faire attention bien sûr parce que les clics, ils ne fournissent pas de jugement de pertinence absolue mais relatif, et donc c'est ce qu'on veut pour l'approche par paire.
+41:45
+Et donc typiquement, il y a énormément de stratégies qui peuvent être mises en place pour constituer ces données d'apprentissage.
+41:55
+Donc considérons un ordre D1, Dn par exemple, et c'est un ensemble de documents cliqués.
+42:02
+Alors, on pourrait par exemple utiliser cette stratégie pour construire un ordre de pertinence entre documents.
+42:10
+Donc si un document Di appartient à C et que Di n'appartient pas à C, forcément Di est préféré pour la requête Q à Di.
+42:19
+Voilà, si Di c'est le dernier document cliqué, et quel que soit J qui est inférieur à I, alors Di n'appartient pas à C, alors Di est préféré à Dj pour la requête Q.
+42:32
+Et puis, etc etc.
+42:34
+On peut mettre en place énormément de stratégies comme ça pour construire des ordres de pertinence entre documents.
+42:40
+Voilà, alors il faut être quand même vigilant avec ça, et avec l'exploitation des clics comme substitut de pertinence, parce que c'est fortement biaisé.
+42:53
+Voilà, typiquement prenons un exemple, avec la requête à Implicit Feedback in Information Retrieval, l'utilisateur clique sur le premier document.
+43:06
+Est-ce que pour autant on peut dire que le premier document est plus pertinent que le deuxième pour ce besoin d'information ?
+43:14
+C'est très discutable.
+43:16
+Voilà, de même, un utilisateur ne clique pas sur un des premiers documents.
+43:26
+Est-ce qu'on peut pour autant dire que le deuxième est beaucoup plus pertinent que le premier ?
+43:30
+C'est pareil, c'est très discutable.
+43:32
+Et c'est des choix d'interprétation des clics, qui sont des choix de conception.
+43:42
+Le clic, ça peut être aussi un élément de pertinence très bruté.
+43:49
+Par exemple, ici, j'ai toujours la même requête, Implicit Feedback in Information Retrieval, mais parce que mon moteur de recherche n'est pas très bon, il me renvoie cette liste d'images, je me demande pourquoi, ça m'interroge, ça attire ma curiosité, je clique.
+44:07
+Prenons aussi un autre cas qui est difficile à interpréter, où cette fois-ci, ma requête, c'est la capitale de Londres.
+44:17
+Donc, je vais me demander pourquoi, je vais me demander si je peux me faire un lien avec ce document, je vais me demander si je peux me faire un lien avec ce document, je vais me demander si je peux me faire un lien avec ce document, je vais me demander si je peux me faire un lien avec ce document, où cette fois-ci, ma requête, c'est la capitale de Londres.
+44:36
+L'utilisateur, fois ces résultats-là, il quitte son aviateur.
+44:41
+On pourrait interpréter ça comme, il n'est pas satisfait des résultats du moteur de recherche.
+44:49
+Le problème, c'est qu'il va exactement avoir le même comportement pour cette requête-là et ces résultats-là.
+45:00
+Pourquoi ?
+45:00
+Parce qu'il a directement la réponse à sa question.
+45:03
+Et donc, on voit bien toute la difficulté, finalement, qui est liée à l'analyse des clics et notamment à l'analyse des clics comme substitut de cette notion de pertinence.
+45:17
+C'est juste des petits exemples pour vous montrer à quel point tout cela est forcément bruité et à quel point ça peut introduire des biais et même des erreurs dans l'exploitation des clics, justement pour l'amélioration des moteurs de recherche.
+45:36
+Voilà, juste pour en finir sur les jeux de données, une rapide présentation du jeu de données Lettor, qui est un petit peu le jeu de données qui est devenu très standard pour l'évaluation des algorithmes d'ordonnancement.
+45:48
+C'est un jeu de données qui a été proposé par Microsoft Research avec un certain nombre de collections proposées dans le jeu de données.
+45:57
+Et puis, il y a eu énormément d'autres initiatives, notamment Yahoo qui a proposé un challenge autour de l'apprentissage pour l'ordonnancement, et puis ensuite Microsoft, avec des jeux de données à chaque fois de plus en plus gros.
+46:12
+Voilà, donc juste des ordres de grandeur, donc Lettor, on a une dizaine de jeux de données avec à chaque fois un certain nombre de requêtes et pour chaque requête, un certain nombre de documents associés, soit exprimés sous paires, soit donnés comme une liste de documents pertinents ordonnés.
+46:36
+Et puis aussi un certain nombre de variables descriptives des données.
+46:41
+Voilà, typiquement dans Lettor, on a chaque paire de données requêtes documents et définies selon un certain nombre de variables, dont ces 37 là, donc qui sont typiquement les caractéristiques qu'on utilise, que vous avez essayé d'utiliser dans le Lab 1 pour caractériser aussi vos données d'apprentissage.
+47:08
+Alors, il y a un problème dont on n'a pas vraiment trop parlé jusqu'à maintenant, qui est un problème de réduction de la dimension et qui est nettement lié au fait que l'ensemble de nos vecteurs caractéristiques sont décrits dans un espace de très grande dimension, un espace qui est engendré par le vocabulaire de termes, donc avec autant de termes dans le vocabulaire en fait que de dimensions dans l'espace de représentation.
+47:36
+Et donc, il peut se poser un certain nombre de questions pour essayer de réduire cet espace de représentation.
+47:45
+Et notamment, on peut faire ça en utilisant énormément de techniques de sélection de variables.
+47:50
+Donc l'objectif, c'est de réduire la grande dimensionnalité de l'espace de représentation des documents.
+47:56
+Avec plusieurs approches, il y a des approches qui consistent à faire du seuil sur la mesure des f, où typiquement on va supprimer les termes qui ont une faible fréquence dont on peut penser qu'ils ne sont pas informatifs pour une classe de données.
+48:11
+Donc ça, c'est des choses qu'on va beaucoup utiliser quand on est dans un cadre, par exemple, de catégorisation de documents.
+48:16
+Et puis, il y a d'autres mesures qui se basent plutôt sur des mesures d'estimation de l'information, avec notamment la mesure d'information mutuelle ponctuelle, qui consiste à estimer l'information que la présence d'un terme apporte à la classe C et apporte à la catégorisation de cette classe.
+48:34
+Et puis, l'information mutuelle qui s'intéresse à la présence et l'absence de termes et ce qu'ils apportent sur la catégorisation de la classe.
+48:43
+Donc, je ne détaillerai pas ces approches ici, mais vous avez une version détaillée des slides sur Edunao.
+48:54
+Voilà, et j'aimerais juste terminer ce cours par une petite ouverture et justement, qui traite de cet aspect relatif à la représentation de l'information.
+49:06
+Donc, on a utilisé jusqu'à maintenant des représentations vectorielles et donc sur un espace qui est engendré par le vocabulaire de termes, avec comme dimension la cardinalité du vocabulaire de termes.
+49:19
+Donc, voilà, on peut représenter le document de manière binaire en termes de présence ou absence des termes de ce vocabulaire.
+49:29
+On peut aussi représenter un terme de cette manière-là, c'est-à-dire que le terme sur l'espace engendré par le vocabulaire de termes, il a une représentation de l'espace.
+49:39
+Il a une représentation one-hot, donc il y a 1 pour la dimension qui correspond au terme et 0 pour les autres dimensions.
+49:47
+Et puis, bien sûr, tout ça, on peut le représenter avec de la pondération, en avis à quel point la pondération était importante en recherche d'informations.
+49:58
+Voilà, alors il y a des grosses limitations à ce type de représentation et notamment, en fait, très liées à la compréhension, l'étude fine de la langue et ce qu'on pourrait en faire en recherche d'informations.
+50:13
+Et notamment, il est très difficile de traiter des problèmes de polysémie et de synonymie avec ce type de représentation.
+50:23
+Ce type de représentation, elles font toujours l'hypothèse que les mots sont indépendants, alors on sait bien que les mots ne sont pas indépendants.
+50:31
+Et puis, finalement, ce ne sont pas des représentations qui arrivent à capter réellement la sémantique d'un mot.
+50:40
+Voilà, et donc, on pourrait vouloir essayer d'améliorer ces représentations des mots et donc des documents en essayant de trouver des représentations qui portent un peu plus la sémantique des mots.
+50:55
+Par exemple, pour faire de l'expansion de requêtes en prenant en compte cette sémantique.
+50:59
+Supposons que vous cherchiez à faire une requête jaguar, est-ce qu'on parle de jaguar la voiture, est-ce qu'on parle de jaguar animal ?
+51:07
+Voilà, c'est typiquement ce type de sémantique qu'on aimerait capter et associer aux mots.
+51:16
+Donc, l'expansion de requêtes, c'est une technique de recherche d'informations qui a principalement comme objectif d'augmenter le rappel des systèmes de recherche.
+51:27
+On va typiquement étendre la requête en utilisant un certain nombre de ressources globales qui sont non-dépendantes de la requête.
+51:34
+Alors, il y a trois approches principales, des techniques d'expansion de requêtes avec des thésaurus existants, donc par exemple WordNet ou PuMed, une expansion avec une génération automatique de thésaurus, et puis il y a aussi, bien sûr, des expansions de requêtes de l'ordre de la correction orthographique dont on ne parlera pas ici.
+51:58
+Voilà, donc le principe, c'est que chaque terme de la requête va pouvoir être étendu avec des synonymes ou des termes qui sont sémantiquement proches en utilisant un thésaurus.
+52:08
+Donc, on va voir justement comment on peut capter ces termes sémantiquement proches avec donc différentes approches.
+52:15
+Donc, la notion de thésaurus, elle est multiple.
+52:19
+Soit on a des thésaurus manuels qui sont maintenus par des thésaurus, soit on a des thésaurus manuels qui sont maintenus par des éditeurs, comme par exemple PuMed ou WordNet.
+52:28
+Soit on peut dériver automatiquement des thésaurus à partir notamment de statistiques de co-occurrence entre mots sur une collection.
+52:36
+Donc, on prend en compte aussi le contexte des mots dans une collection.
+52:39
+Et on peut aussi, bien sûr, utiliser l'analyse des logs des requêtes et en faisant de la reformulation de requêtes en utilisant les requêtes qui ont été formulées par d'autres utilisateurs.
+52:47
+Donc, si je pars d'un thésaurus existant, automatiquement, ce qui est fait dans le site PuMed, qui est un site qui permet d'accéder à des articles médicaux, ou voilà, si je fais une requête cancer, automatiquement, ma requête va être étendue avec les termes néoplasme et cancer, qui sont en fait des mots d'une ressource terminologique qui s'appelle MeSH, et qui sont donc des termes qui sont beaucoup plus médicaux.
+53:25
+Je peux aussi utiliser WordNet.
+53:26
+Alors, WordNet, c'est quoi ?
+53:27
+C'est une ressource lexicale, qui est certainement la ressource lexicale qui est la plus utilisée en traitement du langage naturel.
+53:35
+Elle est développée à Princeton depuis 1985.
+53:38
+Et en gros, elle est constituée de ce qu'on appelle un ensemble de synsets, qui est en fait un groupe de sens ou des synonymes.
+53:48
+Et ces synsets, ils sont reliés entre eux par des relations lexicales et sémantico-conceptuelles.
+53:54
+Donc, c'est une vraie grosse ressource lexicale qui est intéressante et qui a été portée en plusieurs langues.
+54:00
+Et elle a aussi l'avantage d'être disponible dans NLTK.
+54:04
+Donc voilà, par exemple, prenons une requête dog.
+54:10
+Voilà, j'importe NLTK et j'importe WordNet.
+54:15
+Et je demande finalement d'accéder à l'ensemble des synsets qui sont associés au terme dog.
+54:22
+Voilà, on voit qu'il y en a un certain nombre de synsets qui sont associés au terme dog, dont tous ceux-là.
+54:28
+Et on voit qu'on a une définition associée.
+54:31
+Et donc, du coup, je peux tout à fait utiliser cette définition pour faire de l'expansion de requête.
+54:37
+Typiquement, je peux aussi prendre un ordre dans les synsets qui me sont renvoyés, qui sont des ordres de fréquence, dans ce mécanisme d'expansion de requête.
+54:52
+Je peux aussi vouloir créer mon propre thésaurus de co-occurrence en faisant de l'analyse de la distribution des mots dans un document.
+55:00
+Typiquement, ça se base sur une similarité des mots qui est beaucoup plus contextuelle que réellement sémantique.
+55:08
+C'est-à-dire qu'on va prendre en compte une similarité, on va considérer que deux mots sont similaires s'ils co-occurrent avec les mêmes mots.
+55:14
+Typiquement, voiture et moto sont similaires parce qu'ils vont co-occurrer très souvent dans un corpus avec les mots route et essence, qui n'est pas tout à fait la même chose que la similarité quand ils co-occurrent avec la même relation grammaticale.
+55:33
+Et donc, ce théausaurus de co-occurrence, en fait, on peut le construire avec des outils dont on a déjà parlé, notamment à partir de la matrice d'incidence terme document, ou WIJ, c'est le poids normalisé pour le terme TI dans le document DJI.
+55:48
+Si je construis la matrice de co-occurrence C en faisant A fois la transformée de A, eh bien, j'obtiens donc ma matrice de co-occurrence et pour chaque terme TI, je peux prendre les termes qui sont maximum dans C, bien sûr en utilisant ce que j'obtiens avec les points.
+56:07
+Et voilà, par exemple, ce que je peux obtenir sur un exemple donné, qui sont donc les termes qui co-occurrent avec un certain nombre de mots donnés en utilisant cette approche.
+56:19
+Et typiquement, je pourrais du coup faire de l'expansion de requêtes en utilisant ces plus proches voisins dans mon théaurus de co-occurrence.
+56:27
+Par exemple, lithogra, je pourrais l'étendre avec drawing, Picasso, Dali, etc.
+56:32
+On voit que du coup, avec cette approche, la qualité des associations est souvent discutable.
+56:38
+En plus de ça, on a souvent une matrice qui est fortement creuse, on avait déjà le problème avec la matrice terme incidence, et du coup, l'imbiguïté des termes peut quand même introduire de mauvaises associations entre nos termes.
+56:50
+Et donc, on va essayer de trouver une nouvelle approche, et notamment, l'approche, elle va consister à essayer d'apprendre directement les relations entre les termes.
+57:01
+Donc, revenons à notre problème de la relation entre termes.
+57:05
+La représentation des termes.
+57:07
+Nos termes, ils sont considérés comme des symboles atomiques.
+57:10
+Chaque terme, c'est une dimension, et donc, on l'a vu avec une représentation de type ouanote.
+57:17
+Voilà, prenons par exemple le terme motel et le terme hôtel, et leur représentation ouanote.
+57:28
+Supposons que notre requête contienne le terme motel, et que les documents qui sont dans notre corpus ne parlent que de termes hôtel.
+57:42
+Et bien, typiquement, c'est l'inverse ici, mais si j'ai une requête sur hôtel et que le document parle de motel, alors avec les principes de recherche qu'on a mis en œuvre, qui font appel, du coup, au produit scalaire, je vais forcément avoir une similarité qui va être nulle entre ma requête et mon document.
+58:03
+Donc, c'est vraiment ce problème-là, en fait, qui est limitant et pour lequel on aimerait apporter une solution.
+58:12
+Et typiquement, ce qu'on aimerait, c'est avoir une meilleure représentation de nos termes.
+58:17
+Donc, l'idée, ça va être d'apprendre une représentation qui va être de plus petite dimension d'un mot donné, d'un terme, donc dans RD, et telle que cette représentation U, elle soit telle que UTV représente la similarité entre mots.
+58:34
+Donc, le principe, ça va être de représenter chaque mot par ce qu'on appelle un vecteur distributionnel.
+58:41
+Et donc, en gros, on va représenter un mot à l'aide de ses voisins.
+58:43
+C'est pour ça qu'on appelle ça un vecteur distributionnel.
+58:46
+Et donc, ça, ça utilise un principe qui est un principe qui date des années 50, qui a été énoncé par First, et qui dit qu'on peut connaître la compagnie, qu'on peut connaître, pardon, qu'on peut connaître un mot par la compagnie de ce mot-là.
+59:01
+Voilà, donc on va aussi, du coup, mettre en place dans ce mécanisme de similarité distributionnelle de la similarité entre vecteurs.
+59:08
+Et donc, l'hypothèse, c'est que le sens d'un mot inconnu, il va être devinable par son contexte, et que le contexte va bien sûr aider à caractériser le sens du mot.
+59:18
+Et puis, la similarité de contexte va aider à caractériser la similarité de sens.
+59:22
+Voilà, donc ça, c'est ce qu'on appelle la similarité distributionnelle, qui consiste à représenter un mot par ses voisins.
+59:28
+Donc typiquement, l'idée, c'est ça.
+59:31
+Si je veux caractériser banking, eh bien, je veux utiliser les voisins de banking pour caractériser justement le mot banking.
+59:39
+Et inversement, je peux caractériser le contexte d'un mot à partir du mot du même.
+59:46
+Ça, c'est vraiment une des idées clés pour les mots de la compagnie.
+59:50
+Ça, c'est vraiment une des idées clés du traitement du langage naturel moderne, et c'est notamment ce qu'on appelle les techniques d'embedding de mots, type Word2Vec, GloVe, etc., et puis les modèles de langues plus récents, préentraînées, de type BERT, par exemple.
+01:00:10
+Voilà, alors la question, c'est comment représenter un mot par ses voisins.
+01:00:14
+Et donc, pour ça, on va utiliser une représentation dense de plus petite dimension.
+01:00:18
+L'idée, c'est que le nombre de sujets couverts dans un corpus, il est petit, et l'idée, ça va être de stocker l'information la plus importante dans ce petit nombre de dimensions.
+01:00:30
+Donc, on retombe sur un problème de réduction de la dimension.
+01:00:34
+Alors, comment on peut représenter un mot par ses voisins ?
+01:00:37
+L'approche classique, c'est d'utiliser une matrice de co-occurrence.
+01:00:41
+On l'a parlé juste avant.
+01:00:42
+Après, il y a deux options.
+01:00:44
+Soit je prends en compte tout le document, soit je prends une fenêtre autour de chaque mot.
+01:00:49
+Si je prends en compte tout le document, je vais tomber sur des problèmes qui sont connus comme des problèmes d'analyse en sémantique latente.
+01:00:56
+Et si je prends une fenêtre autour de chaque mot, ben, je suis typiquement dans ce qu'on fait en analyse distributionnelle.
+01:01:06
+Prenons un petit exemple avec une fenêtre de taille A. Donc, j'ai un petit corpus qui est celui-là, donc avec un ensemble de termes qui sont I like, deep learning, NLP, enjoy flying, et puis le point.
+01:01:21
+Et puis, comme j'ai une fenêtre de taille 1, ben, je vais construire du coup ma matrice de co-occurrence.
+01:01:28
+Donc, I n'est jamais voisin de I. I est voisin de like deux fois.
+01:01:37
+I like, I like.
+01:01:39
+I est voisin de enjoy une fois.
+01:01:43
+I n'est jamais voisin de deep, etc.
+01:01:45
+Vous avez compris comment on construit cette matrice de co-occurrence avec un voisinage de taille 1.
+01:01:53
+Donc, j'ai comme ça la représentation d'un mot par ses voisins, donc avec cette matrice de co-occurrence.
+01:02:01
+Après, on peut se poser des questions sur cette représentation, notamment sur son passage à l'échelle, parce qu'on va avoir une taille de la matrice qui va croître avec le vocabulaire.
+01:02:12
+J'ai une matrice qui est non dense, et donc l'idée, ça va être d'essayer de stocker l'information qui est contenue dans cette matrice dans un nombre fixé plus petit de dimensions.
+01:02:23
+Notamment, on estime qu'entre 25 et 1000... 1000 dimensions, c'est très bien.
+01:02:28
+Et donc on va essayer d'utiliser sur cette matrice de co-occurrence des techniques de réduction de la dimension.
+01:02:34
+Alors, une technique de réduction de la dimension qui est assez adéquate pour ce problème, c'est la décomposition en valeur singulière.
+01:02:43
+On sait que toute matrice A de dimension m fois n, avec m qui est supérieur à n, on peut la décomposer de la manière suivante.
+01:02:51
+A, c'est U, sigma, transposé de V, avec U qui est de dimension m fois m unitaire, telle que U, T, U c'est la matrice identité, sigma qui est une matrice m fois n diagonale avec des coefficients réels positifs, donc les sigma 1 supérieur à sigma 2, etc.
+01:03:10
+Et puis V qui est de dimension n fois n et qui est aussi unitaire.
+01:03:14
+Et puis les sigma i, en fait, ce sont ce qu'on appelle les valeurs singulières de la matrice A. Voilà, donc une illustration de cette décomposition en valeur singulière.
+01:03:25
+Pour une matrice X qui est ici de taille V fois V, cardinal de V étant la taille de notre vocabulaire, j'ai cette décomposition avec cette première matrice U de taille cardinal V fois cette matrice diagonale, avec les sigma 1 qui vont être les valeurs singulières, et puis donc la matrice V. Donc les valeurs singulières de X sont les racines carrées des valeurs propres de X, T, X. Les colonnes de V, les valeurs singulières droits de X, c'est les vecteurs propres de X, T, X.
+01:04:06
+Et les colonnes de U, c'est les vecteurs propres de X, X, T. Voilà, cette décomposition en valeur singulière, on peut l'utiliser pour réduire la dimension en sélectionnant uniquement les cas premiers vecteurs singuliers.
+01:04:26
+Je me contente ici de sélectionner les cas premiers vecteurs singuliers, donc je tronque ma matrice U et ma matrice V. Voilà, donc la réduction de la dimension avec la SVD, c'est étant donné un vocabulaire de terme V, je génère la matrice X de taille cardinal V fois cardinal V, j'applique la SVD pour obtenir U, S et V, et puis je choisis les cas premières colonnes de U pour avoir des vecteurs de mots de dimension K. Et ça, du coup, ces cas premières colonnes de U, c'est ce qu'on peut appeler des représentations distributionnelles de mémoire.
+01:05:08
+Et puis on a aussi des informations statistiques qui indiquent comment le fait de choisir que les cas premières dimensions capturent ou pas de l'information.
+01:05:21
+Voilà, reprenons notre petit exemple de tout à l'heure et donc appliquons ce principe de réduction de la dimension sur ce petit exemple-là.
+01:05:29
+Donc j'ai mon ensemble de mots qui est celui-là, je fais appel au module linale de NumPy, et puis j'applique la SVD sur cette matrice X qui est donc ma matrice de co-occurrence telle que construite tout à l'heure, avec un voisinage de contexte, une fenêtre de contexte de taille 1.
+01:05:51
+Je vais du coup, après, sélectionner les deux premières colonnes de U, donc les deux plus grandes valeurs singulières, ce que je fais avec ce code-là, et puis j'affiche du coup les mots obtenus, les représentations des mots obtenus, donc dans cet espace à deux dimensions.
+01:06:16
+Et donc on voit que c'est intéressant, que j'ai peut-être effectivement capté une information un peu plus sémantique avec ce type de représentation, et notamment le fait que NLP soit proche de DEEP dans cet espace, c'est relativement pertinent.
+01:06:31
+ENJOY et LIKE sont pas très loin non plus dans cet espace.
+01:06:39
+Donc c'est intéressant, mais c'est bien sûr coûteux en termes de calcul, et puis il est difficile d'incorporer de nouveaux mots, de nouveaux documents.
+01:06:49
+Juste ce qu'il faut retenir de cette approche, c'est qu'on va souhaiter représenter un mot par un vecteur dense.
+01:06:55
+Voilà, typiquement ce qu'on souhaite c'est un mot associé à ce type de vecteur là, de petite dimension.
+01:07:03
+Et donc cette représentation, en fait on peut la prendre, et notamment on peut la prendre avec des approches qu'utilisent des réseaux de neurones profonds.
+01:07:12
+Donc c'est vraiment cette idée-là, apprendre directement la représentation dans ce démo, et ça c'est typiquement ce qui a été proposé par Mikolov en 2013 avec l'approche Word2Vec, où l'idée c'était de prédire le contexte des mots directement plutôt que de compter les co-occurrences.
+01:07:28
+Donc après il y a eu une famille énorme d'algorithmes qui ont suivi, donc GloVe, BERT, qui est des modèles de langues un peu plus sophistiqués, mais il y a eu énormément d'extensions de cette idée.
+01:07:41
+Donc si je reprends Word2Vec, il y a principalement deux algorithmes.
+01:07:46
+L'algorithme qu'on appelle CEBO, donc Continuous Back of Word Model, qui prédit le mot cible étant donné son contexte, donc étant donné son voisinage, ou l'approche Skipgram qui elle, cherche à prédire le contexte étant donné le mot cible.
+01:08:00
+Donc on va regarder l'approche Skipgram, donc on a des modèles de langues, des modèles de mots.
+01:08:08
+Voilà, donc on a le mot banking qui est le mot central, et puis en fait je vais chercher à prédire le contexte, c'est-à-dire les mots précédents et les mots suivants, justement en essayant d'estimer la probabilité que tel mot soit le mot avant banking, que tel mot soit le mot après banking, etc.
+01:08:30
+Donc j'ai mon mot central, j'ai donc mon fenêtrage de M mots, et puis l'objectif va être de prédire le contexte, c'est-à-dire les mots voisins dans cette fenêtre de taille M étant donné le mot cible.
+01:08:46
+Et donc pour ça, je vais avoir une fonction objective qui va chercher à maximiser la log probabilité de chaque mot de contexte étant donné le mot cible.
+01:08:56
+Donc j'ai ces probabilités d'un mot étant donné le mot cible, d'un mot de mot contexte, avec M qui est la taille de ma fenêtre, et puis je vais chercher à maximiser ça pour l'ensemble des mots à ma disposition, de mon corpus.
+01:09:15
+Et donc ce que je cherche, c'est à trouver l'ensemble des variables qui vont me permettre de maximiser ça, et donc c'est ça que je cherche à optimiser.
+01:09:26
+Donc ce qu'on fait généralement dans ces approches-là, c'est qu'on va transformer une valeur qui est dans RV à une distribution de probabilité au travers d'une fonction qui s'appelle une fonction softmax, et donc qui est définie de cette manière-là.
+01:09:44
+Et donc si j'applique ça sur ce cadre-là, sur notre problème, je vais avoir une fonction softmax et donc une formulation pour notre problème qui va devenir celle-ci.
+01:10:00
+Donc on voit qu'on prend bien en compte la similarité entre nos mots en faisant ça.
+01:10:06
+Donc O et C ici, c'est les indices de mots de sortie et centraux, et puis U et V, c'est les U de O et V, c'est les vecteurs correspondants.
+01:10:15
+Donc regardons plus en détail cette architecture d'apprentissage de représentation de mots par des approches neuronales.
+01:10:24
+Donc j'ai la représentation de mon mot central, ici c'est l'entraînement système, donc représentation de type one-hot.
+01:10:36
+J'ai une première matrice de taille D x V. D, c'est la taille de mon vocabulaire, c'est l'espèce de représentation de mes termes en one-hot.
+01:10:45
+Et puis D, c'est la dimension que je souhaite pour mon vecteur dans mes digues.
+01:10:52
+Donc avec des paramètres bien sûr que j'initialise, mais que je vais chercher à estimer.
+01:11:00
+Et puis en sortie de la multiplication de cette représentation one-hot de mon mot et de la matrice, j'ai mon vecteur Vc, qui est mon vecteur dans mes digues que je cherche.
+01:11:17
+Ce vecteur-là, je vais donc ensuite le remultiplier avec mes mots de contexte.
+01:11:28
+Voilà, donc à nouveau j'ai une matrice de taille D x V, la taille de mon vocabulaire, donc avec ici les mots de mon contexte.
+01:11:42
+J'en sorti le produit scalaire entre mon mot central et son mot de contexte, et je transforme ces valeurs-là en softmax, comme indiqué, qui me donne une estimation de la probabilité de x sachant c. Du fait que le mot x soit un mot de contexte de c, et puis que je peux mettre en relation avec ma vérité.
+01:12:10
+Et donc avec le principe d'optimisation des réseaux de neurones, et notamment la descente de gradients, je vais pouvoir petit à petit apprendre les différentes points de ma matrice, et donc je vais pouvoir avoir en sortie la représentation distributionnelle, donc le plongement, le mot dans mes dignes, de mon mot de contexte, donc ici.
+01:12:40
+Alors bien sûr, il y a plein d'applications de tout ça à l'AERI, notamment pour construire des représentations des requêtes et des textes selon ce formalisme, donc avec ces représentations de mots.
+01:12:54
+L'idée c'est d'appliquer ça à chaque mot de la requête, chaque mot du texte, et puis après avec des fonctions d'agrégation, on obtient une représentation de la requête et une représentation du texte qu'on peut après mettre en correspondance avec tous les modèles qu'on a à notre disposition.
+01:13:10
+Et puis il y a plein d'autres architectures qui utilisent ces mécanismes-là.
+01:13:14
+Une slide qui montre l'ensemble des choses qui sont possibles, l'ensemble des architectures qui sont possibles et qui sont toutes plus complexes que les unes que les autres.
+01:13:26
+Voilà, j'en ai fini sur ce cours, donc rapide bilan sur ce qui vous a été présenté.
+01:13:32
+Donc un nouveau paradigme pour l'AERI au travers de cette approche Learning to Rank.
+01:13:36
+Donc ça, j'avais déjà dit la dernière fois, des approches qui tentent d'exploiter toutes les informations à disposition, des résultats comparables à ceux des modèles probabilistes dans le cadre de collection classique et des résultats bien meilleurs quand on a des grosses collections pour lesquelles on est capable de construire des espaces d'attributs très riches.
+01:13:55
+Et puis bien sûr, ce problème de disponibilité des données d'entrée, des données à noter pour mettre en place les techniques d'apprentissage.
+01:14:03
+Voilà, des lectures conseillées pour compléter ce cours.
+01:14:08
+Et puis je vous souhaite un bon lab qui vous demandera d'appliquer l'approche par paire d'une part et d'autre part, qui vous fera travailler justement sur cette partie d'ouverture, donc sur les représentations de mots par plongement lexico.
+01:14:26
