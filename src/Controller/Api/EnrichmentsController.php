@@ -169,10 +169,20 @@ class EnrichmentsController extends AbstractController
     )]
     #[OA\Response(
         response: 200,
-        description: 'Returns an enrichment',
+        description: 'Returns a list of possible AI Models/Infrastructure pairs',
         content: new OA\JsonContent(
-            type: 'object',
-            ref: new Model(type: Enrichment::class, groups: ['enrichments'])
+            type: 'array', items: new OA\Items(type: 'object', properties: [
+                new OA\Property(
+                    property: 'aiModel',
+                    description: 'Enrichment AI Model',
+                    type: 'string'
+                ),
+                new OA\Property(
+                    property: 'infrastructure',
+                    description: 'Infrastructure',
+                    type: 'string',
+                ),
+            ])
         )
     )]
     #[OA\Response(
