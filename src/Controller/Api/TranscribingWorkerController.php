@@ -169,7 +169,7 @@ class TranscribingWorkerController extends AbstractController
                 ->setSentences(json_encode($transcriptContent['sentences'], JSON_THROW_ON_ERROR))
             ;
         } else {
-            return $this->json(['status' => 'KO', 'errors' => ['No transcript has been given']], 403);
+            return $this->json(['status' => 'KO', 'errors' => ['No transcript has been given']], 400);
         }
 
         $enrichmentVersion = (new EnrichmentVersion())

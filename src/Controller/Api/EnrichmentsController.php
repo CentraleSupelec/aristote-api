@@ -335,7 +335,7 @@ class EnrichmentsController extends AbstractController
         in: 'path',
         schema: new OA\Schema(type: 'string')
     )]
-    #[Route('/enrichments/{id}', name: 'enrichment', methods: ['DELETE'])]
+    #[Route('/enrichments/{id}', name: 'delete_enrichment', methods: ['DELETE'])]
     public function deleteEnrichmentByID(string $id, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository, EntityManagerInterface $entityManager): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
@@ -1080,8 +1080,8 @@ class EnrichmentsController extends AbstractController
 
         $inputEnrichmentParameters = json_decode($request->request->get('enrichmentParameters'), true, 512, JSON_THROW_ON_ERROR);
         $endUserIdentifier = $request->request->get('endUserIdentifier');
-        $aiModel = $inputEnrichmentParameters['aiModel'];
-        $infrastructure = $inputEnrichmentParameters['infrastructure'];
+        $aiModel = $inputEnrichmentParameters['aiModel'] ?? null;
+        $infrastructure = $inputEnrichmentParameters['infrastructure'] ?? null;
         $enrichmentCreationFileUploadRequestPayload = (new EnrichmentCreationFileUploadRequestPayload())
             ->setFile($file)
             ->setNotificationWebhookUrl($request->request->get('notificationWebhookUrl'))
