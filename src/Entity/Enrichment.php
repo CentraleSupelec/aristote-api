@@ -188,6 +188,10 @@ class Enrichment
     #[Groups(groups: ['enrichments'])]
     private ?string $infrastructure = null;
 
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    #[Groups(groups: ['enrichments'])]
+    private int $retries = 0;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -539,6 +543,18 @@ class Enrichment
     public function setInfrastructure(?string $infrastructure): self
     {
         $this->infrastructure = $infrastructure;
+
+        return $this;
+    }
+
+    public function getRetries(): int
+    {
+        return $this->retries;
+    }
+
+    public function setRetries(int $retries): self
+    {
+        $this->retries = $retries;
 
         return $this;
     }

@@ -268,6 +268,11 @@ class TranscribingWorkerController extends AbstractController
             if ($enrichmentLock->acquire()) {
                 $mediaFilePath = sprintf('%s/%s', $enrichment->getMedia()->getFileDirectory(), $enrichment->getMedia()->getFileName());
                 $mediaTemporaryUrl = $fileUploadService->generatePublicLink($mediaFilePath);
+
+                if (Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION !== $enrichment->getStatus()) {
+                    $enrichment->setRetries($enrichment->getRetries() + 1);
+                }
+
                 $enrichment
                     ->setStatus(Enrichment::STATUS_TRANSCRIBING_MEDIA)
                     ->setTransribingStartedAt(new DateTime())
