@@ -305,6 +305,11 @@ class AiEnrichmentsWorkerController extends AbstractController
             $enrichmentLock = $lockFactory->createLock(sprintf('enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
                 $enrichmentVersion = $enrichment->getVersions()->get(0);
+
+                if (Enrichment::STATUS_WAITING_AI_ENRICHMENT !== $enrichment->getStatus()) {
+                    $enrichment->setRetries($enrichment->getRetries() + 1);
+                }
+
                 $enrichment
                     ->setStatus(Enrichment::STATUS_AI_ENRICHING)
                     ->setAiEnrichmentStartedAt(new DateTime())

@@ -18,8 +18,11 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class EnrichmentRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $managerRegistry, private readonly PaginatorInterface $paginator)
-    {
+    public function __construct(
+        private readonly int $maxRetries,
+        ManagerRegistry $managerRegistry,
+        private readonly PaginatorInterface $paginator
+    ) {
         parent::__construct($managerRegistry, Enrichment::class);
     }
 
@@ -53,10 +56,13 @@ class EnrichmentRepository extends ServiceEntityRepository
             )
         ));
 
+        $qb->andWhere($qb->expr()->lt('e.retries', ':maxRetries'));
+
         $parameters = [
             'statusWaitingAiEnrichment' => Enrichment::STATUS_WAITING_AI_ENRICHMENT,
             'statusAiEnrichment' => Enrichment::STATUS_AI_ENRICHING,
             'timeThreshold' => (new DateTime())->modify('-'.$minutes.' minutes'),
+            'maxRetries' => $this->maxRetries,
         ];
 
         if ($aiModel) {
@@ -106,10 +112,12 @@ class EnrichmentRepository extends ServiceEntityRepository
                 )
             )
         ))
+            ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
             ->setParameters([
-            'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
-            'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
-            'timeThreshold' => (new DateTime())->modify('-'.$minutes.' minutes'),
+        'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
+        'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
+        'timeThreshold' => (new DateTime())->modify('-'.$minutes.' minutes'),
+        'maxRetries' => $this->maxRetries,
         ])
             ->orderBy('e.createdAt', 'ASC')
         ;
@@ -139,11 +147,13 @@ class EnrichmentRepository extends ServiceEntityRepository
                     )
                 ))
             )
+            ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
             ->setParameters([
                 'statusWaitingAiEvaluation' => Enrichment::STATUS_WAITING_AI_EVALUATION,
                 'statusAiEvaluating' => Enrichment::STATUS_AI_EVALUATING,
                 'timeThreshold' => (new DateTime())->modify('-'.$minutes.' minutes'),
                 'evaluator' => $evaluator,
+                'maxRetries' => $this->maxRetries,
             ])
             ->orderBy('e.createdAt', 'ASC')
         ;

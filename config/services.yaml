@@ -107,3 +107,7 @@ services:
   App\Controller\Api\AiEvaluationWorkerController:
     arguments:
       $aiEvaluationWorkerTimeoutInMinutes: "%env(AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES)%"
+
+  App\Repository\EnrichmentRepository:
+      arguments:
+        $maxRetries: "%env(MAX_RETRIES)%"
