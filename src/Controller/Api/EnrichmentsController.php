@@ -650,10 +650,11 @@ class EnrichmentsController extends AbstractController
             ;
             $answerPointer = $inputMultipleChoiceQuestion['answerPointer'];
             if ($answerPointer && $answerPointer['startAnswerPointer']) {
-                $multipleChoiceQuestion->setAnswerPointer((new AnswerPointer())->setStartAnswerPointer($answerPointer['startAnswerPointer']));
+                $anwserPointerEntity = (new AnswerPointer())->setStartAnswerPointer($answerPointer['startAnswerPointer']);
                 if ($answerPointer['stopAnswerPointer']) {
-                    $multipleChoiceQuestion->setAnswerPointer((new AnswerPointer())->setStopAnswerPointer($answerPointer['stopAnswerPointer']));
+                    $anwserPointerEntity->setStopAnswerPointer($answerPointer['stopAnswerPointer']);
                 }
+                $multipleChoiceQuestion->setAnswerPointer($anwserPointerEntity);
             }
 
             foreach ($inputMultipleChoiceQuestion['choices'] as $choice) {
