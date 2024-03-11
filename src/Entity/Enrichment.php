@@ -75,10 +75,12 @@ class Enrichment
 
     #[ORM\ManyToOne(inversedBy: 'aiProcessedEnrichments', targetEntity: ApiClient::class, )]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?ApiClient $aiProcessedBy = null;
 
     #[ORM\ManyToOne(inversedBy: 'aiEvaluatedEnrichments', targetEntity: ApiClient::class, )]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?ApiClient $aiEvaluatedBy = null;
 
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
@@ -86,6 +88,7 @@ class Enrichment
 
     #[ORM\ManyToOne(inversedBy: 'transcribedEnrichments', targetEntity: ApiClient::class, )]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?ApiClient $transcribedBy = null;
 
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
@@ -151,15 +154,19 @@ class Enrichment
     private ?array $mediaTypes = [];
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?DateTimeInterface $aiEnrichmentStartedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?DateTimeInterface $aiEnrichmentEndedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?DateTimeInterface $transribingStartedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?DateTimeInterface $transribingEndedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -171,9 +178,11 @@ class Enrichment
     private ?string $aiEvaluation = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?DateTimeInterface $aiEvaluationStartedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?DateTimeInterface $aiEvaluationEndedAt = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

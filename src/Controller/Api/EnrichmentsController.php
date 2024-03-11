@@ -131,6 +131,12 @@ class EnrichmentsController extends AbstractController
         in: 'query',
         schema: new OA\Schema(type: 'string')
     )]
+    #[OA\Parameter(
+        name: 'withStatus',
+        description: 'Get Statuses information',
+        in: 'query',
+        schema: new OA\Schema(type: 'boolean')
+    )]
     #[Route('/enrichments', name: 'enrichments', methods: ['GET'], options: ['expose' => true])]
     public function getEnrichments(Request $request, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository): Response
     {
@@ -143,6 +149,13 @@ class EnrichmentsController extends AbstractController
         $size = $request->query->get('size', 50);
         $page = $request->query->get('page', 1);
         $endUserIdentifier = $request->query->get('endUserIdentifier');
+        $withStatus = $request->query->get('withStatus', 'false');
+
+        $groups = ['enrichments'];
+
+        if ('true' === $withStatus) {
+            $groups[] = 'enrichments_with_status';
+        }
 
         $paginationParametersErrors = $this->paginationUtils->paginationRequestParametersValidator(Enrichment::getSortFields(), $sort, $order, $size, $page);
 
@@ -156,7 +169,7 @@ class EnrichmentsController extends AbstractController
         $enrichments = $enrichmentRepository->findByCreatedBy($clientEntity->getIdentifier(), $page, $size, $sort, $order, $endUserIdentifier);
 
         $options = [
-            AbstractNormalizer::GROUPS => ['enrichments'],
+            AbstractNormalizer::GROUPS => $groups,
         ];
 
         return $this->json($this->paginationUtils->parsePagination($enrichments), context: $options);
