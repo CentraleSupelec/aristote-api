@@ -70,7 +70,7 @@ class EnrichmentsController extends AbstractController
                 new OA\Property(
                     property: 'content',
                     type: 'array',
-                    items: new OA\Items(ref: new Model(type: Enrichment::class, groups: ['enrichments']))
+                    items: new OA\Items(ref: new Model(type: Enrichment::class, groups: ['enrichments', 'enrichments_with_status']))
                 ),
                 new OA\Property(
                     property: 'isLastPage',
