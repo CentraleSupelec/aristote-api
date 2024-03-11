@@ -13,9 +13,9 @@ class MultipleChoiceQuestionNormalizer implements NormalizerInterface
     ) {
     }
 
-    public function normalize($enrichment, string $format = null, array $context = []): array
+    public function normalize($multipleChoiceQuestion, string $format = null, array $context = []): array
     {
-        $data = $this->objectNormalizer->normalize($enrichment, $format, $context);
+        $data = $this->objectNormalizer->normalize($multipleChoiceQuestion, $format, $context);
 
         if (isset($data['evaluation'])) {
             $data['evaluation'] = json_decode((string) $data['evaluation'], null, 512, JSON_THROW_ON_ERROR);
