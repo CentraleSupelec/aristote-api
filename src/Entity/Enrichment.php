@@ -76,11 +76,23 @@ class Enrichment
     #[ORM\ManyToOne(inversedBy: 'aiProcessedEnrichments', targetEntity: ApiClient::class, )]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     #[Groups(groups: ['enrichments_with_status'])]
+    #[OA\Property(property: 'aiProcessedBy', type: 'object', properties: [
+        new OA\Property(
+            property: 'name',
+            type: 'string'
+        ),
+    ])]
     private ?ApiClient $aiProcessedBy = null;
 
     #[ORM\ManyToOne(inversedBy: 'aiEvaluatedEnrichments', targetEntity: ApiClient::class, )]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     #[Groups(groups: ['enrichments_with_status'])]
+    #[OA\Property(property: 'aiEvaluatedBy', type: 'object', properties: [
+        new OA\Property(
+            property: 'name',
+            type: 'string'
+        ),
+    ])]
     private ?ApiClient $aiEvaluatedBy = null;
 
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
@@ -89,6 +101,12 @@ class Enrichment
     #[ORM\ManyToOne(inversedBy: 'transcribedEnrichments', targetEntity: ApiClient::class, )]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     #[Groups(groups: ['enrichments_with_status'])]
+    #[OA\Property(property: 'transcribedBy', type: 'object', properties: [
+        new OA\Property(
+            property: 'name',
+            type: 'string'
+        ),
+    ])]
     private ?ApiClient $transcribedBy = null;
 
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
