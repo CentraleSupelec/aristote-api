@@ -26,17 +26,17 @@ class EnrichmentVersionMetadata implements Stringable
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(allowNull: false)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job'])]
     private ?string $title = null;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(allowNull: false)]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job'])]
     private ?string $description = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'topics', description: 'Topics', type: 'array', items: new OA\Items(type: 'string'))]
-    #[Groups(groups: ['enrichment_versions'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job'])]
     private ?array $topics = [];
 
     #[ORM\Column(type: 'string', nullable: true)]

@@ -30,12 +30,12 @@ class Transcript
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions', 'enrichment_job'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_evaluation_job'])]
     private ?string $language = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions', 'enrichment_job'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_evaluation_job'])]
     private ?string $text = null;
 
     #[ORM\Column(type: 'json', nullable: true)]

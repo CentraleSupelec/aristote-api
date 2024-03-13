@@ -96,18 +96,9 @@ services:
     arguments:
       $enrichmentWorkerService: '@app.ai_evaluation_worker'
   
-  App\Controller\Api\TranscribingWorkerController:
-    arguments:
-      $transcriptionWorkerTimeoutInMinutes: "%env(TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES)%"
-
-  App\Controller\Api\AiEnrichmentsWorkerController:
-    arguments:
-      $aiEnrichmentWorkerTimeoutInMinutes: "%env(AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES)%"
-  
-  App\Controller\Api\AiEvaluationWorkerController:
-    arguments:
-      $aiEvaluationWorkerTimeoutInMinutes: "%env(AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES)%"
-
   App\Repository\EnrichmentRepository:
-      arguments:
-        $maxRetries: "%env(MAX_RETRIES)%"
+    arguments:
+      $maxRetries: "%env(MAX_RETRIES)%"
+      $transcriptionWorkerTimeoutInMinutes: "%env(TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES)%"
+      $aiEnrichmentWorkerTimeoutInMinutes: "%env(AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES)%"
+      $aiEvaluationWorkerTimeoutInMinutes: "%env(AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES)%"

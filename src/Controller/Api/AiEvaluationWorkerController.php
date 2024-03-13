@@ -25,7 +25,6 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,7 +41,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class AiEvaluationWorkerController extends AbstractController
 {
     public function __construct(
-        private readonly int $aiEvaluationWorkerTimeoutInMinutes,
         private readonly LoggerInterface $logger,
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
@@ -292,7 +290,7 @@ class AiEvaluationWorkerController extends AbstractController
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
-            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEvaluationStatusOrAiEvaluatingStatusForMoreThanXMinutesByEvaluator($evaluator, $this->aiEvaluationWorkerTimeoutInMinutes);
+            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEvaluationStatusOrAiEvaluatingStatusForMoreThanXMinutesByEvaluator($evaluator);
 
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => ['No job currently available']], 404);
@@ -327,6 +325,7 @@ class AiEvaluationWorkerController extends AbstractController
                     ->setEnrichmentVersionId($enrichmentVersion->getId())
                     ->setTranscript($enrichmentVersion->getTranscript())
                     ->setMultipleChoiceQuestions($enrichmentVersion->getMultipleChoiceQuestions())
+                    ->setEnrichmentVersionMetadata($enrichmentVersion->getEnrichmentVersionMetadata())
                 ;
 
                 return $this->json($aiEvaluationJobResponse, context: $options);

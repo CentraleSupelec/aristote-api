@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Entity\EnrichmentVersionMetadata;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -29,6 +30,10 @@ class AiEvaluationJobResponse
     #[OA\Property(property: 'multipleChoiceQuestions', type: 'array', items: new OA\Items(ref: new Model(type: MultipleChoiceQuestion::class, groups: ['ai_evaluation_job'])))]
     #[Groups(groups: ['ai_evaluation_job'])]
     private Collection $multipleChoiceQuestions;
+
+    #[OA\Property(property: 'enrichmentVersionMetadata', type: 'object', ref: new Model(type: EnrichmentVersionMetadata::class, groups: ['ai_evaluation_job']))]
+    #[Groups(groups: ['ai_evaluation_job'])]
+    private ?EnrichmentVersionMetadata $enrichmentVersionMetadata = null;
 
     public function __construct()
     {
@@ -82,6 +87,18 @@ class AiEvaluationJobResponse
     public function setMultipleChoiceQuestions(Collection $multipleChoiceQuestion): self
     {
         $this->multipleChoiceQuestions = $multipleChoiceQuestion;
+
+        return $this;
+    }
+
+    public function getEnrichmentVersionMetadata(): ?EnrichmentVersionMetadata
+    {
+        return $this->enrichmentVersionMetadata;
+    }
+
+    public function setEnrichmentVersionMetadata(?EnrichmentVersionMetadata $enrichmentVersionMetadata): static
+    {
+        $this->enrichmentVersionMetadata = $enrichmentVersionMetadata;
 
         return $this;
     }
