@@ -36,7 +36,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class TranscribingWorkerController extends AbstractController
 {
     public function __construct(
-        private readonly int $transcriptionWorkerTimeoutInMinutes,
         private readonly LoggerInterface $logger,
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
@@ -258,7 +257,7 @@ class TranscribingWorkerController extends AbstractController
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
-            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingMediaTranscriptionStatusOrTranscribingMediaStatusForMoreThanXMinutes($this->transcriptionWorkerTimeoutInMinutes);
+            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingMediaTranscriptionStatusOrTranscribingMediaStatusForMoreThanXMinutes();
 
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => ['No transcription job currently available']], 404);

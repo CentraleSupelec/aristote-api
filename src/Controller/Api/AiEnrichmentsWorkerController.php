@@ -24,7 +24,6 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,7 +40,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class AiEnrichmentsWorkerController extends AbstractController
 {
     public function __construct(
-        private readonly int $aiEnrichmentWorkerTimeoutInMinutes,
         private readonly LoggerInterface $logger,
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
@@ -289,7 +287,6 @@ class AiEnrichmentsWorkerController extends AbstractController
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
             $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(
-                $this->aiEnrichmentWorkerTimeoutInMinutes,
                 $clientEntity->getAiModel(),
                 $clientEntity->getInfrastructure()
             );

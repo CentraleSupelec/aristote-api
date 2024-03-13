@@ -994,8 +994,8 @@ class EnrichmentsController extends AbstractController
                 ->setDisciplines($content['enrichmentParameters']['disciplines'] ?? [])
                 ->setMediaTypes($content['enrichmentParameters']['mediaTypes'] ?? [])
                 ->setAiEvaluation($content['enrichmentParameters']['aiEvaluation'] ?? null)
-                ->setAiModel(null === $content['aiModel'] || '' === $content['aiModel'] ? null : $content['aiModel'])
-                ->setInfrastructure(null === $content['infrastructure'] || '' === $content['infrastructure'] ? null : $content['infrastructure'])
+                ->setAiModel(null === $content['enrichmentParameters']['aiModel'] || '' === $content['enrichmentParameters']['aiModel'] ? null : $content['enrichmentParameters']['aiModel'])
+                ->setInfrastructure(null === $content['enrichmentParameters']['infrastructure'] || '' === $content['enrichmentParameters']['infrastructure'] ? null : $content['enrichmentParameters']['infrastructure'])
             )
         ;
 
