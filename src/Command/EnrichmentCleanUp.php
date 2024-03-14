@@ -28,9 +28,10 @@ class EnrichmentCleanUp extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        new SymfonyStyle($input, $output);
+        $symfonyStyle = new SymfonyStyle($input, $output);
 
-        $enrichments = $this->enrichmentRepository->findEnrichmentsWithMaxTriesNotAtWaitingStatus();
+        $enrichments = $this->enrichmentRepository->findEnrichmentsWithMaxTriesAtWaitingStatus();
+        $symfonyStyle->info(sprintf('%s enrichments to pass to failure status', count($enrichments)));
 
         foreach ($enrichments as $enrichment) {
             /* @var Enrichment $enrichment */
@@ -40,6 +41,7 @@ class EnrichmentCleanUp extends Command
             ;
         }
         $this->entityManager->flush();
+        $symfonyStyle->success(sprintf('Successfully passed %s enrichments to failure status', count($enrichments)));
 
         return Command::SUCCESS;
     }
