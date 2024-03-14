@@ -170,7 +170,7 @@ class EnrichmentRepository extends ServiceEntityRepository
         return null;
     }
 
-    public function findEnrichmentsWithMaxTriesNotAtWaitingStatus(): array
+    public function findEnrichmentsWithMaxTriesAtWaitingStatus(): array
     {
         $qb = $this->createQueryBuilder('e');
         $qb
