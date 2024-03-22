@@ -43,8 +43,17 @@ class FileUploadFromUrlMessageHandler
 
         try {
             $uploadedFile = new UploadedFile($temporaryFilePath, $url);
-            $enrichment = $this->fileUploadService->uploadFile($uploadedFile, $fileUploadFromUrlMessage->getApiClient(), $enrichment);
-            $this->entityManager->flush();
+            if ('application/x-empty' === $uploadedFile->getMimeType()) {
+                $errorMessage = "Uploaded file mimetype is 'application/x-empty'. Please report this issue.";
+
+                if (file_exists($temporaryFilePath)) {
+                    unlink($temporaryFilePath);
+                }
+                $this->handleUploadFailure($enrichment, new Exception($errorMessage), $errorMessage);
+            } else {
+                $enrichment = $this->fileUploadService->uploadFile($uploadedFile, $fileUploadFromUrlMessage->getApiClient(), $enrichment);
+                $this->entityManager->flush();
+            }
             unlink($temporaryFilePath);
         } catch (Exception $exception) {
             if (file_exists($temporaryFilePath)) {
@@ -63,7 +72,14 @@ class FileUploadFromUrlMessageHandler
             mkdir(Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, 0777, true);
         }
 
-        $fileContents = file_get_contents($fileUrl);
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+            ],
+        ]);
+
+        $fileContents = file_get_contents($fileUrl, false, $context);
         file_put_contents(sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $fileName), $fileContents);
 
         return $fileName;

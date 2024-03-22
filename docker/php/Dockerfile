@@ -14,11 +14,11 @@ RUN docker-php-ext-install intl mbstring opcache pdo pdo_pgsql pdo_mysql zip bcm
     && docker-php-ext-enable redis
 
 RUN echo "date.timezone = Europe/Paris" >> /usr/local/etc/php/conf.d/timezone.ini && \
-    echo 'memory_limit = 1024M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini && \
+    echo 'memory_limit = 4096M' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini && \
     echo 'short_open_tag = off' >> /usr/local/etc/php/conf.d/docker-php-short-open-tag.ini && \
     echo 'expose_php = off' >> /usr/local/etc/php/conf.d/docker-php-expose.ini && \
-    echo 'post_max_size = 1024M' >> /usr/local/etc/php/conf.d/docker-php-upload.ini && \
-    echo 'upload_max_filesize = 1024M' >> /usr/local/etc/php/conf.d/docker-php-upload.ini
+    echo 'post_max_size = 2048M' >> /usr/local/etc/php/conf.d/docker-php-upload.ini && \
+    echo 'upload_max_filesize = 2048M' >> /usr/local/etc/php/conf.d/docker-php-upload.ini
 
 WORKDIR /app
 
