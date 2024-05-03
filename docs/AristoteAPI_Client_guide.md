@@ -1,4 +1,4 @@
-# Project actors, components and termminology
+# Project actors, components and terminology
 
 **Aristote** is an AI infrastructure which helps enrich pedagogical contents such as videos, providing automatic metadata and MCQ generation. It is made available through the use of the **AristoteAPI**.
 
