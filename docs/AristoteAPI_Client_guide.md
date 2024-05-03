@@ -35,7 +35,7 @@ Here is a basic state diagram of the statuses for the `Enrichment`:
 ```mermaid
 stateDiagram-v2
    WAITING_EVALUATION: WAITING_EVALUATION
-   note right of WAITING_EVALUATION
+   note left of WAITING_EVALUATION
       Optionnal step
    end note
     [*] --> UPLOADING_MEDIA
