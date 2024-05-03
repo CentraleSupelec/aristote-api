@@ -27,7 +27,8 @@ The *client* can post the URL of a video to create an `Enrichment`.
 **Aristote's workers** will then process the `Enrichment`:
 - the **media worker** will download the media, and the `Enrichment` status will change to `UPLOADING_MEDIA` then `WAITING_MEDIA_TRANSCRIPTION`
 - the **transcription worker** will process the video and the enrichment status will change to `TRANSCRBING_MEDIA` then to `WAITING_AI_ENRICHMENT`
-- the **AI worker** will then process the `Enrichment` and its status will switch to `AI_ENRICHING` and then to `SUCCESS` or `FAILURE`
+- the **AI worker** will then process the `Enrichment` and its status will switch to `AI_ENRICHING`. If the `Evaluation` option has not been required, then the state switches to `SUCCESS` or `FAILURE`
+- If the optionnal `Evaluation` feature has been asked at the `Enrichment` creation time, the state will switch to `WAITING_EVALUATION`then `EVALUATING`before going to `SUCCESS`or `ERROR`
 - Failure can occur at several steps
 
 Here is a basic state diagram of the statuses for the `Enrichment`:
@@ -39,6 +40,9 @@ stateDiagram-v2
     TRANSCRBING_MEDIA --> WAITING_AI_ENRICHMENT
     WAITING_AI_ENRICHMENT --> AI_ENRICHING
     AI_ENRICHING --> SUCCESS
+    AI_ENRICHING --> WAITING_EVALUATION
+    WAITING_EVALUATION --> EVALUATING
+    EVALUATING --> SUCCESS
     AI_ENRICHING --> FAILURE
     TRANSCRBING_MEDIA --> FAILURE
     UPLOADING_MEDIA --> FAILURE
