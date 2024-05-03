@@ -34,6 +34,9 @@ The *client* can post the URL of a video to create an `Enrichment`.
 Here is a basic state diagram of the statuses for the `Enrichment`:
 ```mermaid
 stateDiagram-v2
+   WAITING_EVALUATION: WAITING_EVALUATION
+   note right of WAITING_EVALUATION
+      Optionnal step
     [*] --> UPLOADING_MEDIA
     UPLOADING_MEDIA --> WAITING_MEDIA_TRANSCRIPTION
     WAITING_MEDIA_TRANSCRIPTION --> TRANSCRBING_MEDIA    
