@@ -46,6 +46,7 @@ services:
     arguments:
       - version: '2006-03-01'
         region: '%env(OVH_REGION)%'
+        use_path_style_endpoint: true
         credentials:
           key: '%env(OVH_ACCESS_KEY)%'
           secret: '%env(OVH_SECRET_KEY)%'
@@ -56,7 +57,7 @@ services:
   app.service.file_upload_service:
     class: App\Service\FileUploadService
     arguments:
-      $baseDirectory: '%env(APP_ENV)%/videos/'
+      $baseDirectory: '%env(APP_ENV)%'
       $bucketName: '%env(OVH_BUCKET_NAME)%'
       $linkExpirationInMinutes: '%env(S3_LINK_EXPIRATION_IN_MINUTES)%'
 

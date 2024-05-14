@@ -9,7 +9,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use UnexpectedValueException;
 
-class VideoFileConstraintValidator extends ConstraintValidator
+class SubtitleFileConstraintValidator extends ConstraintValidator
 {
     public function __construct(
         private readonly MimeTypeUtils $mimeTypeUtils,
@@ -18,8 +18,8 @@ class VideoFileConstraintValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof VideoFileConstraint) {
-            throw new UnexpectedTypeException($constraint, VideoFileConstraint::class);
+        if (!$constraint instanceof SubtitleFileConstraint) {
+            throw new UnexpectedTypeException($constraint, SubtitleFileConstraint::class);
         }
         if (null === $value) {
             return;
@@ -29,7 +29,7 @@ class VideoFileConstraintValidator extends ConstraintValidator
         }
 
         /** @var File $value */
-        if (!$this->mimeTypeUtils->isVideo($value->getMimeType())) {
+        if (!$this->mimeTypeUtils->isPlainText($value->getMimeType())) {
             $this->context->buildViolation($constraint->invalidFormat)->addViolation();
         }
     }

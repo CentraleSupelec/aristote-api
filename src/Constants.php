@@ -14,8 +14,7 @@ final class Constants
     public const SCOPE_TRANSCRIPTION_WORKER = 'scope_transcription_worker';
     public const SCOPE_EVALUATION_WORKER = 'scope_evaluation_worker';
     public const SORT_ORDER_OPTIONS = ['asc', 'desc'];
-    public const TEMPORARY_STORAGE_PATH = './tmp/videos';
-    public const TEMPORARY_STORAGE_FOR_WORKER_PATH = './public/tmp/videos';
+    public const TEMPORARY_STORAGE_FOR_WORKER_PATH = './public/tmp/medias';
     public const MEDIAS_PREFIX = 'medias';
     public const EVALUATOR_CHAT_GPT = 'ChatGPT';
 

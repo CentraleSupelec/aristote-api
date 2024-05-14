@@ -37,3 +37,8 @@ config/jwt/public.key
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+/minio/.minio.sys
+/minio/.DS_Store
+/minio/*/*
+!/minio/*/.gitkeep

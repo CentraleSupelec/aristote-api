@@ -34,89 +34,6 @@ services:
       - "./var/cache:/app/var/cache:delegated"
       - "./var/log:/app/var/log:delegated"
 
-  transcription-worker:
-    restart: always
-    build:
-      dockerfile: ./docker/php/Dockerfile
-      context: .
-      target: php_dev
-    command:
-      - php-fpm
-      - -d xdebug.client_host=host.docker.internal
-    entrypoint: [ '/bin/bash', '/worker-enrichment-entrypoint.sh' ]
-    depends_on:
-      - php
-    volumes:
-      - ".:/app:cached"
-      - "./var/cache:/app/var/cache:delegated"
-      - "./var/log:/app/var/log:delegated"
-
-  ai-enrichment-worker:
-    restart: always
-    build:
-      dockerfile: ./docker/php/Dockerfile
-      context: .
-      target: php_dev
-    command:
-      - php-fpm
-      - -d xdebug.client_host=host.docker.internal
-    entrypoint: [ '/bin/bash', '/worker-enrichment-entrypoint.sh' ]
-    depends_on:
-      - php
-    volumes:
-      - ".:/app:cached"
-      - "./var/cache:/app/var/cache:delegated"
-      - "./var/log:/app/var/log:delegated"
-
-  evaluation-worker:
-    restart: always
-    build:
-      dockerfile: ./docker/php/Dockerfile
-      context: .
-      target: php_dev
-    command:
-      - php-fpm
-      - -d xdebug.client_host=host.docker.internal
-    entrypoint: [ '/bin/bash', '/worker-enrichment-entrypoint.sh' ]
-    depends_on:
-      - php
-    volumes:
-      - ".:/app:cached"
-      - "./var/cache:/app/var/cache:delegated"
-      - "./var/log:/app/var/log:delegated"
-
-  client-worker:
-    restart: always
-    build:
-      dockerfile: ./docker/php/Dockerfile
-      context: .
-      target: php_dev
-    command:
-      - php-fpm
-      - -d xdebug.client_host=host.docker.internal
-    entrypoint: [ '/bin/bash', '/worker-enrichment-entrypoint.sh' ]
-    depends_on:
-      - php
-    volumes:
-      - ".:/app:cached"
-      - "./var/cache:/app/var/cache:delegated"
-      - "./var/log:/app/var/log:delegated"
-
-  client-nginx:
-    build:
-      context: .
-      dockerfile: ./docker/nginx/Dockerfile
-      target: nginx_dev
-    depends_on:
-      - client-worker
-    environment:
-      PHP_BACKEND: client-worker
-    volumes:
-      - "./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:cached"
-      - ".:/app:cached"
-    ports:
-      - ${FRONT_PORT:-8081}:80
-
   nginx:
     build:
       context: .
@@ -157,5 +74,33 @@ services:
     ports:
       - "5433:5432"
 
+  minio:
+    container_name: aristote-minio
+    image: quay.io/minio/minio
+    restart: on-failure
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - ./minio:/data:rw
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: aristote-pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: aristote@api.com
+      PGADMIN_DEFAULT_PASSWORD: arisote
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json
+
 volumes:
   db-data:
+  pgadmin-data:

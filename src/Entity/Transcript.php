@@ -44,30 +44,25 @@ class Transcript
     #[OA\Property(property: 'sentences', description: "Transcipt's sentences", type: 'array', items: new OA\Items(type: 'object', properties: [
         new OA\Property(
             property: 'is_transient',
-            description: 'Returns the current page number',
             type: 'boolean'
         ),
         new OA\Property(
             property: 'no_speech_prob',
-            description: 'Returns the current page number',
             type: 'integer',
             format: 'int64'
         ),
         new OA\Property(
             property: 'start',
-            description: 'Returns the current page number',
             type: 'integer',
             format: 'int64'
         ),
         new OA\Property(
             property: 'end',
-            description: 'Returns the current page number',
             type: 'integer',
             format: 'int64'
         ),
         new OA\Property(
             property: 'text',
-            description: 'Returns the current page number',
             type: 'string'
         ),
     ]))]
