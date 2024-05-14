@@ -33,13 +33,11 @@ class FileUploadFromUrlMessageHandler
         $url = $fileUploadFromUrlMessage->getEnrichmentCreationUrlRequestPayload()->getUrl();
 
         try {
-            $fileName = $this->getFileFromUrl($url);
+            $temporaryFilePath = $this->getFileFromUrl($url);
         } catch (Exception $exception) {
             $this->handleUploadFailure($enrichment, $exception, "Couldn't get file from URL");
             throw $exception;
         }
-
-        $temporaryFilePath = sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $fileName);
 
         try {
             $uploadedFile = new UploadedFile($temporaryFilePath, $url);
@@ -80,9 +78,10 @@ class FileUploadFromUrlMessageHandler
         ]);
 
         $fileContents = file_get_contents($fileUrl, false, $context);
-        file_put_contents(sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $fileName), $fileContents);
+        $filePath = sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $fileName);
+        file_put_contents($filePath, $fileContents);
 
-        return $fileName;
+        return $filePath;
     }
 
     private function handleUploadFailure(Enrichment $enrichment, Exception $exception, string $errorMessage)

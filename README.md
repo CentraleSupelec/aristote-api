@@ -62,7 +62,7 @@ docker-compose exec -it php sh tests/init-test-database.sh
 
 Command to run all tests:
 ```
-docker-compose exec -it php vendor/bin/phpunit
+docker-compose exec -it php php vendor/bin/phpunit
 ```
 
 To run a given testing directory:
@@ -74,12 +74,12 @@ docker-compose exec -it php vendor/bin/phpunit tests/<SUBDIRECTORY_NAME>
 
 * Run the php fixer
 ```
-docker-compose exec -it php vendor/bin/php-cs-fixer fix -v --dry-run
+docker-compose exec -it php php vendor/bin/php-cs-fixer fix -v --dry-run
 ```
 
 * Run rector
 ```
-docker-compose exec -it php vendor/bin/rector process --dry-run
+docker-compose exec -it php php vendor/bin/rector process --dry-run
 ```
 
  * Générer une migration :

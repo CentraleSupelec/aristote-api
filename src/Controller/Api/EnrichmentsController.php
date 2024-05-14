@@ -10,6 +10,7 @@ use App\Entity\EnrichmentVersion;
 use App\Entity\EnrichmentVersionMetadata;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
+use App\Exception\UploadFileUnsupportedTypeException;
 use App\Message\FileUploadFromUrlMessage;
 use App\Model\EnrichmentCreationFileUploadRequestPayload;
 use App\Model\EnrichmentCreationUrlRequestPayload;
@@ -1131,7 +1132,14 @@ class EnrichmentsController extends AbstractController
                 ->setInfrastructure($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getInfrastructure())
         ;
 
-        $enrichment = $fileUploadService->uploadFile($file, $clientEntity, $enrichment);
+        try {
+            $enrichment = $fileUploadService->uploadFile($file, $clientEntity, $enrichment);
+        } catch (UploadFileUnsupportedTypeException $exception) {
+            return $this->json([
+                'status' => 'KO',
+                'errors' => $exception->getMessage(),
+            ], 400);
+        }
 
         $errors = $this->validator->validate($enrichment);
         if (count($errors) > 0) {

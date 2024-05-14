@@ -3,19 +3,20 @@
 namespace App\Serializer;
 
 use App\Entity\ApiClient;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class ApiClientNormalizer implements NormalizerInterface
 {
     public function __construct(
-        private readonly ObjectNormalizer $objectNormalizer,
+        #[Autowire(service: 'serializer.normalizer.object')]
+        private readonly NormalizerInterface $normalizer,
     ) {
     }
 
     public function normalize($apiClient, string $format = null, array $context = []): array
     {
-        $data = $this->objectNormalizer->normalize($apiClient, $format, $context);
+        $data = $this->normalizer->normalize($apiClient, $format, $context);
         if ($context['groups'] && in_array('enrichments_with_status', $context['groups'])) {
             $data['name'] = $apiClient->getName();
         }
@@ -26,5 +27,12 @@ class ApiClientNormalizer implements NormalizerInterface
     public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
         return $data instanceof ApiClient;
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            ApiClient::class => true,
+        ];
     }
 }

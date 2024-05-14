@@ -28,7 +28,7 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 80, unique: true)]
     #[ORM\GeneratedValue(strategy: 'NONE')]
-    protected $identifier;
+    protected string $identifier;
 
     #[Assert\Length(min: 6, minMessage: 'Veuillez saisir un mot de passe plus long (minimum 6 caractères).')]
     #[Assert\NotBlank(message: 'Veuillez saisir un secret.', allowNull: false, groups: ['CreateApiClient'])]
@@ -101,7 +101,7 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
 
     public function getId(): ?string
     {
-        return $this->identifier;
+        return $this->identifier ?? null;
     }
 
     public function getPlainSecret(): ?string

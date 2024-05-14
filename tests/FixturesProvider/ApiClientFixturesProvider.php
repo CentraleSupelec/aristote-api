@@ -35,4 +35,93 @@ class ApiClientFixturesProvider
 
         return $apiClients;
     }
+
+    public static function getApiClientScopeClient(EntityManagerInterface $entityManager = null): ApiClient
+    {
+        $apiClient = (new ApiClient('client', 'client', 'very-secret'))
+            ->setActive(true)
+            ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
+            ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_CLIENT])
+        ;
+
+        if (null !== $entityManager) {
+            $entityManager->persist($apiClient);
+
+            $entityManager->flush();
+        }
+
+        return $apiClient;
+    }
+
+    public static function getApiClientScopeClients(EntityManagerInterface $entityManager = null): array
+    {
+        $firstApiClient = (new ApiClient('client1', 'client1', 'very-secret'))
+            ->setActive(true)
+            ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
+            ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_CLIENT])
+        ;
+
+        $secondApiClient = (new ApiClient('client2', 'client2', 'very-secret'))
+            ->setActive(true)
+            ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
+            ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_CLIENT])
+        ;
+
+        if (null !== $entityManager) {
+            $entityManager->persist($firstApiClient);
+            $entityManager->persist($secondApiClient);
+
+            $entityManager->flush();
+        }
+
+        return [$firstApiClient, $secondApiClient];
+    }
+
+    public static function getApiClientScopeEnrichmentWorker(EntityManagerInterface $entityManager = null): ApiClient
+    {
+        $apiClient = (new ApiClient('enrichment', 'enrichment', 'very-secret'))
+            ->setActive(true)
+            ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
+            ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_PROCESSING_WORKER])
+        ;
+
+        if (null !== $entityManager) {
+            $entityManager->persist($apiClient);
+            $entityManager->flush();
+        }
+
+        return $apiClient;
+    }
+
+    public static function getApiClientScopeTranscriptionWorker(EntityManagerInterface $entityManager = null): ApiClient
+    {
+        $apiClient = (new ApiClient('trasription', 'trasription', 'very-secret'))
+            ->setActive(true)
+            ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
+            ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_TRANSCRIPTION_WORKER])
+        ;
+
+        if (null !== $entityManager) {
+            $entityManager->persist($apiClient);
+            $entityManager->flush();
+        }
+
+        return $apiClient;
+    }
+
+    public static function getApiClientScopeEvaluationWorker(EntityManagerInterface $entityManager = null): ApiClient
+    {
+        $apiClient = (new ApiClient('evaluation', 'evaluation', 'very-secret'))
+            ->setActive(true)
+            ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
+            ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_TRANSCRIPTION_WORKER])
+        ;
+
+        if (null !== $entityManager) {
+            $entityManager->persist($apiClient);
+            $entityManager->flush();
+        }
+
+        return $apiClient;
+    }
 }

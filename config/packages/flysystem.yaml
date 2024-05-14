@@ -3,7 +3,6 @@ flysystem:
     storages:
         media.storage:
             adapter: 'aws'
-            # visibility: public # Make the uploaded file publicly accessible in S3
             options:
                 client: 'media_storage_s3'
                 bucket: '%env(OVH_BUCKET_NAME)%'
