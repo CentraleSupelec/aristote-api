@@ -173,7 +173,15 @@ class TranscribingWorkerController extends AbstractController
 
         $enrichmentVersion = (new EnrichmentVersion())
             ->setInitialVersion(true)
+            ->setAiGenerated(true)
             ->setTranscript($newTranscript)
+            ->setNotificationWebhookUrl($enrichment->getNotificationWebhookUrl())
+            ->setDisciplines($enrichment->getDisciplines())
+            ->setMediaTypes($enrichment->getMediaTypes())
+            ->setAiEvaluation($enrichment->getAiEvaluation())
+            ->setEndUserIdentifier($enrichment->getEndUserIdentifier())
+            ->setAiModel($enrichment->getAiModel())
+            ->setInfrastructure($enrichment->getInfrastructure())
         ;
 
         $enrichment->addVersion($enrichmentVersion);

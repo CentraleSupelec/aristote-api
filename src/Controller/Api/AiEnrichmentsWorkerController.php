@@ -146,10 +146,11 @@ class AiEnrichmentsWorkerController extends AbstractController
                 return $enrichmentVersionAccessErrorResponse;
             }
 
-            if (!$enrichmentVersion->isInitialVersion()) {
+            $latestEnrichmentVersion = $enrichmentVersionRepository->findLatestVersionByEnrichmentId($enrichmentId);
+            if (!$enrichmentVersion->getId()->equals($latestEnrichmentVersion->getId()) || !$enrichmentVersion->isAiGenerated()) {
                 return $this->json([
                     'status' => 'KO',
-                    'errors' => ['This enrichment version is not an initial version waiting for AI Enrichment'],
+                    'errors' => ['This enrichment version is not a placeholder AI generated version waiting for AI Enrichment'],
                 ], 403);
             }
 
@@ -269,6 +270,7 @@ class AiEnrichmentsWorkerController extends AbstractController
         LockFactory $lockFactory,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
+        EnrichmentVersionRepository $enrichmentVersionRepository
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_PROCESSING_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
@@ -294,15 +296,14 @@ class AiEnrichmentsWorkerController extends AbstractController
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => ['No job currently available']], 404);
             }
+            $latestEnrichmentVersion = $enrichmentVersionRepository->findLatestVersionByEnrichmentId($enrichment->getId());
 
-            if (1 !== $enrichment->getVersions()->count()) {
-                return $this->json(['status' => 'KO', 'errors' => [sprintf('No or more than one versions have been found for the eligible enrichment (%s), please report this issue', $enrichment->getId())]], 404);
+            if (!$latestEnrichmentVersion->isAiGenerated()) {
+                return $this->json(['status' => 'KO', 'errors' => [sprintf('No enrichment version prepared for the eligible enrichment (%s), please report this issue', $enrichment->getId())]], 404);
             }
 
             $enrichmentLock = $lockFactory->createLock(sprintf('enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
-                $enrichmentVersion = $enrichment->getVersions()->get(0);
-
                 if (Enrichment::STATUS_WAITING_AI_ENRICHMENT !== $enrichment->getStatus()) {
                     $enrichment->setRetries($enrichment->getRetries() + 1);
                 }
@@ -322,8 +323,8 @@ class AiEnrichmentsWorkerController extends AbstractController
 
                 $aiEnrichmentJobResponse = (new AiEnrichmentJobResponse())
                     ->setEnrichmentId($enrichment->getId())
-                    ->setEnrichmentVersionId($enrichmentVersion->getId())
-                    ->setTranscript($enrichmentVersion->getTranscript())
+                    ->setEnrichmentVersionId($latestEnrichmentVersion->getId())
+                    ->setTranscript($latestEnrichmentVersion->getTranscript())
                     ->setDisciplines($enrichment->getDisciplines())
                     ->setMediaTypes($enrichment->getMediaTypes())
                 ;

@@ -77,6 +77,42 @@ class EnrichmentVersion
     #[Groups(groups: ['enrichment_versions'])]
     private ?DateTimeInterface $lastEvaluationDate = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    #[Groups(groups: ['enrichment_versions'])]
+    private bool $aiGenerated = false;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    #[OA\Property(property: 'disciplines', description: 'Disciplines', type: 'array', items: new OA\Items(type: 'string'))]
+    #[Groups(groups: ['enrichment_versions'])]
+    #[Assert\Count(min: 1, minMessage: 'At least one discipline is expected')]
+    private ?array $disciplines = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    #[OA\Property(property: 'mediaTypes', description: 'Meida Types', type: 'array', items: new OA\Items(type: 'string'))]
+    #[Groups(groups: ['enrichment_versions'])]
+    #[Assert\Count(min: 1, minMessage: 'At least one media type is expected')]
+    private ?array $mediaTypes = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?string $endUserIdentifier = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?string $aiEvaluation = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?string $aiModel = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?string $infrastructure = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\Url]
+    private ?string $notificationWebhookUrl = null;
+
     public function __construct()
     {
         $this->multipleChoiceQuestions = new ArrayCollection();
@@ -173,6 +209,102 @@ class EnrichmentVersion
     public function setLastEvaluationDate(DateTimeInterface $lastEvaluationDate): self
     {
         $this->lastEvaluationDate = $lastEvaluationDate;
+
+        return $this;
+    }
+
+    public function isAiGenerated(): bool
+    {
+        return $this->aiGenerated;
+    }
+
+    public function setAiGenerated(bool $aiGenerated): self
+    {
+        $this->aiGenerated = $aiGenerated;
+
+        return $this;
+    }
+
+    public function getEndUserIdentifier(): ?string
+    {
+        return $this->endUserIdentifier;
+    }
+
+    public function setEndUserIdentifier(?string $endUserIdentifier): self
+    {
+        $this->endUserIdentifier = $endUserIdentifier;
+
+        return $this;
+    }
+
+    public function getAiModel(): ?string
+    {
+        return $this->aiModel;
+    }
+
+    public function setAiModel(?string $aiModel): self
+    {
+        $this->aiModel = $aiModel;
+
+        return $this;
+    }
+
+    public function getInfrastructure(): ?string
+    {
+        return $this->infrastructure;
+    }
+
+    public function setInfrastructure(?string $infrastructure): self
+    {
+        $this->infrastructure = $infrastructure;
+
+        return $this;
+    }
+
+    public function getNotificationWebhookUrl(): ?string
+    {
+        return $this->notificationWebhookUrl;
+    }
+
+    public function setNotificationWebhookUrl(?string $notificationWebhookUrl): self
+    {
+        $this->notificationWebhookUrl = $notificationWebhookUrl;
+
+        return $this;
+    }
+
+    public function getMediaTypes(): array
+    {
+        return $this->mediaTypes;
+    }
+
+    public function setMediaTypes(array $mediaTypes): self
+    {
+        $this->mediaTypes = $mediaTypes;
+
+        return $this;
+    }
+
+    public function getDisciplines(): array
+    {
+        return $this->disciplines;
+    }
+
+    public function setDisciplines(array $disciplines): self
+    {
+        $this->disciplines = $disciplines;
+
+        return $this;
+    }
+
+    public function getAiEvaluation(): ?string
+    {
+        return $this->aiEvaluation;
+    }
+
+    public function setAiEvaluation(?string $aiEvaluation): self
+    {
+        $this->aiEvaluation = $aiEvaluation;
 
         return $this;
     }
