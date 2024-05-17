@@ -13,6 +13,7 @@ use App\Entity\Transcript;
 use App\Exception\UploadFileUnsupportedTypeException;
 use App\Message\FileUploadFromUrlMessage;
 use App\Model\EnrichmentCreationFileUploadRequestPayload;
+use App\Model\EnrichmentCreationRequestPayload;
 use App\Model\EnrichmentCreationUrlRequestPayload;
 use App\Model\EnrichmentParameters;
 use App\Model\EnrichmentVersionCreationRequestPayload;
@@ -652,7 +653,6 @@ class EnrichmentsController extends AbstractController
         ;
 
         $enrichmentVersion = (new EnrichmentVersion())
-            ->setInitialVersion(false)
             ->setTranscript($newTranscript)
             ->setEnrichmentVersionMetadata($enrichmentVersionMetadata)
         ;
@@ -980,7 +980,7 @@ class EnrichmentsController extends AbstractController
         description: 'User is not authenticated',
     )]
     #[Route('/enrichments/url', name: 'create_enrichment_from_url', methods: ['POST'])]
-    public function createEnrichmentFromFIleUrl(Request $request, FileUploadService $fileUploadService, MessageBusInterface $messageBus, ApiClientManager $apiClientManager, EntityManagerInterface $entityManager): Response
+    public function createEnrichmentFromUrl(Request $request, FileUploadService $fileUploadService, MessageBusInterface $messageBus, ApiClientManager $apiClientManager, EntityManagerInterface $entityManager): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
@@ -1137,7 +1137,7 @@ class EnrichmentsController extends AbstractController
         } catch (UploadFileUnsupportedTypeException $exception) {
             return $this->json([
                 'status' => 'KO',
-                'errors' => $exception->getMessage(),
+                'errors' => [$exception->getMessage()],
             ], 400);
         }
 
@@ -1152,6 +1152,129 @@ class EnrichmentsController extends AbstractController
         $entityManager->flush();
 
         return $this->json(['status' => 'OK', 'id' => $enrichment->getId()]);
+    }
+
+    #[OA\Tag(name: 'Enrichments')]
+    #[OA\Post(
+        description: 'Create new enrichment version by AI',
+        summary: 'Create new enrichment version by AI'
+    )]
+    #[OA\RequestBody(
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: new Model(type: EnrichmentCreationRequestPayload::class),
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Create new enrichment version by AI request sent',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: 'status',
+                    description: 'OK',
+                    type: 'string'
+                ),
+            ],
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad request, invalid data provided',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
+    )]
+    #[Route('/enrichments/{enrichmentId}/new_ai_version', name: 'create_new_ai_enrichment', methods: ['POST'])]
+    public function createNewAiEnrichment(
+        string $enrichmentId,
+        Request $request,
+        ApiClientManager $apiClientManager,
+        EntityManagerInterface $entityManager,
+        EnrichmentRepository $enrichmentRepository,
+        EnrichmentVersionRepository $enrichmentVersionRepository
+    ): Response {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
+        $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
+        $enrichment = $enrichmentRepository->findOneBy(['id' => $enrichmentId]);
+
+        $enrichmentAccessErrorResponse = $this->validateEnrichmentAccess($enrichment, $enrichmentId);
+        if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
+            return $enrichmentAccessErrorResponse;
+        }
+
+        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $enrichmentCreationRequestPayload = (new EnrichmentCreationRequestPayload())
+            ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
+            ->setNotificationWebhookUrl($content['notificationWebhookUrl'])
+            ->setEnrichmentParameters((new EnrichmentParameters())
+                ->setDisciplines($content['enrichmentParameters']['disciplines'] ?? [])
+                ->setMediaTypes($content['enrichmentParameters']['mediaTypes'] ?? [])
+                ->setAiEvaluation($content['enrichmentParameters']['aiEvaluation'] ?? null)
+                ->setAiModel(null === $content['enrichmentParameters']['aiModel'] || '' === $content['enrichmentParameters']['aiModel'] ? null : $content['enrichmentParameters']['aiModel'])
+                ->setInfrastructure(null === $content['enrichmentParameters']['infrastructure'] || '' === $content['enrichmentParameters']['infrastructure'] ? null : $content['enrichmentParameters']['infrastructure'])
+            )
+        ;
+
+        $errors = $this->validator->validate($enrichmentCreationRequestPayload);
+        if (count($errors) > 0) {
+            $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
+
+            return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
+        }
+
+        $enrichment
+            ->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT)
+            ->setAiProcessedBy(null)
+            ->setAiEnrichmentStartedAt(null)
+            ->setAiEnrichmentEndedAt(null)
+            ->setAiProcessingTaskId(null)
+            ->setAiEvaluatedBy(null)
+            ->setAiEvaluationStartedAt(null)
+            ->setAiEvaluationEndedAt(null)
+            ->setAiEvaluationTaskId(null)
+            ->setNotificationWebhookUrl($enrichmentCreationRequestPayload->getNotificationWebhookUrl())
+            ->setDisciplines($enrichmentCreationRequestPayload->getEnrichmentParameters()->getDisciplines())
+            ->setMediaTypes($enrichmentCreationRequestPayload->getEnrichmentParameters()->getMediaTypes())
+            ->setAiEvaluation($enrichmentCreationRequestPayload->getEnrichmentParameters()->getAiEvaluation())
+            ->setEndUserIdentifier($enrichmentCreationRequestPayload->getEndUserIdentifier())
+            ->setAiModel($enrichmentCreationRequestPayload->getEnrichmentParameters()->getAiModel())
+            ->setInfrastructure($enrichmentCreationRequestPayload->getEnrichmentParameters()->getInfrastructure())
+        ;
+
+        $initialVersion = $enrichmentVersionRepository->findOneBy(['id' => $enrichment->getInitialVersionId()]);
+
+        $enrichmentVersion = (new EnrichmentVersion())
+            ->setAiGenerated(true)
+            ->setTranscript($initialVersion->getTranscript())
+            ->setNotificationWebhookUrl($enrichmentCreationRequestPayload->getNotificationWebhookUrl())
+            ->setDisciplines($enrichmentCreationRequestPayload->getEnrichmentParameters()->getDisciplines())
+            ->setMediaTypes($enrichmentCreationRequestPayload->getEnrichmentParameters()->getMediaTypes())
+            ->setAiEvaluation($enrichmentCreationRequestPayload->getEnrichmentParameters()->getAiEvaluation())
+            ->setEndUserIdentifier($enrichmentCreationRequestPayload->getEndUserIdentifier())
+            ->setAiModel($enrichmentCreationRequestPayload->getEnrichmentParameters()->getAiModel())
+            ->setInfrastructure($enrichmentCreationRequestPayload->getEnrichmentParameters()->getInfrastructure())
+        ;
+
+        $enrichment->addVersion($enrichmentVersion);
+
+        $entityManager->persist($enrichment);
+        $entityManager->flush();
+
+        return $this->json(['status' => 'OK']);
     }
 
     #[OA\Tag(name: 'Enrichments')]
@@ -1223,6 +1346,10 @@ class EnrichmentsController extends AbstractController
         $enrichmentVersionAccessErrorResponse = $this->validateEnrichmentVersionAccess($enrichmentVersion, $versionId, $enrichmentId);
         if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentVersionAccessErrorResponse;
+        }
+
+        if (!$enrichmentVersion->isAiGenerated()) {
+            return $this->json(['status' => 'KO', 'errors' => ['You cannot evaluate an enrichment version that was not generated by AI']], 400);
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
@@ -1352,6 +1479,10 @@ class EnrichmentsController extends AbstractController
             return $multipleChoiceQuestionAccessErrorResponse;
         }
 
+        if (!$multipleChoiceQuestion->getEnrichmentVersion()->isAiGenerated()) {
+            return $this->json(['status' => 'KO', 'errors' => ['You cannot evaluate a MCQ of an enrichment version that was not generated by AI']], 400);
+        }
+
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $multipleChoiceQuestion->setThumbUp($content['thumbUp'])->setUserFeedback($content['userFeedback']);
 
@@ -1451,6 +1582,10 @@ class EnrichmentsController extends AbstractController
         );
         if ($choiceAccessErrorResponse instanceof JsonResponse) {
             return $choiceAccessErrorResponse;
+        }
+
+        if (!$choice->getMultipleChoiceQuestion()->getEnrichmentVersion()->isAiGenerated()) {
+            return $this->json(['status' => 'KO', 'errors' => ['You cannot evaluate a MCQ of an enrichment version that was not generated by AI']], 400);
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);

@@ -411,7 +411,7 @@ class Enrichment
         return $this->aiEnrichmentStartedAt;
     }
 
-    public function setAiEnrichmentStartedAt(DateTimeInterface $aiEnrichmentStartedAt): self
+    public function setAiEnrichmentStartedAt(?DateTimeInterface $aiEnrichmentStartedAt): self
     {
         $this->aiEnrichmentStartedAt = $aiEnrichmentStartedAt;
 
@@ -423,7 +423,7 @@ class Enrichment
         return $this->aiEnrichmentEndedAt;
     }
 
-    public function setAiEnrichmentEndedAt(DateTimeInterface $aiEnrichmentEndedAt): self
+    public function setAiEnrichmentEndedAt(?DateTimeInterface $aiEnrichmentEndedAt): self
     {
         $this->aiEnrichmentEndedAt = $aiEnrichmentEndedAt;
 
@@ -519,7 +519,7 @@ class Enrichment
         return $this->aiEvaluationStartedAt;
     }
 
-    public function setAiEvaluationStartedAt(DateTimeInterface $aiEvaluationStartedAt): self
+    public function setAiEvaluationStartedAt(?DateTimeInterface $aiEvaluationStartedAt): self
     {
         $this->aiEvaluationStartedAt = $aiEvaluationStartedAt;
 
@@ -531,7 +531,7 @@ class Enrichment
         return $this->aiEvaluationEndedAt;
     }
 
-    public function setAiEvaluationEndedAt(DateTimeInterface $aiEvaluationEndedAt): self
+    public function setAiEvaluationEndedAt(?DateTimeInterface $aiEvaluationEndedAt): self
     {
         $this->aiEvaluationEndedAt = $aiEvaluationEndedAt;
 

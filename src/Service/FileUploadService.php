@@ -16,6 +16,7 @@ use Captioning\Cue;
 use Captioning\Format\SubripFile;
 use Captioning\Format\WebvttFile;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileUploadService
@@ -25,7 +26,8 @@ class FileUploadService
         private readonly string $bucketName,
         private readonly int $linkExpirationInMinutes,
         private readonly S3Client $s3Client,
-        private readonly MimeTypeUtils $mimeTypeUtils
+        private readonly MimeTypeUtils $mimeTypeUtils,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -59,7 +61,8 @@ class FileUploadService
             if ($parsingVttFailed) {
                 try {
                     $subtitles = new SubripFile($uploadedFile->getPathname());
-                } catch (Exception) {
+                } catch (Exception $exception) {
+                    $this->logger->error($exception->getMessage());
                     throw new UploadFileUnsupportedTypeException("Couldn't parse subtitles file");
                 }
             }
@@ -86,7 +89,15 @@ class FileUploadService
 
             $enrichmentVersion = (new EnrichmentVersion())
                 ->setInitialVersion(true)
+                ->setAiGenerated(true)
                 ->setTranscript($transcript)
+                ->setNotificationWebhookUrl($enrichment->getNotificationWebhookUrl())
+                ->setDisciplines($enrichment->getDisciplines())
+                ->setMediaTypes($enrichment->getMediaTypes())
+                ->setAiEvaluation($enrichment->getAiEvaluation())
+                ->setEndUserIdentifier($enrichment->getEndUserIdentifier())
+                ->setAiModel($enrichment->getAiModel())
+                ->setInfrastructure($enrichment->getInfrastructure())
             ;
 
             $enrichment->addVersion($enrichmentVersion);
