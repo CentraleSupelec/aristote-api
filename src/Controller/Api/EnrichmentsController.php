@@ -1256,10 +1256,15 @@ class EnrichmentsController extends AbstractController
         ;
 
         $initialVersion = $enrichmentVersionRepository->findOneBy(['id' => $enrichment->getInitialVersionId()]);
-
+        $newTranscript = (new Transcript())
+                ->setText($initialVersion->getTranscript()->getText())
+                ->setLanguage($initialVersion->getTranscript()->getLanguage())
+                ->setOriginalFilename($initialVersion->getTranscript()->getOriginalFilename())
+                ->setSentences($initialVersion->getTranscript()->getSentences())
+        ;
         $enrichmentVersion = (new EnrichmentVersion())
             ->setAiGenerated(true)
-            ->setTranscript($initialVersion->getTranscript())
+            ->setTranscript($newTranscript)
             ->setNotificationWebhookUrl($enrichmentCreationRequestPayload->getNotificationWebhookUrl())
             ->setDisciplines($enrichmentCreationRequestPayload->getEnrichmentParameters()->getDisciplines())
             ->setMediaTypes($enrichmentCreationRequestPayload->getEnrichmentParameters()->getMediaTypes())
