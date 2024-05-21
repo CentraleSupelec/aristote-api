@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Constants;
 use App\Entity\ApiClient;
+use App\Entity\Audio;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\Subtitle;
@@ -40,6 +41,13 @@ class FileUploadService
             $directory = sprintf($directory, 'videos');
             $media = (new Video())
                 ->setVideoFile($uploadedFile)
+                ->setFileDirectory($directory)
+            ;
+            $targetStatus = Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION;
+        } elseif ($this->mimeTypeUtils->isAudio($mimeType)) {
+            $directory = sprintf($directory, 'audios');
+            $media = (new Audio())
+                ->setAudioFile($uploadedFile)
                 ->setFileDirectory($directory)
             ;
             $targetStatus = Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION;
@@ -102,7 +110,7 @@ class FileUploadService
 
             $enrichment->addVersion($enrichmentVersion);
         } else {
-            throw new UploadFileUnsupportedTypeException('File type not supported. Supported types are videos and subtitles');
+            throw new UploadFileUnsupportedTypeException('File type not supported. Supported types are videos, audio files and subtitles');
         }
 
         $enrichment

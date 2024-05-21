@@ -12,6 +12,12 @@ vich_uploader:
             directory_namer:
                 service: vich_uploader.namer_directory_property
                 options: { property: 'fileDirectory'}
+        audios:
+            upload_destination: media.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            directory_namer:
+                service: vich_uploader.namer_directory_property
+                options: { property: 'fileDirectory'}
         subtitles:
             upload_destination: media.storage
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
