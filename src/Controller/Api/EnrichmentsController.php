@@ -1034,7 +1034,7 @@ class EnrichmentsController extends AbstractController
     #[OA\Tag(name: 'Enrichments')]
     #[OA\Post(
         description: 'Create an enrichment from a file',
-        summary: 'Create an enrichment from a file'
+        summary: 'Supported : video, audio and subtitle (srt, vtt) files'
     )]
     #[OA\RequestBody(
         content: [
