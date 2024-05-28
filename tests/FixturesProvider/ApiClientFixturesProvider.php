@@ -124,4 +124,20 @@ class ApiClientFixturesProvider
 
         return $apiClient;
     }
+
+    public static function getApiClientScopeTranslationWorker(EntityManagerInterface $entityManager = null): ApiClient
+    {
+        $apiClient = (new ApiClient('translation', 'translation', 'very-secret'))
+            ->setActive(true)
+            ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
+            ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_TRANSLATION_WORKER])
+        ;
+
+        if (null !== $entityManager) {
+            $entityManager->persist($apiClient);
+            $entityManager->flush();
+        }
+
+        return $apiClient;
+    }
 }

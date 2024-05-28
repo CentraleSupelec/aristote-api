@@ -16,7 +16,9 @@ class MultipleChoiceQuestionType extends AbstractType
         $builder
             ->add('id', UuidType::class)
             ->add('question')
+            ->add('translatedQuestion')
             ->add('explanation')
+            ->add('translatedExplanation')
             ->add('choices', CollectionType::class, [
                 'entry_type' => ChoiceType::class,
                 'allow_add' => true,

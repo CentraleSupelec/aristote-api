@@ -38,6 +38,7 @@ league_oauth2_server:
       - scope_transcription_worker
       - scope_processing_worker
       - scope_evaluation_worker
+      - scope_translation_worker
     default: ["scope_default"]
   # Configures different persistence methods that can be used by the bundle for saving client and token data.
   # Only one persistence method can be configured at a time.

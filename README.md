@@ -67,7 +67,7 @@ docker-compose exec -it php php vendor/bin/phpunit
 
 To run a given testing directory:
 ```
-docker-compose exec -it php vendor/bin/phpunit tests/<SUBDIRECTORY_NAME>
+docker-compose exec -it php php vendor/bin/phpunit tests/<SUBDIRECTORY_NAME>
 ```
 
 ## Other useful commands

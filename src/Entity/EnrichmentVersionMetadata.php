@@ -26,18 +26,33 @@ class EnrichmentVersionMetadata implements Stringable
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job'])]
     private ?string $title = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(allowNull: true)]
+    #[Groups(groups: ['enrichment_versions', 'translation_post'])]
+    private ?string $translatedTitle = null;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job'])]
     private ?string $description = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(allowNull: true)]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_post'])]
+    private ?string $translatedDescription = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'topics', description: 'Topics', type: 'array', items: new OA\Items(type: 'string'))]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job'])]
     private ?array $topics = [];
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    #[OA\Property(property: 'translatedTopics', description: 'Translated topics', type: 'array', items: new OA\Items(type: 'string'))]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_post'])]
+    private ?array $translatedTopics = [];
 
     #[ORM\Column(type: 'string', nullable: true)]
     #[Groups(groups: ['enrichment_versions'])]
@@ -98,6 +113,18 @@ class EnrichmentVersionMetadata implements Stringable
         return $this;
     }
 
+    public function getTranslatedTitle(): ?string
+    {
+        return $this->translatedTitle;
+    }
+
+    public function setTranslatedTitle(?string $translatedTitle): self
+    {
+        $this->translatedTitle = $translatedTitle;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -110,6 +137,18 @@ class EnrichmentVersionMetadata implements Stringable
         return $this;
     }
 
+    public function getTranslatedDescription(): ?string
+    {
+        return $this->translatedDescription;
+    }
+
+    public function setTranslatedDescription(?string $translatedDescription): self
+    {
+        $this->translatedDescription = $translatedDescription;
+
+        return $this;
+    }
+
     public function getTopics(): array
     {
         return $this->topics;
@@ -118,6 +157,18 @@ class EnrichmentVersionMetadata implements Stringable
     public function setTopics(array $topics): self
     {
         $this->topics = $topics;
+
+        return $this;
+    }
+
+    public function getTranslatedTopics(): array
+    {
+        return $this->translatedTopics;
+    }
+
+    public function setTranslatedTopics(array $translatedTopics): self
+    {
+        $this->translatedTopics = $translatedTopics;
 
         return $this;
     }

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EnrichmentRepository;
+use App\Validator\Constraints as AppAssert;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,6 +18,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnrichmentRepository::class)]
+#[AppAssert\TranslationConstraint()]
 class Enrichment
 {
     use TimestampableEntity;
@@ -26,6 +28,8 @@ class Enrichment
     final public const STATUS_TRANSCRIBING_MEDIA = 'TRANSCRIBING_MEDIA';
     final public const STATUS_WAITING_AI_ENRICHMENT = 'WAITING_AI_ENRICHMENT';
     final public const STATUS_AI_ENRICHING = 'AI_ENRICHING';
+    final public const STATUS_WAITING_TRANSLATION = 'WAITING_TRANSLATION';
+    final public const STATUS_TRANSLATING = 'TRANSLATING';
     final public const STATUS_WAITING_AI_EVALUATION = 'WAITING_AI_EVALUATION';
     final public const STATUS_AI_EVALUATING = 'AI_EVALUATING';
     final public const STATUS_SUCCESS = 'SUCCESS';
@@ -40,10 +44,20 @@ class Enrichment
             self::STATUS_TRANSCRIBING_MEDIA => self::STATUS_TRANSCRIBING_MEDIA,
             self::STATUS_WAITING_AI_ENRICHMENT => self::STATUS_WAITING_AI_ENRICHMENT,
             self::STATUS_AI_ENRICHING => self::STATUS_AI_ENRICHING,
+            self::STATUS_WAITING_TRANSLATION => self::STATUS_WAITING_TRANSLATION,
+            self::STATUS_TRANSLATING => self::STATUS_TRANSLATING,
             self::STATUS_WAITING_AI_EVALUATION => self::STATUS_WAITING_AI_EVALUATION,
             self::STATUS_AI_EVALUATING => self::STATUS_AI_EVALUATING,
             self::STATUS_SUCCESS => self::STATUS_SUCCESS,
             self::STATUS_FAILURE => self::STATUS_FAILURE,
+        ];
+    }
+
+    public static function getSupportedLanguages(): array
+    {
+        return [
+            'fr',
+            'en',
         ];
     }
 
@@ -109,11 +123,25 @@ class Enrichment
     ])]
     private ?ApiClient $transcribedBy = null;
 
+    #[ORM\ManyToOne(inversedBy: 'translatedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
+    #[Groups(groups: ['enrichments_with_status'])]
+    #[OA\Property(property: 'translatedBy', type: 'object', properties: [
+        new OA\Property(
+            property: 'name',
+            type: 'string'
+        ),
+    ])]
+    private ?ApiClient $translatedBy = null;
+
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
     private ?Uuid $transcriptionTaskId = null;
 
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
     private ?Uuid $aiEvaluationTaskId = null;
+
+    #[ORM\Column(type: UuidType::NAME, nullable: true)]
+    private ?Uuid $translationTaskId = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(allowNull: false)]
@@ -188,6 +216,14 @@ class Enrichment
     private ?DateTimeInterface $transribingEndedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
+    private ?DateTimeInterface $translationStartedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
+    private ?DateTimeInterface $translationEndedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(groups: ['enrichments'])]
     private ?DateTimeInterface $notifiedAt = null;
 
@@ -218,6 +254,16 @@ class Enrichment
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
     #[Groups(groups: ['enrichments'])]
     private int $retries = 0;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Choice(callback: [self::class, 'getSupportedLanguages'], multiple: false, message: "The chosen language is not supported. Supported languages are : ['fr', 'en']")]
+    #[Groups(groups: ['enrichments'])]
+    private ?string $language = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Choice(callback: [self::class, 'getSupportedLanguages'], multiple: false, message: "The chosen language to translate to is not supported. Supported languages are : ['fr', 'en']")]
+    #[Groups(groups: ['enrichments'])]
+    private ?string $translateTo = null;
 
     public function __construct()
     {
@@ -277,6 +323,18 @@ class Enrichment
         return $this;
     }
 
+    public function getTranslatedBy(): ?ApiClient
+    {
+        return $this->translatedBy;
+    }
+
+    public function setTranslatedBy(?ApiClient $apiClient): static
+    {
+        $this->translatedBy = $apiClient;
+
+        return $this;
+    }
+
     public function getStatus(): ?string
     {
         return $this->status;
@@ -321,6 +379,18 @@ class Enrichment
     public function setAiEvaluationTaskId(?Uuid $aiEvaluationTaskId): self
     {
         $this->aiEvaluationTaskId = $aiEvaluationTaskId;
+
+        return $this;
+    }
+
+    public function getTranslationTaskId(): ?Uuid
+    {
+        return $this->translationTaskId;
+    }
+
+    public function setTranslationTaskId(?Uuid $translationTaskId): self
+    {
+        $this->translationTaskId = $translationTaskId;
 
         return $this;
     }
@@ -454,6 +524,30 @@ class Enrichment
         return $this;
     }
 
+    public function getTranslationStartedAt(): ?DateTimeInterface
+    {
+        return $this->translationStartedAt;
+    }
+
+    public function setTranslationStartedAt(?DateTimeInterface $translationStartedAt): self
+    {
+        $this->translationStartedAt = $translationStartedAt;
+
+        return $this;
+    }
+
+    public function getTranslationEndedAt(): ?DateTimeInterface
+    {
+        return $this->translationEndedAt;
+    }
+
+    public function setTranslationEndedAt(?DateTimeInterface $translationEndedAt): self
+    {
+        $this->translationEndedAt = $translationEndedAt;
+
+        return $this;
+    }
+
     public function getNotifiedAt(): ?DateTimeInterface
     {
         return $this->notifiedAt;
@@ -582,6 +676,30 @@ class Enrichment
     public function setRetries(int $retries): self
     {
         $this->retries = $retries;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(?string $language): self
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    public function getTranslateTo(): ?string
+    {
+        return $this->translateTo;
+    }
+
+    public function setTranslateTo(?string $translateTo): self
+    {
+        $this->translateTo = $translateTo;
 
         return $this;
     }

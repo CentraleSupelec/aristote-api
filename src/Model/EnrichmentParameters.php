@@ -29,6 +29,12 @@ class EnrichmentParameters
     #[OA\Property(property: 'infrastructure', description: 'Infrastructure to be used for enrichment', type: 'string')]
     private ?string $infrastructure = null;
 
+    #[OA\Property(property: 'language', description: 'Language of the quizzes', type: 'string')]
+    private ?string $language = null;
+
+    #[OA\Property(property: 'translateTo', description: 'Translate to this language', type: 'string')]
+    private ?string $translateTo = null;
+
     public function getMediaTypes(): array
     {
         return $this->mediaTypes;
@@ -85,6 +91,30 @@ class EnrichmentParameters
     public function setInfrastructure(?string $infrastructure): self
     {
         $this->infrastructure = $infrastructure;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(?string $language): self
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    public function getTranslateTo(): ?string
+    {
+        return $this->translateTo;
+    }
+
+    public function setTranslateTo(?string $translateTo): self
+    {
+        $this->translateTo = $translateTo;
 
         return $this;
     }

@@ -23,6 +23,7 @@ class EnrichmentRepository extends ServiceEntityRepository
         private readonly int $transcriptionWorkerTimeoutInMinutes,
         private readonly int $aiEnrichmentWorkerTimeoutInMinutes,
         private readonly int $aiEvaluationWorkerTimeoutInMinutes,
+        private readonly int $translationWorkerTimeoutInMinutes,
         ManagerRegistry $managerRegistry,
         private readonly PaginatorInterface $paginator
     ) {
@@ -158,6 +159,38 @@ class EnrichmentRepository extends ServiceEntityRepository
                 'evaluator' => $evaluator,
                 'maxRetries' => $this->maxRetries,
             ])
+            ->orderBy('e.createdAt', 'ASC')
+        ;
+
+        $enrichments = $qb->getQuery()->getResult();
+
+        if ([] !== $enrichments) {
+            return $enrichments[0];
+        }
+
+        return null;
+    }
+
+    public function findOldestEnrichmentInWaitingTranslationStatusOrTranslatingStatusForMoreThanXMinutes(): ?Enrichment
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb->where($qb->expr()->orX(
+            $qb->expr()->eq('e.status', ':statusWaitingTranslation'),
+            $qb->expr()->andX(
+                $qb->expr()->eq('e.status', ':statusTranslating'),
+                $qb->expr()->lte(
+                    'e.translationStartedAt',
+                    ':timeThreshold'
+                )
+            )
+        ))
+            ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
+            ->setParameters([
+        'statusWaitingTranslation' => Enrichment::STATUS_WAITING_TRANSLATION,
+        'statusTranslating' => Enrichment::STATUS_TRANSLATING,
+        'timeThreshold' => (new DateTime())->modify('-'.$this->translationWorkerTimeoutInMinutes.' minutes'),
+        'maxRetries' => $this->maxRetries,
+        ])
             ->orderBy('e.createdAt', 'ASC')
         ;
 

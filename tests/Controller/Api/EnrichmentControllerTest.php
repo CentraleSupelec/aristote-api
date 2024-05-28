@@ -208,4 +208,31 @@ class EnrichmentControllerTest extends BaseWebTestCase
         $this->assertCount(1, $responseData['content']);
         $this->assertEquals($enrichmentVersion->getId(), $responseData['content'][0]['id']);
     }
+
+    public function testGetEnrichmentVersion(): void
+    {
+        $enrichmentVersion = EnrichmentVersionsFixturesProvider::getEnrichmentVersion($this->entityManager);
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $enrichmentVersion->getEnrichment()->getCreatedBy()->getId(),
+            'client_secret' => $enrichmentVersion->getEnrichment()->getCreatedBy()->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $this->client->request('GET', sprintf('/api/v1/enrichments/%s/versions/%s', $enrichmentVersion->getEnrichment()->getId(), $enrichmentVersion->getId()), [], [], [
+            'HTTP_Authorization' => 'Bearer '.$token,
+        ]);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals($enrichmentVersion->getId(), $responseData['id']);
+    }
 }
