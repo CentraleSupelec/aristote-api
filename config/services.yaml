@@ -97,9 +97,21 @@ services:
     arguments:
       $enrichmentWorkerService: '@app.ai_evaluation_worker'
   
+  app.translation_worker:
+    class: App\Service\EnrichmentWorkerService
+    arguments:
+      $clientId: "%env(TRANSLATION_WORKER_CLIENT_ID)%"
+      $clientSecret: "%env(TRANSLATION_WORKER_SECRET)%"
+      $uriPrefix: "%env(URI_PREFIX)%"
+
+  App\Command\TranslationWorkerCommand:
+    arguments:
+      $enrichmentWorkerService: '@app.translation_worker'
+  
   App\Repository\EnrichmentRepository:
     arguments:
       $maxRetries: "%env(MAX_RETRIES)%"
       $transcriptionWorkerTimeoutInMinutes: "%env(TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES)%"
       $aiEnrichmentWorkerTimeoutInMinutes: "%env(AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES)%"
       $aiEvaluationWorkerTimeoutInMinutes: "%env(AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES)%"
+      $translationWorkerTimeoutInMinutes: "%env(TRANSLATION_WORKER_TIMEOUT_IN_MINUTES)%"

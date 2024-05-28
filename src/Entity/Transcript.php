@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use App\Model\Sentence;
 use App\Repository\TranscriptRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -35,38 +37,29 @@ class Transcript
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_evaluation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_evaluation_job', 'translation_job'])]
     private ?string $text = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(allowNull: true)]
+    #[Groups(groups: ['enrichment_versions', 'translation_post'])]
+    private ?string $translatedText = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[Assert\Json]
-    #[Groups(groups: ['enrichment_versions', 'enrichment_job'])]
-    #[OA\Property(property: 'sentences', description: "Transcipt's sentences", type: 'array', items: new OA\Items(type: 'object', properties: [
-        new OA\Property(
-            property: 'is_transient',
-            type: 'boolean'
-        ),
-        new OA\Property(
-            property: 'no_speech_prob',
-            type: 'integer',
-            format: 'int64'
-        ),
-        new OA\Property(
-            property: 'start',
-            type: 'integer',
-            format: 'int64'
-        ),
-        new OA\Property(
-            property: 'end',
-            type: 'integer',
-            format: 'int64'
-        ),
-        new OA\Property(
-            property: 'text',
-            type: 'string'
-        ),
-    ]))]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'translation_job'])]
+    #[OA\Property(property: 'sentences', description: "Transcipt's sentences", type: 'array', items: new OA\Items(
+        ref: new Model(type: Sentence::class)
+    ))]
     private ?string $sentences;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    #[Assert\Json]
+    #[Groups(groups: ['enrichment_versions', 'translation_post'])]
+    #[OA\Property(property: 'translatedSentences', description: "Transcipt's translated sentences", type: 'array', items: new OA\Items(
+        ref: new Model(type: Sentence::class)
+    ))]
+    private ?string $translatedSentences = null;
 
     #[ORM\OneToOne(inversedBy: 'transcript', targetEntity: EnrichmentVersion::class)]
     private ?EnrichmentVersion $enrichmentVersion = null;
@@ -117,6 +110,18 @@ class Transcript
         return $this;
     }
 
+    public function getTranslatedText(): ?string
+    {
+        return $this->translatedText;
+    }
+
+    public function setTranslatedText(?string $translatedText): self
+    {
+        $this->translatedText = $translatedText;
+
+        return $this;
+    }
+
     public function getSentences(): string
     {
         return $this->sentences;
@@ -125,6 +130,18 @@ class Transcript
     public function setSentences(?string $sentences): self
     {
         $this->sentences = $sentences;
+
+        return $this;
+    }
+
+    public function getTranslatedSentences(): string
+    {
+        return $this->translatedSentences;
+    }
+
+    public function setTranslatedSentences(?string $translatedSentences): self
+    {
+        $this->translatedSentences = $translatedSentences;
 
         return $this;
     }

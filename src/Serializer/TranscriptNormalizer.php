@@ -21,6 +21,10 @@ class TranscriptNormalizer implements NormalizerInterface
             $data['sentences'] = json_decode((string) $data['sentences'], null, 512, JSON_THROW_ON_ERROR);
         }
 
+        if (isset($data['translatedSentences'])) {
+            $data['translatedSentences'] = json_decode((string) $data['translatedSentences'], null, 512, JSON_THROW_ON_ERROR);
+        }
+
         return $data;
     }
 

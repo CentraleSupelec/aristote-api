@@ -987,6 +987,13 @@ class EnrichmentsController extends AbstractController
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        $aiEvaluation = $content['aiEvaluation'] ?? null;
+        $aiModel = $content['aiModel'] ?? null;
+        $infrastructure = $content['infrastructure'] ?? null;
+        $language = $content['language'] ?? null;
+        $translateTo = $content['translateTo'] ?? null;
+
         $enrichmentCreationUrlRequestPayload = (new EnrichmentCreationUrlRequestPayload())
             ->setUrl($content['url'])
             ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
@@ -994,9 +1001,11 @@ class EnrichmentsController extends AbstractController
             ->setEnrichmentParameters((new EnrichmentParameters())
                 ->setDisciplines($content['enrichmentParameters']['disciplines'] ?? [])
                 ->setMediaTypes($content['enrichmentParameters']['mediaTypes'] ?? [])
-                ->setAiEvaluation($content['enrichmentParameters']['aiEvaluation'] ?? null)
-                ->setAiModel(null === $content['enrichmentParameters']['aiModel'] || '' === $content['enrichmentParameters']['aiModel'] ? null : $content['enrichmentParameters']['aiModel'])
-                ->setInfrastructure(null === $content['enrichmentParameters']['infrastructure'] || '' === $content['enrichmentParameters']['infrastructure'] ? null : $content['enrichmentParameters']['infrastructure'])
+                ->setAiEvaluation(null === $aiEvaluation || '' === $aiEvaluation ? null : $aiEvaluation)
+                ->setAiModel(null === $aiModel || '' === $aiModel ? null : $aiModel)
+                ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
+                ->setLanguage(null === $language || '' === $language ? null : $language)
+                ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
             )
         ;
 
@@ -1021,6 +1030,8 @@ class EnrichmentsController extends AbstractController
             ->setEndUserIdentifier($enrichmentCreationUrlRequestPayload->getEndUserIdentifier())
             ->setAiModel($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getAiModel())
             ->setInfrastructure($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getInfrastructure())
+            ->setLanguage($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getLanguage())
+            ->setTranslateTo($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getTranslateTo())
         ;
 
         $entityManager->persist($enrichment);
@@ -1095,8 +1106,12 @@ class EnrichmentsController extends AbstractController
 
         $inputEnrichmentParameters = json_decode($request->request->get('enrichmentParameters'), true, 512, JSON_THROW_ON_ERROR);
         $endUserIdentifier = $request->request->get('endUserIdentifier');
+        $aiEvaluation = $inputEnrichmentParameters['aiEvaluation'] ?? null;
         $aiModel = $inputEnrichmentParameters['aiModel'] ?? null;
         $infrastructure = $inputEnrichmentParameters['infrastructure'] ?? null;
+        $language = $inputEnrichmentParameters['language'] ?? null;
+        $translateTo = $inputEnrichmentParameters['translateTo'] ?? null;
+
         $enrichmentCreationFileUploadRequestPayload = (new EnrichmentCreationFileUploadRequestPayload())
             ->setFile($file)
             ->setNotificationWebhookUrl($request->request->get('notificationWebhookUrl'))
@@ -1104,9 +1119,11 @@ class EnrichmentsController extends AbstractController
             ->setEnrichmentParameters((new EnrichmentParameters())
                 ->setDisciplines($inputEnrichmentParameters['disciplines'] ?? [])
                 ->setMediaTypes($inputEnrichmentParameters['mediaTypes'] ?? [])
-                ->setAiEvaluation($inputEnrichmentParameters['aiEvaluation'] ?? null)
+                ->setAiEvaluation(null === $aiEvaluation || '' === $aiEvaluation ? null : $aiEvaluation)
                 ->setAiModel(null === $aiModel || '' === $aiModel ? null : $aiModel)
                 ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
+                ->setLanguage(null === $language || '' === $language ? null : $language)
+                ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
             )
         ;
 
@@ -1130,6 +1147,8 @@ class EnrichmentsController extends AbstractController
                 ->setEndUserIdentifier($enrichmentCreationFileUploadRequestPayload->getEndUserIdentifier())
                 ->setAiModel($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getAiModel())
                 ->setInfrastructure($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getInfrastructure())
+                ->setLanguage($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getLanguage())
+                ->setTranslateTo($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getTranslateTo())
         ;
 
         try {

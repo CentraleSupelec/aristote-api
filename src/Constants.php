@@ -13,6 +13,7 @@ final class Constants
     public const SCOPE_PROCESSING_WORKER = 'scope_processing_worker';
     public const SCOPE_TRANSCRIPTION_WORKER = 'scope_transcription_worker';
     public const SCOPE_EVALUATION_WORKER = 'scope_evaluation_worker';
+    public const SCOPE_TRANSLATION_WORKER = 'scope_translation_worker';
     public const SORT_ORDER_OPTIONS = ['asc', 'desc'];
     public const TEMPORARY_STORAGE_FOR_WORKER_PATH = './public/tmp/medias';
     public const MEDIAS_PREFIX = 'medias';
@@ -33,6 +34,7 @@ final class Constants
             'AI Enrichment Worker' => Constants::SCOPE_PROCESSING_WORKER,
             'Transcription Worker' => Constants::SCOPE_TRANSCRIPTION_WORKER,
             'AI Evaluation Worker' => Constants::SCOPE_EVALUATION_WORKER,
+            'Translation Worker' => Constants::SCOPE_TRANSLATION_WORKER,
         ];
     }
 

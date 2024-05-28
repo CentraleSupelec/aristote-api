@@ -59,6 +59,9 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'aiEvaluatedBy', targetEntity: Enrichment::class)]
     private Collection $aiEvaluatedEnrichments;
 
+    #[ORM\OneToMany(mappedBy: 'translatedBy', targetEntity: Enrichment::class)]
+    private Collection $translatedEnrichments;
+
     #[ORM\ManyToOne(inversedBy: 'apiClients', targetEntity: AiModel::class)]
     private ?AiModel $aiModel = null;
 
@@ -72,6 +75,7 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         $this->aiProcessedEnrichments = new ArrayCollection();
         $this->transcribedEnrichments = new ArrayCollection();
         $this->aiEvaluatedEnrichments = new ArrayCollection();
+        $this->translatedEnrichments = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -291,6 +295,34 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         // set the owning side to null (unless already changed)
         if ($this->aiEvaluatedEnrichments->removeElement($enrichment) && $enrichment->getAiEvaluatedBy() === $this) {
             $enrichment->setAiEvaluatedBy(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Enrichment>
+     */
+    public function getTranslatedEnrichments(): Collection
+    {
+        return $this->translatedEnrichments;
+    }
+
+    public function addTranslatedEnrichment(Enrichment $enrichment): static
+    {
+        if (!$this->translatedEnrichments->contains($enrichment)) {
+            $this->translatedEnrichments->add($enrichment);
+            $enrichment->setTranslatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTranslatedEnrichment(Enrichment $enrichment): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->translatedEnrichments->removeElement($enrichment) && $enrichment->getTranslatedBy() === $this) {
+            $enrichment->setTranslatedBy(null);
         }
 
         return $this;

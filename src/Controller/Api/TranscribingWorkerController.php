@@ -308,7 +308,7 @@ class TranscribingWorkerController extends AbstractController
         return null;
     }
 
-    private function validateEnrichmentAccess(Enrichment|null $enrichment, string $id, string $taskId): ?JsonResponse
+    private function validateEnrichmentAccess(?Enrichment $enrichment, string $id, string $taskId): ?JsonResponse
     {
         if (!$enrichment instanceof Enrichment) {
             return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment with ID '%s' has been found", $id)]], 404);

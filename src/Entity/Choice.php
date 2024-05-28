@@ -22,13 +22,18 @@ class Choice implements Stringable
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[OA\Property(property: 'id', description: 'Choice ID', type: 'string')]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'enrichment_version_evaluation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job', 'translation_post', 'enrichment_version_evaluation'])]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une option.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job', 'enrichment_version_creation'])]
     private ?string $optionText = null;
+
+    #[ORM\Column(type: 'text', length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'Veuillez saisir une option.', allowNull: true)]
+    #[Groups(groups: ['enrichment_versions', 'translation_post'])]
+    private ?string $translatedOptionText = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
@@ -52,6 +57,13 @@ class Choice implements Stringable
         return $this->id;
     }
 
+    public function setId(?Uuid $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function getOptionText(): ?string
     {
         return $this->optionText;
@@ -60,6 +72,18 @@ class Choice implements Stringable
     public function setOptionText(?string $optionText): self
     {
         $this->optionText = $optionText;
+
+        return $this;
+    }
+
+    public function getTranslatedOptionText(): ?string
+    {
+        return $this->translatedOptionText;
+    }
+
+    public function setTranslatedOptionText(?string $translatedOptionText): self
+    {
+        $this->translatedOptionText = $translatedOptionText;
 
         return $this;
     }

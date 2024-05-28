@@ -15,10 +15,16 @@ class EnrichmentVersionMetadataType extends AbstractType
     {
         $builder
             ->add('title')
+            ->add('translatedTitle')
             ->add('description')
+            ->add('translatedDescription')
             ->add('discipline')
             ->add('mediaType')
             ->add('topics', CollectionType::class, [
+                'entry_type' => TextType::class,
+                'allow_add' => true,
+            ])
+            ->add('translatedTopics', CollectionType::class, [
                 'entry_type' => TextType::class,
                 'allow_add' => true,
             ])

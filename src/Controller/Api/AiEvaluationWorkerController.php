@@ -125,6 +125,11 @@ class AiEvaluationWorkerController extends AbstractController
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
         }
 
+        $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
         $uuidValidationErrorResponse = $this->validateUuid($versionId);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
@@ -140,6 +145,7 @@ class AiEvaluationWorkerController extends AbstractController
             $enrichmentVersionAccessErrorResponse = $this->validateEnrichmentVersionAccess(
                 $enrichmentVersion,
                 $versionId,
+                $enrichmentId,
                 $aiEvaluationRequestPayload->getTaskId()
             );
             if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
@@ -349,13 +355,19 @@ class AiEvaluationWorkerController extends AbstractController
         return null;
     }
 
-    private function validateEnrichmentVersionAccess(EnrichmentVersion|null $enrichmentVersion, string $id, string $taskId): ?JsonResponse
+    private function validateEnrichmentVersionAccess(EnrichmentVersion|null $enrichmentVersion, string $enrichmentVersionId, string $enrichmentId, string $taskId): ?JsonResponse
     {
         if (!$enrichmentVersion instanceof EnrichmentVersion) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment version with ID '%s' has been found", $id)]], 404);
+            return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment version with ID '%s' has been found", $enrichmentVersionId)]], 404);
         }
 
         $enrichment = $enrichmentVersion->getEnrichment();
+
+        if ($enrichment->getId()->toRfc4122() !== $enrichmentId) {
+            return $this->json(['status' => 'KO', 'errors' => [
+                sprintf('The enrichment id %s in the url is incorrect', $enrichmentVersionId, $enrichmentId),
+            ]], 403);
+        }
 
         if (
             $enrichment->getAiEvaluatedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')

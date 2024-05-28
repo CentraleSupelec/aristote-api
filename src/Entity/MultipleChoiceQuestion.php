@@ -15,7 +15,6 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MultipleChoiceQuestionRepository::class)]
-// #[ORM\OrderBy(['createdAt' => 'ASC'])]
 class MultipleChoiceQuestion implements Stringable
 {
     use TimestampableEntity;
@@ -24,22 +23,32 @@ class MultipleChoiceQuestion implements Stringable
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'ai_evaluation_post', 'enrichment_version_evaluation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'ai_evaluation_post', 'translation_job', 'translation_post', 'enrichment_version_evaluation'])]
     #[OA\Property(property: 'id', description: 'Multiple Choice Question ID', type: 'string')]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une question.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job', 'enrichment_version_creation'])]
     private ?string $question = null;
+
+    #[ORM\Column(type: 'text', length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'Veuillez saisir une question.', allowNull: false)]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_post', 'enrichment_version_creation'])]
+    private ?string $translatedQuestion = null;
 
     #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une explication.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job',  'enrichment_version_creation'])]
     private ?string $explanation = null;
 
+    #[ORM\Column(type: 'text', length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'Veuillez saisir une explication.', allowNull: false)]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_post',  'enrichment_version_creation'])]
+    private ?string $translatedExplanation = null;
+
     #[ORM\OneToMany(mappedBy: 'multipleChoiceQuestion', targetEntity: Choice::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation', 'enrichment_version_evaluation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job', 'translation_post', 'enrichment_version_creation', 'enrichment_version_evaluation'])]
     #[ORM\OrderBy(['createdAt' => 'ASC'])]
     private Collection $choices;
 
@@ -116,6 +125,18 @@ class MultipleChoiceQuestion implements Stringable
         return $this;
     }
 
+    public function getTranslatedQuestion(): ?string
+    {
+        return $this->translatedQuestion;
+    }
+
+    public function setTranslatedQuestion(?string $translatedQuestion): self
+    {
+        $this->translatedQuestion = $translatedQuestion;
+
+        return $this;
+    }
+
     public function getExplanation(): ?string
     {
         return $this->explanation;
@@ -124,6 +145,18 @@ class MultipleChoiceQuestion implements Stringable
     public function setExplanation(?string $explanation): self
     {
         $this->explanation = $explanation;
+
+        return $this;
+    }
+
+    public function getTranslatedExplanation(): ?string
+    {
+        return $this->translatedExplanation;
+    }
+
+    public function setTranslatedExplanation(?string $translatedExplanation): self
+    {
+        $this->translatedExplanation = $translatedExplanation;
 
         return $this;
     }

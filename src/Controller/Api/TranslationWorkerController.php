@@ -3,13 +3,16 @@
 namespace App\Controller\Api;
 
 use App\Constants;
+use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
-use App\Form\AiEnrichmentRequestPayloadType;
-use App\Model\AiEnrichmentJobResponse;
-use App\Model\AiEnrichmentRequestPayload;
+use App\Entity\MultipleChoiceQuestion;
+use App\Entity\Transcript;
+use App\Form\TranslationRequestPayloadType;
 use App\Model\EnrichmentWebhookPayload;
 use App\Model\ErrorsResponse;
+use App\Model\TranslationJobResponse;
+use App\Model\TranslationRequestPayload;
 use App\Repository\EnrichmentRepository;
 use App\Repository\EnrichmentVersionRepository;
 use App\Service\ApiClientManager;
@@ -24,6 +27,7 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,7 +41,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/v1')]
-class AiEnrichmentsWorkerController extends AbstractController
+class TranslationWorkerController extends AbstractController
 {
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -48,20 +52,26 @@ class AiEnrichmentsWorkerController extends AbstractController
     ) {
     }
 
-    #[OA\Tag(name: 'AI Enrichment - Worker')]
+    #[OA\Tag(name: 'Translation - Worker')]
     #[OA\Post(
-        description: 'Completes an initial version of an enrichment with AI',
-        summary: 'Completes an initial version of an enrichment with AI'
+        description: 'Translate enrichment version',
+        summary: 'Translate enrichment version'
     )]
     #[OA\RequestBody(
-        content: new OA\JsonContent(
-            type: 'object',
-            ref: new Model(type: AiEnrichmentRequestPayload::class),
-        )
+        content: [
+            new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(ref: new Model(type: TranslationRequestPayload::class, groups: ['default', 'multipart']))
+            ),
+            new OA\JsonContent(
+                type: 'object',
+                ref: new Model(type: TranslationRequestPayload::class, groups: ['default', 'json']),
+            ),
+        ],
     )]
     #[OA\Response(
         response: 200,
-        description: 'Completed the initial version successfully',
+        description: 'Translated the enrichment version successfully',
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(
@@ -107,8 +117,8 @@ class AiEnrichmentsWorkerController extends AbstractController
         in: 'path',
         schema: new OA\Schema(type: 'string')
     )]
-    #[Route('/enrichments/{enrichmentId}/versions/{versionId}/ai_enrichment', name: 'complete_initial_enrichment_version', methods: ['POST'])]
-    public function completeInitialEnrichmentVersionsByEnrichmentVersionID(
+    #[Route('/enrichments/{enrichmentId}/versions/{versionId}/translation', name: 'translate_enrichment_version', methods: ['POST'])]
+    public function translateEnrichmentVersion(
         string $enrichmentId,
         string $versionId,
         Request $request,
@@ -120,7 +130,8 @@ class AiEnrichmentsWorkerController extends AbstractController
         HttpClientInterface $httpClient,
         FilesystemOperator $mediaStorage
     ): Response {
-        if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_PROCESSING_WORKER)) {
+        $requestBody = [];
+        if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSLATION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
         }
 
@@ -133,10 +144,32 @@ class AiEnrichmentsWorkerController extends AbstractController
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
+        $translationRequestPayload = new TranslationRequestPayload();
+        $form = $this->createForm(TranslationRequestPayloadType::class, $translationRequestPayload);
+        dump($request);
+        if ('json' === $request->getContentTypeFormat()) {
+            $requestBody = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            if (array_key_exists('transcript', $requestBody) && array_key_exists('translatedSentences', $requestBody['transcript'])) {
+                $requestBody['transcript']['translatedSentences'] = json_encode($requestBody['transcript']['translatedSentences'], JSON_THROW_ON_ERROR);
+            }
+        } else {
+            $requestBody['transcriptFile'] = $request->files->get('transcriptFile');
+            $enrichmentVersionMetadata = $request->request->get('enrichmentVersionMetadata');
+            if ($enrichmentVersionMetadata) {
+                $requestBody['enrichmentVersionMetadata'] = json_decode($enrichmentVersionMetadata, true, 512, JSON_THROW_ON_ERROR);
+            }
 
-        $aiEnrichmentRequestPayload = new AiEnrichmentRequestPayload();
-        $form = $this->createForm(AiEnrichmentRequestPayloadType::class, $aiEnrichmentRequestPayload);
-        $requestBody = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            $mcqs = $request->request->get('multipleChoiceQuestions');
+            if ($mcqs) {
+                $requestBody['multipleChoiceQuestions'] = json_decode($mcqs, true, 512, JSON_THROW_ON_ERROR);
+            }
+
+            $requestBody['taskId'] = $request->request->get('taskId');
+            $requestBody['status'] = $request->request->get('status');
+            $requestBody['failureCause'] = $request->request->get('failureCause');
+        }
+        dump($requestBody);
+
         $form->submit($requestBody);
 
         if ($form->isValid()) {
@@ -146,7 +179,7 @@ class AiEnrichmentsWorkerController extends AbstractController
                 $enrichmentVersion,
                 $versionId,
                 $enrichmentId,
-                $aiEnrichmentRequestPayload->getTaskId()
+                $translationRequestPayload->getTaskId(),
             );
             if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
                 return $enrichmentVersionAccessErrorResponse;
@@ -156,35 +189,70 @@ class AiEnrichmentsWorkerController extends AbstractController
             if (!$enrichmentVersion->getId()->equals($latestEnrichmentVersion->getId()) || !$enrichmentVersion->isAiGenerated()) {
                 return $this->json([
                     'status' => 'KO',
-                    'errors' => ['This enrichment version is not a placeholder AI generated version waiting for AI Enrichment'],
+                    'errors' => ['This enrichment version is not a placeholder AI generated version waiting for translation'],
                 ], 403);
             }
 
             $enrichment = $enrichmentVersion->getEnrichment();
 
-            if ('KO' === $aiEnrichmentRequestPayload->getStatus()) {
-                $enrichment->setFailureCause($aiEnrichmentRequestPayload->getFailureCause());
+            if ('KO' === $translationRequestPayload->getStatus()) {
+                $enrichment->setFailureCause($translationRequestPayload->getFailureCause());
                 $enrichment->setStatus(Enrichment::STATUS_FAILURE);
                 $entityManager->flush();
 
                 return $this->json(['status' => 'OK']);
             }
+            dump($translationRequestPayload);
+            if ($translationRequestPayload->getTranscriptFile() instanceof UploadedFile) {
+                $translatedTranscriptContent = json_decode($translationRequestPayload->getTranscriptFile()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                $enrichmentVersion->getTranscript()
+                    ->setTranslatedText($translatedTranscriptContent['translatedText'])
+                    ->setTranslatedSentences(json_encode($translatedTranscriptContent['translatedSentences'], JSON_THROW_ON_ERROR))
+                ;
+            } elseif ($translationRequestPayload->getTranscript() instanceof Transcript) {
+                $enrichmentVersion->getTranscript()
+                    ->setTranslatedText($translationRequestPayload->getTranscript()->getTranslatedText())
+                    ->setTranslatedSentences($translationRequestPayload->getTranscript()->getTranslatedSentences())
+                ;
+            }
 
-            $enrichmentVersion->setEnrichmentVersionMetadata($aiEnrichmentRequestPayload->getEnrichmentVersionMetadata());
+            $enrichmentVersion->getEnrichmentVersionMetadata()
+                ->setTranslatedTitle($translationRequestPayload->getEnrichmentVersionMetadata()->getTranslatedTitle())
+                ->setTranslatedDescription($translationRequestPayload->getEnrichmentVersionMetadata()->getTranslatedDescription())
+                ->setTranslatedTopics($translationRequestPayload->getEnrichmentVersionMetadata()->getTranslatedTopics())
+            ;
 
-            $multipleChoiceQuestions = $aiEnrichmentRequestPayload->getMultipleChoiceQuestions();
-            foreach ($multipleChoiceQuestions as $multipleChoiceQuestion) {
-                $enrichmentVersion->addMultipleChoiceQuestion($multipleChoiceQuestion);
+            $translatedMultipleChoiceQuestions = $translationRequestPayload->getMultipleChoiceQuestions();
+
+            foreach ($translatedMultipleChoiceQuestions as $translatedMultipleChoiceQuestion) {
+                $mcq = $enrichmentVersion->getMultipleChoiceQuestions()->findFirst(
+                    fn (int $index, MultipleChoiceQuestion $multipleChoiceQuestion) => $multipleChoiceQuestion->getId()->equals($translatedMultipleChoiceQuestion->getId())
+                );
+                if ($mcq instanceof MultipleChoiceQuestion) {
+                    $mcq
+                        ->setTranslatedQuestion($translatedMultipleChoiceQuestion->getTranslatedQuestion())
+                        ->setTranslatedExplanation($translatedMultipleChoiceQuestion->getTranslatedExplanation())
+                    ;
+
+                    $translatedChoices = $translatedMultipleChoiceQuestion->getChoices();
+
+                    foreach ($translatedChoices as $translatedChoice) {
+                        $choice = $mcq->getChoices()->findFirst(
+                            fn (int $index, Choice $choice) => $choice->getId()->equals($translatedChoice->getId())
+                        );
+                        if ($choice instanceof Choice) {
+                            $choice->setTranslatedOptionText($translatedChoice->getTranslatedOptionText());
+                        }
+                    }
+                }
             }
 
             $targetStatus = Enrichment::STATUS_SUCCESS;
-            if ($enrichment->getTranslateTo()) {
-                $targetStatus = Enrichment::STATUS_WAITING_TRANSLATION;
-            } elseif ($enrichment->getAiEvaluation()) {
+            if ($enrichment->getAiEvaluation()) {
                 $targetStatus = Enrichment::STATUS_WAITING_AI_EVALUATION;
             }
 
-            $enrichment->setStatus($targetStatus)->setAiEnrichmentEndedAt(new DateTime());
+            $enrichment->setStatus($targetStatus)->setTranslationEndedAt(new DateTime());
 
             $errors = $this->validator->validate($enrichmentVersion);
             if (count($errors) > 0) {
@@ -200,6 +268,7 @@ class AiEnrichmentsWorkerController extends AbstractController
                     ->setFailureCause($enrichment->getFailureCause())
                     ->setInitialVersionId($enrichmentVersion->getId())
                 ;
+
                 try {
                     $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
 
@@ -221,7 +290,6 @@ class AiEnrichmentsWorkerController extends AbstractController
             }
 
             $entityManager->flush();
-            $mediaStorage->delete($enrichment->getMedia()->getFileDirectory().'/'.$enrichment->getMedia()->getFileName());
 
             return $this->json(['status' => 'OK']);
         } else {
@@ -236,17 +304,17 @@ class AiEnrichmentsWorkerController extends AbstractController
         }
     }
 
-    #[OA\Tag(name: 'AI Enrichment - Worker')]
+    #[OA\Tag(name: 'Translation - Worker')]
     #[OA\Get(
-        description: 'Get an enrichment job',
-        summary: 'Get an enrichment job'
+        description: 'Get a translation job',
+        summary: 'Get a translation job'
     )]
     #[OA\Response(
         response: 200,
         description: 'Returns a job',
         content: new OA\JsonContent(
             type: 'object',
-            ref: new Model(type: AiEnrichmentJobResponse::class),
+            ref: new Model(type: TranslationJobResponse::class),
         )
     )]
     #[OA\Response(
@@ -275,8 +343,8 @@ class AiEnrichmentsWorkerController extends AbstractController
         in: 'query',
         schema: new OA\Schema(type: 'string')
     )]
-    #[Route('/enrichments/job/ai_enrichment/oldest', name: 'get_enrichment_job', methods: ['GET'])]
-    public function getEnrichmentJob(
+    #[Route('/enrichments/job/translation/oldest', name: 'get_translation_job', methods: ['GET'])]
+    public function getTranslationJob(
         Request $request,
         ApiClientManager $apiClientManager,
         EnrichmentRepository $enrichmentRepository,
@@ -285,7 +353,7 @@ class AiEnrichmentsWorkerController extends AbstractController
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
         EnrichmentVersionRepository $enrichmentVersionRepository
     ): Response {
-        if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_PROCESSING_WORKER)) {
+        if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSLATION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
         }
 
@@ -301,48 +369,48 @@ class AiEnrichmentsWorkerController extends AbstractController
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
-            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(
-                $clientEntity->getAiModel(),
-                $clientEntity->getInfrastructure()
-            );
+            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingTranslationStatusOrTranslatingStatusForMoreThanXMinutes();
 
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => ['No job currently available']], 404);
             }
+
             $latestEnrichmentVersion = $enrichmentVersionRepository->findLatestVersionByEnrichmentId($enrichment->getId());
 
             if (!$latestEnrichmentVersion->isAiGenerated()) {
                 return $this->json(['status' => 'KO', 'errors' => [sprintf('No enrichment version prepared for the eligible enrichment (%s), please report this issue', $enrichment->getId())]], 404);
             }
 
-            $enrichmentLock = $lockFactory->createLock(sprintf('enrichment-%s', $enrichment->getId()));
+            $enrichmentLock = $lockFactory->createLock(sprintf('translating-enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
-                if (Enrichment::STATUS_WAITING_AI_ENRICHMENT !== $enrichment->getStatus()) {
+                if (Enrichment::STATUS_WAITING_TRANSLATION !== $enrichment->getStatus()) {
                     $enrichment->setRetries($enrichment->getRetries() + 1);
                 }
 
                 $enrichment
-                    ->setStatus(Enrichment::STATUS_AI_ENRICHING)
-                    ->setAiEnrichmentStartedAt(new DateTime())
-                    ->setAiProcessedBy($clientEntity)
-                    ->setAiProcessingTaskId(Uuid::fromString($taskId))
+                    ->setStatus(Enrichment::STATUS_TRANSLATING)
+                    ->setTranslationStartedAt(new DateTime())
+                    ->setTranslatedBy($clientEntity)
+                    ->setTranslationTaskId(Uuid::fromString($taskId))
                 ;
                 $entityManager->flush();
                 $enrichmentLock->release();
 
                 $options = [
-                    AbstractNormalizer::GROUPS => ['enrichment_job'],
+                    AbstractNormalizer::GROUPS => ['translation_job'],
                 ];
 
-                $aiEnrichmentJobResponse = (new AiEnrichmentJobResponse())
+                $translationJobResponse = (new TranslationJobResponse())
                     ->setEnrichmentId($enrichment->getId())
                     ->setEnrichmentVersionId($latestEnrichmentVersion->getId())
                     ->setTranscript($latestEnrichmentVersion->getTranscript())
-                    ->setDisciplines($enrichment->getDisciplines())
-                    ->setMediaTypes($enrichment->getMediaTypes())
+                    ->setMultipleChoiceQuestions($latestEnrichmentVersion->getMultipleChoiceQuestions())
+                    ->setEnrichmentVersionMetadata($latestEnrichmentVersion->getEnrichmentVersionMetadata())
+                    ->setLanguage($enrichment->getLanguage())
+                    ->setTranslateTo($enrichment->getTranslateTo())
                 ;
 
-                return $this->json($aiEnrichmentJobResponse, context: $options);
+                return $this->json($translationJobResponse, context: $options);
             }
         }
 
@@ -375,8 +443,8 @@ class AiEnrichmentsWorkerController extends AbstractController
         }
 
         if (
-            $enrichment->getAiProcessedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')
-            || (string) $enrichment->getAiProcessingTaskId() !== $taskId
+            $enrichment->getTranslatedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')
+            || (string) $enrichment->getTranslationTaskId() !== $taskId
         ) {
             return $this->json(['status' => 'KO', 'errors' => ['You are not allowed to access this enrichment version']], 403);
         }

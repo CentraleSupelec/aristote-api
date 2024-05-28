@@ -17,6 +17,7 @@ nelmio_api_doc:
                 scope_processing_worker: Processing worker scope
                 scope_transcription_worker: Transcription worker scope
                 scope_evaluation_worker: Evaluation worker scope
+                scope_translation_worker: Translation worker scope
     # Send OAuth2 authentication on all routes in the documentation
     security:
       - oauth2: []
