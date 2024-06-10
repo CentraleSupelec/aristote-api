@@ -265,6 +265,18 @@ class Enrichment
     #[Groups(groups: ['enrichments'])]
     private ?string $translateTo = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $deleted = false;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $deletedAt = null;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $aiGenerationCount = 0;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 3, nullable: true)]
+    private ?string $evaluationMark = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -572,24 +584,24 @@ class Enrichment
         return $this;
     }
 
-    public function getMediaTypes(): array
+    public function getMediaTypes(): ?array
     {
         return $this->mediaTypes;
     }
 
-    public function setMediaTypes(array $mediaTypes): self
+    public function setMediaTypes(?array $mediaTypes): self
     {
         $this->mediaTypes = $mediaTypes;
 
         return $this;
     }
 
-    public function getDisciplines(): array
+    public function getDisciplines(): ?array
     {
         return $this->disciplines;
     }
 
-    public function setDisciplines(array $disciplines): self
+    public function setDisciplines(?array $disciplines): self
     {
         $this->disciplines = $disciplines;
 
@@ -700,6 +712,54 @@ class Enrichment
     public function setTranslateTo(?string $translateTo): self
     {
         $this->translateTo = $translateTo;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): self
+    {
+        $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?DateTimeInterface $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function getAiGenerationCount(): int
+    {
+        return $this->aiGenerationCount;
+    }
+
+    public function setAiGenerationCount(int $aiGenerationCount): self
+    {
+        $this->aiGenerationCount = $aiGenerationCount;
+
+        return $this;
+    }
+
+    public function getEvaluationMark(): ?string
+    {
+        return $this->evaluationMark;
+    }
+
+    public function setEvaluationMark(?string $evaluationMark): self
+    {
+        $this->evaluationMark = $evaluationMark;
 
         return $this;
     }

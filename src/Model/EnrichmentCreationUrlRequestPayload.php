@@ -18,7 +18,7 @@ class EnrichmentCreationUrlRequestPayload extends EnrichmentCreationRequestPaylo
         return $this->url;
     }
 
-    public function setUrl(?string $url): self
+    public function setUrl(?string $url): static
     {
         $this->url = $url;
 

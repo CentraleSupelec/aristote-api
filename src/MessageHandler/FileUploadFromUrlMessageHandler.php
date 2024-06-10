@@ -50,6 +50,7 @@ class FileUploadFromUrlMessageHandler
                 $this->handleUploadFailure($enrichment, new Exception($errorMessage), $errorMessage);
             } else {
                 $enrichment = $this->fileUploadService->uploadFile($uploadedFile, $fileUploadFromUrlMessage->getApiClient(), $enrichment);
+                $enrichment->setMediaUrl(null);
                 $this->entityManager->flush();
             }
             unlink($temporaryFilePath);

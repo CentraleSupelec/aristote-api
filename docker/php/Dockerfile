@@ -1,7 +1,7 @@
 FROM php:8.2-fpm-alpine3.17 as php_base
 
 RUN apk update \
- && apk add bash icu-dev icu-data-full postgresql-dev libzip-dev libpng-dev oniguruma-dev autoconf gcc g++ make fcgi optipng jpegoptim libjpeg libpng imagemagick ghostscript git libxml2-dev gnu-libiconv screen \
+ && apk add bash icu-dev icu-data-full postgresql-dev libzip-dev libpng-dev oniguruma-dev autoconf gcc g++ make fcgi optipng jpegoptim libjpeg libpng imagemagick ghostscript git libxml2-dev gnu-libiconv screen ffmpeg \
  && curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | bash - \
  && apk add symfony-cli=5.4.21
 

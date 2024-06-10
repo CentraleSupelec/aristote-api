@@ -18,7 +18,6 @@ use App\Utils\PaginationUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use League\Flysystem\FilesystemOperator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -118,7 +117,6 @@ class AiEnrichmentsWorkerController extends AbstractController
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
         HttpClientInterface $httpClient,
-        FilesystemOperator $mediaStorage
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_PROCESSING_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
@@ -221,7 +219,6 @@ class AiEnrichmentsWorkerController extends AbstractController
             }
 
             $entityManager->flush();
-            $mediaStorage->delete($enrichment->getMedia()->getFileDirectory().'/'.$enrichment->getMedia()->getFileName());
 
             return $this->json(['status' => 'OK']);
         } else {

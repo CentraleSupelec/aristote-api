@@ -55,4 +55,24 @@ class EnrichmentVersionRepository extends ServiceEntityRepository
 
         return null;
     }
+
+    public function findLatestAiVersionByEnrichmentId(string $enrichmentId): ?EnrichmentVersion
+    {
+        $enrichmentVersions = new ArrayCollection($this->createQueryBuilder('ev')
+            ->where('ev.enrichment = :enrichmentId')
+            ->andWhere('ev.aiGenerated = true')
+            ->setParameters([
+                'enrichmentId' => $enrichmentId,
+            ])
+            ->orderBy('ev.createdAt', 'desc')
+            ->getQuery()
+            ->getResult()
+        );
+
+        if (0 !== $enrichmentVersions->count()) {
+            return $enrichmentVersions->get(0);
+        }
+
+        return null;
+    }
 }

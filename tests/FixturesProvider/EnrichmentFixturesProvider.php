@@ -24,6 +24,9 @@ class EnrichmentFixturesProvider
                     ->setSize(1000)
                     ->setFileDirectory('dev')
             )
+            ->setDisciplines(['Maths', 'Physics', 'Chemestry'])
+            ->setMediaTypes(['Conference', 'Course', 'Webinar'])
+            ->setNotificationWebhookUrl('http://localhost:8080/api/webhook')
             ->setStatus(Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION)
             ->setCreatedBy($apiClient)
         ;
