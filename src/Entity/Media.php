@@ -50,7 +50,7 @@ class Media
         return $this->fileName;
     }
 
-    public function setFileName(?string $fileName): self
+    public function setFileName(?string $fileName): static
     {
         $this->fileName = $fileName;
 
@@ -62,7 +62,7 @@ class Media
         return $this->originalFileName;
     }
 
-    public function setOriginalFileName(?string $originalFileName): self
+    public function setOriginalFileName(?string $originalFileName): static
     {
         $this->originalFileName = $originalFileName;
 
@@ -74,7 +74,7 @@ class Media
         return $this->mimeType;
     }
 
-    public function setMimeType(?string $mimeType): self
+    public function setMimeType(?string $mimeType): static
     {
         $this->mimeType = $mimeType;
 
@@ -86,7 +86,7 @@ class Media
         return $this->fileDirectory;
     }
 
-    public function setFileDirectory(?string $fileDirectory): self
+    public function setFileDirectory(?string $fileDirectory): static
     {
         $this->fileDirectory = $fileDirectory;
 
@@ -98,7 +98,7 @@ class Media
         return $this->size;
     }
 
-    public function setSize(?int $size): self
+    public function setSize(?int $size): static
     {
         $this->size = $size;
 
@@ -110,7 +110,7 @@ class Media
         return $this->enrichment;
     }
 
-    public function setEnrichment(?Enrichment $enrichment): self
+    public function setEnrichment(?Enrichment $enrichment): static
     {
         $this->enrichment = $enrichment;
 

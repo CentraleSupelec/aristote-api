@@ -17,11 +17,14 @@ use Captioning\Cue;
 use Captioning\Format\SubripFile;
 use Captioning\Format\WebvttFile;
 use Exception;
+use FFMpeg\FFMpeg;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileUploadService
 {
+    private readonly FFMpeg $fFMpeg;
+
     public function __construct(
         private readonly string $baseDirectory,
         private readonly string $bucketName,
@@ -30,6 +33,7 @@ class FileUploadService
         private readonly MimeTypeUtils $mimeTypeUtils,
         private readonly LoggerInterface $logger,
     ) {
+        $this->fFMpeg = FFMpeg::create();
     }
 
     public function uploadFile(UploadedFile $uploadedFile, ApiClient $apiClient, Enrichment $enrichment): Enrichment
@@ -39,16 +43,20 @@ class FileUploadService
 
         if ($this->mimeTypeUtils->isVideo($mimeType)) {
             $directory = sprintf($directory, 'videos');
+            $duration = $this->fFMpeg->open($uploadedFile->getPathname())->getFormat()->get('duration');
             $media = (new Video())
                 ->setVideoFile($uploadedFile)
                 ->setFileDirectory($directory)
+                ->setDuration((int) $duration)
             ;
             $targetStatus = Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION;
         } elseif ($this->mimeTypeUtils->isAudio($mimeType)) {
             $directory = sprintf($directory, 'audios');
+            $duration = $this->fFMpeg->open($uploadedFile->getPathname())->getFormat()->get('duration');
             $media = (new Audio())
                 ->setAudioFile($uploadedFile)
                 ->setFileDirectory($directory)
+                ->setDuration((int) $duration)
             ;
             $targetStatus = Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION;
         } elseif ($this->mimeTypeUtils->isPlainText($mimeType)) {
@@ -108,7 +116,7 @@ class FileUploadService
                 ->setInfrastructure($enrichment->getInfrastructure())
             ;
 
-            $enrichment->addVersion($enrichmentVersion);
+            $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount(1);
         } else {
             throw new UploadFileUnsupportedTypeException('File type not supported. Supported types are videos, audio files and subtitles');
         }

@@ -19,7 +19,6 @@ use App\Utils\PaginationUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use League\Flysystem\FilesystemOperator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -118,8 +117,7 @@ class AiEvaluationWorkerController extends AbstractController
         EnrichmentRepository $enrichmentRepository,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
-        HttpClientInterface $httpClient,
-        FilesystemOperator $mediaStorage
+        HttpClientInterface $httpClient
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_EVALUATION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);

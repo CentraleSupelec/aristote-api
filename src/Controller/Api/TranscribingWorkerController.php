@@ -17,6 +17,7 @@ use App\Service\ScopeAuthorizationCheckerService;
 use App\Utils\PaginationUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemOperator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -36,6 +37,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class TranscribingWorkerController extends AbstractController
 {
     public function __construct(
+        private readonly bool $autoDeleteMediaAfterTranscription,
         private readonly LoggerInterface $logger,
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
@@ -118,7 +120,8 @@ class TranscribingWorkerController extends AbstractController
         EnrichmentVersionRepository $enrichmentVersionRepository,
         EnrichmentRepository $enrichmentRepository,
         EntityManagerInterface $entityManager,
-        ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService
+        ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
+        FilesystemOperator $mediaStorage
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSCRIPTION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
@@ -184,7 +187,7 @@ class TranscribingWorkerController extends AbstractController
             ->setInfrastructure($enrichment->getInfrastructure())
         ;
 
-        $enrichment->addVersion($enrichmentVersion);
+        $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount(1);
         $enrichment->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT)->setTransribingEndedAt(new DateTime());
 
         $errors = $this->validator->validate($enrichment);
@@ -196,6 +199,9 @@ class TranscribingWorkerController extends AbstractController
         }
         $entityManager->persist($enrichment);
         $entityManager->flush();
+        if ($this->autoDeleteMediaAfterTranscription) {
+            $mediaStorage->delete($enrichment->getMedia()->getFileDirectory().'/'.$enrichment->getMedia()->getFileName());
+        }
 
         return $this->json(['status' => 'OK', 'id' => $enrichmentVersion->getId()]);
     }
@@ -312,6 +318,10 @@ class TranscribingWorkerController extends AbstractController
     {
         if (!$enrichment instanceof Enrichment) {
             return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment with ID '%s' has been found", $id)]], 404);
+        }
+
+        if ($enrichment->isDeleted()) {
+            return $this->json(['status' => 'KO', 'errors' => [sprintf("The enrichment that you want to get '%s' has been deleted", $id)]], 404);
         }
 
         if (

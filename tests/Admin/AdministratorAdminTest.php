@@ -24,8 +24,6 @@ class AdministratorAdminTest extends WebTestCase
 
     public function testLoginLogic(): void
     {
-        $adminRepository = $this->entityManager->getRepository(Administrator::class);
-
         // Try to access the dashboard without being authenticated
         $this->client->request('GET', '/admin/dashboard');
         $this->assertResponseRedirects('http://localhost/admin/login');

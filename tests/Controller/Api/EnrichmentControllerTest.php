@@ -2,6 +2,11 @@
 
 namespace App\Tests\Controller\Api;
 
+use App\Entity\Enrichment;
+use App\Entity\EnrichmentVersion;
+use App\Entity\EnrichmentVersionMetadata;
+use App\Entity\MultipleChoiceQuestion;
+use App\Entity\Transcript;
 use App\Tests\FixturesProvider\ApiClientFixturesProvider;
 use App\Tests\FixturesProvider\EnrichmentFixturesProvider;
 use App\Tests\FixturesProvider\EnrichmentVersionsFixturesProvider;
@@ -118,7 +123,16 @@ class EnrichmentControllerTest extends BaseWebTestCase
 
     public function testDeleteEnrichment(): void
     {
-        $enrichment = EnrichmentFixturesProvider::getEnrichment($this->entityManager);
+        $enrichmentVersion = EnrichmentVersionsFixturesProvider::getEnrichmentVersion($this->entityManager);
+        $enrichment = $enrichmentVersion->getEnrichment();
+
+        $this->assertNotTrue($enrichment->isDeleted());
+        $this->assertNotNull($enrichment->getNotificationWebhookUrl());
+        $this->assertIsArray($enrichment->getDisciplines());
+        $this->assertIsArray($enrichment->getMediaTypes());
+        $this->assertNotNull($enrichment->getMedia()->getOriginalFileName());
+
+        $this->assertCount(1, $enrichment->getVersions());
 
         $content = [
             'grant_type' => 'client_credentials',
@@ -151,6 +165,28 @@ class EnrichmentControllerTest extends BaseWebTestCase
             'HTTP_Authorization' => 'Bearer '.$token,
         ]);
         $this->assertResponseStatusCodeSame(404);
+
+        /** @var Enrichment $enrichment */
+        $enrichment = $this->entityManager->find(Enrichment::class, $enrichment->getId());
+
+        $this->assertTrue($enrichment->isDeleted());
+        $this->assertNull($enrichment->getNotificationWebhookUrl());
+        $this->assertNull($enrichment->getDisciplines());
+        $this->assertNull($enrichment->getMediaTypes());
+        $this->assertNull($enrichment->getMedia()->getOriginalFileName());
+        $this->assertCount(0, $enrichment->getVersions());
+
+        $transcript = $this->entityManager->find(Transcript::class, $enrichmentVersion->getTranscript()->getId());
+        $this->assertNull($transcript);
+
+        $enrichmentVersionMetadata = $this->entityManager->find(EnrichmentVersionMetadata::class, $enrichmentVersion->getEnrichmentVersionMetadata()->getId());
+        $this->assertNull($enrichmentVersionMetadata);
+
+        $firstMcq = $this->entityManager->find(MultipleChoiceQuestion::class, $enrichmentVersion->getMultipleChoiceQuestions()->get(0)->getId());
+        $this->assertNull($firstMcq);
+
+        $enrichmentVersion = $this->entityManager->find(EnrichmentVersion::class, $enrichmentVersion->getId());
+        $this->assertNull($enrichmentVersion);
     }
 
     public function testGetEnrichmentVersions(): void

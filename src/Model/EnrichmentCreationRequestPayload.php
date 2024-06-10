@@ -26,7 +26,7 @@ class EnrichmentCreationRequestPayload
         return $this->notificationWebhookUrl;
     }
 
-    public function setNotificationWebhookUrl(?string $notificationWebhookUrl): self
+    public function setNotificationWebhookUrl(?string $notificationWebhookUrl): static
     {
         $this->notificationWebhookUrl = $notificationWebhookUrl;
 
@@ -38,7 +38,7 @@ class EnrichmentCreationRequestPayload
         return $this->enrichmentParameters;
     }
 
-    public function setEnrichmentParameters(?EnrichmentParameters $enrichmentParameters): self
+    public function setEnrichmentParameters(?EnrichmentParameters $enrichmentParameters): static
     {
         $this->enrichmentParameters = $enrichmentParameters;
 
@@ -50,7 +50,7 @@ class EnrichmentCreationRequestPayload
         return $this->endUserIdentifier;
     }
 
-    public function setEndUserIdentifier(?string $endUserIdentifier): self
+    public function setEndUserIdentifier(?string $endUserIdentifier): static
     {
         $this->endUserIdentifier = $endUserIdentifier;
 

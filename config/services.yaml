@@ -115,3 +115,11 @@ services:
       $aiEnrichmentWorkerTimeoutInMinutes: "%env(AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES)%"
       $aiEvaluationWorkerTimeoutInMinutes: "%env(AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES)%"
       $translationWorkerTimeoutInMinutes: "%env(TRANSLATION_WORKER_TIMEOUT_IN_MINUTES)%"
+
+  App\Controller\Api\TranscribingWorkerController:
+    arguments:
+      $autoDeleteMediaAfterTranscription: "%env(bool:AUTO_DELETE_MEDIA_AFTER_TRANSCRIPTION)%"
+
+  App\Controller\Api\EnrichmentsController:
+    arguments:
+      $autoDeleteMediaAfterTranscription: "%env(bool:AUTO_DELETE_MEDIA_AFTER_TRANSCRIPTION)%"

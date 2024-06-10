@@ -26,9 +26,12 @@ use App\Repository\MultipleChoiceQuestionRepository;
 use App\Service\ApiClientManager;
 use App\Service\FileUploadService;
 use App\Service\ScopeAuthorizationCheckerService;
+use App\Utils\EnrichmentUtils;
+use App\Utils\MimeTypeUtils;
 use App\Utils\PaginationUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemOperator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -49,6 +52,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class EnrichmentsController extends AbstractController
 {
     public function __construct(
+        private readonly bool $autoDeleteMediaAfterTranscription,
         private readonly LoggerInterface $logger,
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
@@ -351,8 +355,13 @@ class EnrichmentsController extends AbstractController
         schema: new OA\Schema(type: 'string')
     )]
     #[Route('/enrichments/{id}', name: 'delete_enrichment', methods: ['DELETE'])]
-    public function deleteEnrichmentByID(string $id, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository, EntityManagerInterface $entityManager): Response
-    {
+    public function deleteEnrichmentByID(
+        string $id,
+        ApiClientManager $apiClientManager,
+        EnrichmentRepository $enrichmentRepository,
+        EntityManagerInterface $entityManager,
+        EnrichmentUtils $enrichmentUtils
+    ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to delete this resource']], 403);
         }
@@ -368,8 +377,24 @@ class EnrichmentsController extends AbstractController
         if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
+        $enrichment->getMedia()->setOriginalFileName(null);
 
-        $entityManager->remove($enrichment);
+        $enrichment
+            ->setDeleted(true)
+            ->setDisciplines(null)
+            ->setMediaTypes(null)
+            ->setNotificationWebhookUrl(null)
+            ->setMediaUrl(null)
+            ->setDeletedAt(new DateTime())
+            ->setEvaluationMark($enrichmentUtils->calculateEvaluationMark($enrichment))
+        ;
+
+        $versions = $enrichment->getVersions();
+
+        foreach ($versions as $version) {
+            $entityManager->remove($version);
+        }
+
         $entityManager->flush();
 
         return $this->json(['status' => 'OK']);
@@ -624,6 +649,7 @@ class EnrichmentsController extends AbstractController
         $inputTranscript = $request->files->get('transcript');
 
         if (null !== $inputTranscript) {
+            // TODO: TEST THIS BRANCH
             $transcriptContent = json_decode((string) $inputTranscript->getContent(), true, 512, JSON_THROW_ON_ERROR);
             $newTranscript = (new Transcript())
                 ->setLanguage($transcriptContent['language'])
@@ -987,7 +1013,6 @@ class EnrichmentsController extends AbstractController
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-
         $aiEvaluation = $content['aiEvaluation'] ?? null;
         $aiModel = $content['aiModel'] ?? null;
         $infrastructure = $content['infrastructure'] ?? null;
@@ -1091,7 +1116,9 @@ class EnrichmentsController extends AbstractController
         Request $request,
         FileUploadService $fileUploadService,
         ApiClientManager $apiClientManager,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        FilesystemOperator $mediaStorage,
+        MimeTypeUtils $mimeTypeUtils
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
@@ -1169,6 +1196,10 @@ class EnrichmentsController extends AbstractController
         }
         $entityManager->persist($enrichment);
         $entityManager->flush();
+
+        if ($this->autoDeleteMediaAfterTranscription && $mimeTypeUtils->isPlainText($enrichment->getMedia()->getMimeType())) {
+            $mediaStorage->delete($enrichment->getMedia()->getFileDirectory().'/'.$enrichment->getMedia()->getFileName());
+        }
 
         return $this->json(['status' => 'OK', 'id' => $enrichment->getId()]);
     }
@@ -1293,7 +1324,7 @@ class EnrichmentsController extends AbstractController
             ->setInfrastructure($enrichmentCreationRequestPayload->getEnrichmentParameters()->getInfrastructure())
         ;
 
-        $enrichment->addVersion($enrichmentVersion);
+        $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount($enrichment->getAiGenerationCount() + 1);
 
         $entityManager->persist($enrichment);
         $entityManager->flush();
@@ -1639,6 +1670,10 @@ class EnrichmentsController extends AbstractController
     {
         if (!$enrichment instanceof Enrichment) {
             return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment with ID '%s' has been found", $enrichmentId)]], 404);
+        }
+
+        if ($enrichment->isDeleted()) {
+            return $this->json(['status' => 'KO', 'errors' => [sprintf("The enrichment that you want to get '%s' has been deleted", $enrichmentId)]], 404);
         }
 
         if ($enrichment->getCreatedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')) {

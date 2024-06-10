@@ -32,18 +32,23 @@ class EnrichmentRepository extends ServiceEntityRepository
 
     public function findByCreatedBy(string $client, int $page, int $size, string $sortField, string $sortDirection, ?string $endUserIdentifier)
     {
-        $queryBuilder = $this->createQueryBuilder('e')
+        $qb = $this->createQueryBuilder('e')
             ->where('e.createdBy = :client')
-            ->setParameter('client', $client);
+            ->setParameter('client', $client)
+        ;
+
+        $qb->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
+            ->setParameter('deleted', false)
+        ;
 
         if ($endUserIdentifier) {
-            $queryBuilder->andWhere('e.endUserIdentifier = :endUserIdentifier')
+            $qb->andWhere('e.endUserIdentifier = :endUserIdentifier')
                 ->setParameter('endUserIdentifier', $endUserIdentifier);
         }
 
-        $queryBuilder->orderBy(sprintf('e.%s', $sortField), $sortDirection);
+        $qb->orderBy(sprintf('e.%s', $sortField), $sortDirection);
 
-        return $this->paginator->paginate($queryBuilder, $page, $size);
+        return $this->paginator->paginate($qb, $page, $size);
     }
 
     public function findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(string $aiModel = null, string $infrastructure = null): ?Enrichment
@@ -61,12 +66,14 @@ class EnrichmentRepository extends ServiceEntityRepository
         ));
 
         $qb->andWhere($qb->expr()->lt('e.retries', ':maxRetries'));
+        $qb->andWhere($qb->expr()->eq('e.deleted', ':deleted'));
 
         $parameters = [
             'statusWaitingAiEnrichment' => Enrichment::STATUS_WAITING_AI_ENRICHMENT,
             'statusAiEnrichment' => Enrichment::STATUS_AI_ENRICHING,
             'timeThreshold' => (new DateTime())->modify('-'.$this->aiEnrichmentWorkerTimeoutInMinutes.' minutes'),
             'maxRetries' => $this->maxRetries,
+            'deleted' => false,
         ];
 
         if ($aiModel) {
@@ -117,11 +124,13 @@ class EnrichmentRepository extends ServiceEntityRepository
             )
         ))
             ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
+            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
             ->setParameters([
-        'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
-        'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
-        'timeThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
-        'maxRetries' => $this->maxRetries,
+            'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
+            'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
+            'timeThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
+            'maxRetries' => $this->maxRetries,
+            'deleted' => false,
         ])
             ->orderBy('e.createdAt', 'ASC')
         ;
@@ -152,12 +161,14 @@ class EnrichmentRepository extends ServiceEntityRepository
                 ))
             )
             ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
+            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
             ->setParameters([
                 'statusWaitingAiEvaluation' => Enrichment::STATUS_WAITING_AI_EVALUATION,
                 'statusAiEvaluating' => Enrichment::STATUS_AI_EVALUATING,
                 'timeThreshold' => (new DateTime())->modify('-'.$this->aiEvaluationWorkerTimeoutInMinutes.' minutes'),
                 'evaluator' => $evaluator,
                 'maxRetries' => $this->maxRetries,
+                'deleted' => false,
             ])
             ->orderBy('e.createdAt', 'ASC')
         ;
@@ -185,12 +196,14 @@ class EnrichmentRepository extends ServiceEntityRepository
             )
         ))
             ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
+            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
             ->setParameters([
-        'statusWaitingTranslation' => Enrichment::STATUS_WAITING_TRANSLATION,
-        'statusTranslating' => Enrichment::STATUS_TRANSLATING,
-        'timeThreshold' => (new DateTime())->modify('-'.$this->translationWorkerTimeoutInMinutes.' minutes'),
-        'maxRetries' => $this->maxRetries,
-        ])
+                'statusWaitingTranslation' => Enrichment::STATUS_WAITING_TRANSLATION,
+                'statusTranslating' => Enrichment::STATUS_TRANSLATING,
+                'timeThreshold' => (new DateTime())->modify('-'.$this->translationWorkerTimeoutInMinutes.' minutes'),
+                'maxRetries' => $this->maxRetries,
+                'deleted' => false,
+            ])
             ->orderBy('e.createdAt', 'ASC')
         ;
 
@@ -230,8 +243,8 @@ class EnrichmentRepository extends ServiceEntityRepository
                         ':aiEvaluationThreshold'
                     )
                 )
-            )
-            )
+            ))
+            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
             ->setParameters([
                 'maxRetries' => $this->maxRetries,
                 'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
@@ -240,6 +253,7 @@ class EnrichmentRepository extends ServiceEntityRepository
                 'transcriptionThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
                 'aiEnrichmentThreshold' => (new DateTime())->modify('-'.$this->aiEnrichmentWorkerTimeoutInMinutes.' minutes'),
                 'aiEvaluationThreshold' => (new DateTime())->modify('-'.$this->aiEvaluationWorkerTimeoutInMinutes.' minutes'),
+                'deleted' => false,
             ]);
 
         return $qb->getQuery()->getResult();
