@@ -19,6 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnrichmentRepository::class)]
 #[AppAssert\TranslationConstraint()]
+#[AppAssert\LanguageConstraint()]
 class Enrichment
 {
     use TimestampableEntity;

@@ -26,32 +26,32 @@ class EnrichmentVersionMetadata implements Stringable
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job', 'translation_post'])]
     private ?string $title = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions', 'translation_post'])]
+    #[Groups(groups: ['enrichment_versions'])]
     private ?string $translatedTitle = null;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job', 'translation_post'])]
     private ?string $description = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_post'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job'])]
     private ?string $translatedDescription = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'topics', description: 'Topics', type: 'array', items: new OA\Items(type: 'string'))]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_job', 'translation_post'])]
     private ?array $topics = [];
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'translatedTopics', description: 'Translated topics', type: 'array', items: new OA\Items(type: 'string'))]
-    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job', 'translation_post'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_evaluation_job'])]
     private ?array $translatedTopics = [];
 
     #[ORM\Column(type: 'string', nullable: true)]

@@ -294,7 +294,11 @@ class TranscribingWorkerController extends AbstractController
                 ;
                 $entityManager->flush();
                 $enrichmentLock->release();
-                $transcriptionJobResponse = (new TranscriptionJobResponse())->setEnrichmentId($enrichment->getId())->setMediaTemporaryUrl($mediaTemporaryUrl);
+                $transcriptionJobResponse = (new TranscriptionJobResponse())
+                    ->setEnrichmentId($enrichment->getId())
+                    ->setMediaTemporaryUrl($mediaTemporaryUrl)
+                    ->setLanguage($enrichment->getLanguage())
+                ;
 
                 return $this->json($transcriptionJobResponse);
             }

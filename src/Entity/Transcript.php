@@ -37,17 +37,17 @@ class Transcript
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_evaluation_job', 'translation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'ai_evaluation_job', 'translation_job', 'translation_post'])]
     private ?string $text = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(allowNull: true)]
-    #[Groups(groups: ['enrichment_versions', 'translation_post'])]
+    #[Groups(groups: ['enrichment_versions'])]
     private ?string $translatedText = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[Assert\Json]
-    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'translation_job'])]
+    #[Groups(groups: ['enrichment_versions', 'enrichment_job', 'translation_job', 'translation_post'])]
     #[OA\Property(property: 'sentences', description: "Transcipt's sentences", type: 'array', items: new OA\Items(
         ref: new Model(type: Sentence::class)
     ))]
@@ -55,7 +55,7 @@ class Transcript
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[Assert\Json]
-    #[Groups(groups: ['enrichment_versions', 'translation_post'])]
+    #[Groups(groups: ['enrichment_versions'])]
     #[OA\Property(property: 'translatedSentences', description: "Transcipt's translated sentences", type: 'array', items: new OA\Items(
         ref: new Model(type: Sentence::class)
     ))]

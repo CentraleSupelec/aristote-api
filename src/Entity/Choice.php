@@ -27,12 +27,12 @@ class Choice implements Stringable
 
     #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une option.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job', 'enrichment_version_creation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job', 'enrichment_version_creation', 'translation_post'])]
     private ?string $optionText = null;
 
     #[ORM\Column(type: 'text', length: 255, nullable: true)]
     #[Assert\NotBlank(message: 'Veuillez saisir une option.', allowNull: true)]
-    #[Groups(groups: ['enrichment_versions', 'translation_post'])]
+    #[Groups(groups: ['enrichment_versions'])]
     private ?string $translatedOptionText = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
