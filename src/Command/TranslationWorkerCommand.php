@@ -85,47 +85,20 @@ class TranslationWorkerCommand extends Command
 
         sleep(1);
 
-        // $requestOptions = [
-        //     'body' => [
-        //         'transcriptFile' => fopen('public/astro.json', 'r'),
-        //         'enrichmentVersionMetadata' => json_encode([
-        //             'translatedTitle' => $this->translate($enrichmentVersionMetadata['title'], $translateTo),
-        //             'translatedDescription' => $this->translate($enrichmentVersionMetadata['description'], $translateTo),
-        //             'translatedTopics' => array_map(fn (string $topic) => $this->translate($topic, $translateTo), $enrichmentVersionMetadata['topics'])
-        //         ]),
-        //         'multipleChoiceQuestions' => json_encode(array_map(fn (array $mcq) =>
-        //             [
-        //                 'id' => $mcq['id'],
-        //                 'translatedQuestion' => $this->translate($mcq['question'], $translateTo),
-        //                 'translatedExplanation' => $this->translate($mcq['explanation'], $translateTo),
-        //                 'choices' => array_map(
-        //                     fn (array $choice) => [
-        //                         'id' => $choice['id'],
-        //                         'translatedOptionText' => $this->translate($choice['optionText'], $translateTo),
-        //                     ]
-        //                     , $mcq['choices']
-        //                 )
-        //             ]
-        //             , $multipleChoiceQuestions
-        //         )),
-        //         'taskId' => $taskId,
-        //         'status' => 'OK',
-        //     ]
-        // ];
         $body = [
             'enrichmentVersionMetadata' => [
-                'translatedTitle' => $this->translate($enrichmentVersionMetadata['title'], $translateTo),
-                'translatedDescription' => $this->translate($enrichmentVersionMetadata['description'], $translateTo),
-                'translatedTopics' => array_map(fn (string $topic) => $this->translate($topic, $translateTo), $enrichmentVersionMetadata['topics']),
+                'title' => $this->translate($enrichmentVersionMetadata['title'], $translateTo),
+                'description' => $this->translate($enrichmentVersionMetadata['description'], $translateTo),
+                'topics' => array_map(fn (string $topic) => $this->translate($topic, $translateTo), $enrichmentVersionMetadata['topics']),
             ],
             'multipleChoiceQuestions' => array_map(fn (array $mcq) => [
                     'id' => $mcq['id'],
-                    'translatedQuestion' => $this->translate($mcq['question'], $translateTo),
-                    'translatedExplanation' => $this->translate($mcq['explanation'], $translateTo),
+                    'question' => $this->translate($mcq['question'], $translateTo),
+                    'explanation' => $this->translate($mcq['explanation'], $translateTo),
                     'choices' => array_map(
                         fn (array $choice) => [
                             'id' => $choice['id'],
-                            'translatedOptionText' => $this->translate($choice['optionText'], $translateTo),
+                            'optionText' => $this->translate($choice['optionText'], $translateTo),
                         ], $mcq['choices']
                     ),
                 ], $multipleChoiceQuestions

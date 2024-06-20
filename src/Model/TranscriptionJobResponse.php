@@ -14,6 +14,9 @@ class TranscriptionJobResponse
     #[OA\Property(property: 'mediaTemporaryUrl', type: 'string')]
     private ?string $mediaTemporaryUrl = null;
 
+    #[OA\Property(property: 'language', type: 'string')]
+    private ?string $language = null;
+
     public function getEnrichmentId(): ?Uuid
     {
         return $this->enrichmentId;
@@ -34,6 +37,18 @@ class TranscriptionJobResponse
     public function setMediaTemporaryUrl(?string $mediaTemporaryUrl): self
     {
         $this->mediaTemporaryUrl = $mediaTemporaryUrl;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(?string $language): self
+    {
+        $this->language = $language;
 
         return $this;
     }

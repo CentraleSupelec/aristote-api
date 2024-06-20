@@ -146,11 +146,11 @@ class TranslationWorkerController extends AbstractController
         }
         $translationRequestPayload = new TranslationRequestPayload();
         $form = $this->createForm(TranslationRequestPayloadType::class, $translationRequestPayload);
-        dump($request);
+
         if ('json' === $request->getContentTypeFormat()) {
             $requestBody = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-            if (array_key_exists('transcript', $requestBody) && array_key_exists('translatedSentences', $requestBody['transcript'])) {
-                $requestBody['transcript']['translatedSentences'] = json_encode($requestBody['transcript']['translatedSentences'], JSON_THROW_ON_ERROR);
+            if (array_key_exists('transcript', $requestBody) && array_key_exists('sentences', $requestBody['transcript'])) {
+                $requestBody['transcript']['sentences'] = json_encode($requestBody['transcript']['sentences'], JSON_THROW_ON_ERROR);
             }
         } else {
             $requestBody['transcriptFile'] = $request->files->get('transcriptFile');
@@ -206,20 +206,20 @@ class TranslationWorkerController extends AbstractController
             if ($translationRequestPayload->getTranscriptFile() instanceof UploadedFile) {
                 $translatedTranscriptContent = json_decode($translationRequestPayload->getTranscriptFile()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 $enrichmentVersion->getTranscript()
-                    ->setTranslatedText($translatedTranscriptContent['translatedText'])
-                    ->setTranslatedSentences(json_encode($translatedTranscriptContent['translatedSentences'], JSON_THROW_ON_ERROR))
+                    ->setTranslatedText($translatedTranscriptContent['text'])
+                    ->setTranslatedSentences(json_encode($translatedTranscriptContent['sentences'], JSON_THROW_ON_ERROR))
                 ;
             } elseif ($translationRequestPayload->getTranscript() instanceof Transcript) {
                 $enrichmentVersion->getTranscript()
-                    ->setTranslatedText($translationRequestPayload->getTranscript()->getTranslatedText())
-                    ->setTranslatedSentences($translationRequestPayload->getTranscript()->getTranslatedSentences())
+                    ->setTranslatedText($translationRequestPayload->getTranscript()->getText())
+                    ->setTranslatedSentences($translationRequestPayload->getTranscript()->getSentences())
                 ;
             }
 
             $enrichmentVersion->getEnrichmentVersionMetadata()
-                ->setTranslatedTitle($translationRequestPayload->getEnrichmentVersionMetadata()->getTranslatedTitle())
-                ->setTranslatedDescription($translationRequestPayload->getEnrichmentVersionMetadata()->getTranslatedDescription())
-                ->setTranslatedTopics($translationRequestPayload->getEnrichmentVersionMetadata()->getTranslatedTopics())
+                ->setTranslatedTitle($translationRequestPayload->getEnrichmentVersionMetadata()->getTitle())
+                ->setTranslatedDescription($translationRequestPayload->getEnrichmentVersionMetadata()->getDescription())
+                ->setTranslatedTopics($translationRequestPayload->getEnrichmentVersionMetadata()->getTopics())
             ;
 
             $translatedMultipleChoiceQuestions = $translationRequestPayload->getMultipleChoiceQuestions();
@@ -230,8 +230,8 @@ class TranslationWorkerController extends AbstractController
                 );
                 if ($mcq instanceof MultipleChoiceQuestion) {
                     $mcq
-                        ->setTranslatedQuestion($translatedMultipleChoiceQuestion->getTranslatedQuestion())
-                        ->setTranslatedExplanation($translatedMultipleChoiceQuestion->getTranslatedExplanation())
+                        ->setTranslatedQuestion($translatedMultipleChoiceQuestion->getQuestion())
+                        ->setTranslatedExplanation($translatedMultipleChoiceQuestion->getExplanation())
                     ;
 
                     $translatedChoices = $translatedMultipleChoiceQuestion->getChoices();
@@ -241,7 +241,7 @@ class TranslationWorkerController extends AbstractController
                             fn (int $index, Choice $choice) => $choice->getId()->equals($translatedChoice->getId())
                         );
                         if ($choice instanceof Choice) {
-                            $choice->setTranslatedOptionText($translatedChoice->getTranslatedOptionText());
+                            $choice->setTranslatedOptionText($translatedChoice->getOptionText());
                         }
                     }
                 }

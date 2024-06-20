@@ -119,6 +119,14 @@ class AiEnrichmentWorkerCommand extends Command
                                 'optionText' => 'Option 2',
                                 'correctAnswer' => false,
                             ],
+                            [
+                                'optionText' => 'Option 3',
+                                'correctAnswer' => false,
+                            ],
+                            [
+                                'optionText' => 'Option 4',
+                                'correctAnswer' => false,
+                            ],
                         ],
                         'answerPointer' => [
                             'startAnswerPointer' => '00:01:30',
@@ -135,6 +143,14 @@ class AiEnrichmentWorkerCommand extends Command
                             ],
                             [
                                 'optionText' => 'Option 2',
+                                'correctAnswer' => false,
+                            ],
+                            [
+                                'optionText' => 'Option 3',
+                                'correctAnswer' => false,
+                            ],
+                            [
+                                'optionText' => 'Option 4',
                                 'correctAnswer' => false,
                             ],
                         ],

@@ -29,22 +29,22 @@ class MultipleChoiceQuestion implements Stringable
 
     #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une question.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job', 'enrichment_version_creation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job', 'enrichment_version_creation', 'translation_post'])]
     private ?string $question = null;
 
     #[ORM\Column(type: 'text', length: 255, nullable: true)]
     #[Assert\NotBlank(message: 'Veuillez saisir une question.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_post', 'enrichment_version_creation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'enrichment_version_creation'])]
     private ?string $translatedQuestion = null;
 
     #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank(message: 'Veuillez saisir une explication.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job',  'enrichment_version_creation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_job',  'enrichment_version_creation', 'translation_post'])]
     private ?string $explanation = null;
 
     #[ORM\Column(type: 'text', length: 255, nullable: true)]
     #[Assert\NotBlank(message: 'Veuillez saisir une explication.', allowNull: false)]
-    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job', 'translation_post',  'enrichment_version_creation'])]
+    #[Groups(groups: ['enrichment_versions', 'ai_enrichment_post', 'ai_evaluation_job',  'enrichment_version_creation'])]
     private ?string $translatedExplanation = null;
 
     #[ORM\OneToMany(mappedBy: 'multipleChoiceQuestion', targetEntity: Choice::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
