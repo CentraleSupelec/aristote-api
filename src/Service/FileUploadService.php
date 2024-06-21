@@ -100,7 +100,7 @@ class FileUploadService
                 ->setOriginalFilename($uploadedFile->getClientOriginalName())
                 ->setSentences(json_encode($sentences, JSON_THROW_ON_ERROR))
                 ->setText($text)
-                ->setLanguage($enrichment->getLanguage())
+                ->setLanguage($enrichment->getLanguage() ?? Enrichment::LANGUAGE_FR)
             ;
 
             $enrichmentVersion = (new EnrichmentVersion())
