@@ -163,6 +163,7 @@ class AiEnrichmentsWorkerController extends AbstractController
             if ('KO' === $aiEnrichmentRequestPayload->getStatus()) {
                 $enrichment->setFailureCause($aiEnrichmentRequestPayload->getFailureCause());
                 $enrichment->setStatus(Enrichment::STATUS_FAILURE);
+                $enrichment->getAiProcessedBy()->setJobLastFailuredAt(new DateTime());
                 $entityManager->flush();
 
                 return $this->json(['status' => 'OK']);
@@ -217,7 +218,7 @@ class AiEnrichmentsWorkerController extends AbstractController
                     $enrichment->setNotificationStatus($e->getCode());
                 }
             }
-
+            $enrichment->getAiProcessedBy()->setJobLastSuccessAt(new DateTime());
             $entityManager->flush();
 
             return $this->json(['status' => 'OK']);
@@ -295,6 +296,8 @@ class AiEnrichmentsWorkerController extends AbstractController
 
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
+        $clientEntity->setJobLastRequestedAt(new DateTime());
+        $entityManager->flush();
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
@@ -325,6 +328,8 @@ class AiEnrichmentsWorkerController extends AbstractController
                     ->setAiProcessedBy($clientEntity)
                     ->setAiProcessingTaskId(Uuid::fromString($taskId))
                 ;
+                $clientEntity->setJobLastTakendAt(new DateTime());
+
                 $entityManager->flush();
                 $enrichmentLock->release();
 

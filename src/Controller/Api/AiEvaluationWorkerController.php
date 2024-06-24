@@ -163,6 +163,7 @@ class AiEvaluationWorkerController extends AbstractController
             if ('KO' === $aiEvaluationRequestPayload->getStatus()) {
                 $enrichment->setFailureCause($aiEvaluationRequestPayload->getFailureCause());
                 $enrichment->setStatus(Enrichment::STATUS_FAILURE);
+                $enrichment->getAiEvaluatedBy()->setJobLastFailuredAt(new DateTime());
                 $entityManager->flush();
 
                 return $this->json(['status' => 'OK']);
@@ -208,7 +209,7 @@ class AiEvaluationWorkerController extends AbstractController
                 $this->logger->error($e->getMessage());
                 $enrichment->setNotificationStatus($e->getCode());
             }
-
+            $enrichment->getAiEvaluatedBy()->setJobLastSuccessAt(new DateTime());
             $entityManager->flush();
 
             return $this->json(['status' => 'OK']);
@@ -293,6 +294,8 @@ class AiEvaluationWorkerController extends AbstractController
 
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
+        $clientEntity->setJobLastRequestedAt(new DateTime());
+        $entityManager->flush();
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
@@ -320,6 +323,8 @@ class AiEvaluationWorkerController extends AbstractController
                     ->setAiEvaluatedBy($clientEntity)
                     ->setAiEvaluationTaskId(Uuid::fromString($taskId))
                 ;
+                $clientEntity->setJobLastTakendAt(new DateTime());
+
                 $entityManager->flush();
                 $enrichmentLock->release();
 

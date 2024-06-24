@@ -168,7 +168,6 @@ class TranslationWorkerController extends AbstractController
             $requestBody['status'] = $request->request->get('status');
             $requestBody['failureCause'] = $request->request->get('failureCause');
         }
-        dump($requestBody);
 
         $form->submit($requestBody);
 
@@ -198,11 +197,12 @@ class TranslationWorkerController extends AbstractController
             if ('KO' === $translationRequestPayload->getStatus()) {
                 $enrichment->setFailureCause($translationRequestPayload->getFailureCause());
                 $enrichment->setStatus(Enrichment::STATUS_FAILURE);
+                $enrichment->getTranslatedBy()->setJobLastFailuredAt(new DateTime());
                 $entityManager->flush();
 
                 return $this->json(['status' => 'OK']);
             }
-            dump($translationRequestPayload);
+
             if ($translationRequestPayload->getTranscriptFile() instanceof UploadedFile) {
                 $translatedTranscriptContent = json_decode($translationRequestPayload->getTranscriptFile()->getContent(), true, 512, JSON_THROW_ON_ERROR);
                 $enrichmentVersion->getTranscript()
@@ -288,7 +288,7 @@ class TranslationWorkerController extends AbstractController
                     $enrichment->setNotificationStatus($e->getCode());
                 }
             }
-
+            $enrichment->getTranslatedBy()->setJobLastSuccessAt(new DateTime());
             $entityManager->flush();
 
             return $this->json(['status' => 'OK']);
@@ -366,6 +366,8 @@ class TranslationWorkerController extends AbstractController
 
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
+        $clientEntity->setJobLastRequestedAt(new DateTime());
+        $entityManager->flush();
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
@@ -393,6 +395,7 @@ class TranslationWorkerController extends AbstractController
                     ->setTranslatedBy($clientEntity)
                     ->setTranslationTaskId(Uuid::fromString($taskId))
                 ;
+                $clientEntity->setJobLastTakendAt(new DateTime());
                 $entityManager->flush();
                 $enrichmentLock->release();
 

@@ -158,6 +158,10 @@ class ApiClientAdmin extends AbstractAdmin
                 ->add('tokenLastRequestedAt', null, ['label' => 'Date de dernière requête du token'])
                 ->add('createdAt', null, ['label' => 'Date de création'])
                 ->add('updatedAt', null, ['label' => 'Date de dernière modification'])
+                ->add('jobLastRequestedAt', null, ['label' => 'Dernière demande de job'])
+                ->add('jobLastTakendAt', null, ['label' => 'Dernier job pris'])
+                ->add('jobLastSuccessAt', null, ['label' => 'Dernier job réussi'])
+                ->add('jobLastFailuredAt', null, ['label' => 'Dernier job échoué'])
             ->end()
             ->with('Sécurité', [
                 'class' => 'col-12 col-md-6',
@@ -174,7 +178,6 @@ class ApiClientAdmin extends AbstractAdmin
                     'display' => 'values',
                     'inline' => false,
                 ])
-
             ->end()
             ->with("Pour les workers d'enrichissment", [
                 'class' => 'col-12 col-md-6',
