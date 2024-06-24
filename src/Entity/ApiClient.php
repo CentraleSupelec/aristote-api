@@ -68,6 +68,9 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[ORM\ManyToOne(inversedBy: 'apiClients', targetEntity: Infrastructure::class)]
     private ?Infrastructure $infrastructure = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false], nullable: true)]
+    private bool $treatUnspecifiedModelOrInfrastructure = false;
+
     public function __construct(string $name, string $identifier, ?string $secret)
     {
         parent::__construct($name, $identifier, $secret);
@@ -348,6 +351,18 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     public function setInfrastructure(?Infrastructure $infrastructure): static
     {
         $this->infrastructure = $infrastructure;
+
+        return $this;
+    }
+
+    public function getTreatUnspecifiedModelOrInfrastructure(): bool
+    {
+        return $this->treatUnspecifiedModelOrInfrastructure;
+    }
+
+    public function setTreatUnspecifiedModelOrInfrastructure(bool $treatUnspecifiedModelOrInfrastructure): self
+    {
+        $this->treatUnspecifiedModelOrInfrastructure = $treatUnspecifiedModelOrInfrastructure;
 
         return $this;
     }

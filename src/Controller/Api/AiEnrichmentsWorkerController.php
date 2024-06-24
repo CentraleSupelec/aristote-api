@@ -300,7 +300,8 @@ class AiEnrichmentsWorkerController extends AbstractController
         for ($i = 0; $i < $retryTimes; ++$i) {
             $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(
                 $clientEntity->getAiModel(),
-                $clientEntity->getInfrastructure()
+                $clientEntity->getInfrastructure(),
+                $clientEntity->getTreatUnspecifiedModelOrInfrastructure()
             );
 
             if (!$enrichment instanceof Enrichment) {

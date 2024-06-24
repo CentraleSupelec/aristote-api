@@ -116,17 +116,25 @@ class ApiClientAdmin extends AbstractAdmin
                     'multiple' => true,
                     'choices' => Constants::getAvailableGrants(),
                 ])
+            ->end()
+            ->with("Pour les workers d'enrichissment", [
+                'class' => 'col-12 col-md-6',
+                'box_class' => 'box box-solid box-danger',
+            ])
                 ->add('aiModel', EntityType::class, [
-                    'label' => "Modèle IA (si Worker d'enrichissment)",
+                    'label' => 'Modèle IA',
                     'class' => AiModel::class,
                     'required' => false,
                     'multiple' => false,
                 ])
                 ->add('infrastructure', EntityType::class, [
-                    'label' => "Infrastructure (si Worker d'enrichissment)",
+                    'label' => 'Infrastructure',
                     'class' => Infrastructure::class,
                     'required' => false,
                     'multiple' => false,
+                ])
+                ->add('treatUnspecifiedModelOrInfrastructure', null, [
+                    'label' => "Prendre les enrichissements qui n'ont pas spécifié de modèle ou d'infrastructure",
                 ])
             ->end()
         ;
@@ -166,6 +174,12 @@ class ApiClientAdmin extends AbstractAdmin
                     'display' => 'values',
                     'inline' => false,
                 ])
+
+            ->end()
+            ->with("Pour les workers d'enrichissment", [
+                'class' => 'col-12 col-md-6',
+                'box_class' => 'box box-solid box-danger',
+            ])
                 ->add('aiModel', EntityType::class, [
                     'label' => "Modèle IA (si Worker d'enrichissment)",
                     'class' => AiModel::class,
@@ -177,6 +191,9 @@ class ApiClientAdmin extends AbstractAdmin
                     'class' => Infrastructure::class,
                     'required' => false,
                     'multiple' => false,
+                ])
+                ->add('treatUnspecifiedModelOrInfrastructure', null, [
+                    'label' => "Prendre les enrichissements qui n'ont pas spécifié de modèle ou d'infrastructure (si Worker d'enrichissment)",
                 ])
             ->end()
         ;
