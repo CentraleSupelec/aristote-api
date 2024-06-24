@@ -51,7 +51,7 @@ class EnrichmentRepository extends ServiceEntityRepository
         return $this->paginator->paginate($qb, $page, $size);
     }
 
-    public function findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(string $aiModel = null, string $infrastructure = null): ?Enrichment
+    public function findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(string $aiModel = null, string $infrastructure = null, bool $treatUnspecifiedModelOrInfrastructure = false): ?Enrichment
     {
         $qb = $this->createQueryBuilder('e');
         $qb->where($qb->expr()->orX(
@@ -77,20 +77,28 @@ class EnrichmentRepository extends ServiceEntityRepository
         ];
 
         if ($aiModel) {
-            $qb->andWhere($qb->expr()->orX(
-                $qb->expr()->eq('e.aiModel', ':aiModel'),
-                $qb->expr()->isNull('e.aiModel'))
-            );
+            if ($treatUnspecifiedModelOrInfrastructure) {
+                $qb->andWhere($qb->expr()->orX(
+                    $qb->expr()->eq('e.aiModel', ':aiModel'),
+                    $qb->expr()->isNull('e.aiModel'))
+                );
+            } else {
+                $qb->andWhere($qb->expr()->eq('e.aiModel', ':aiModel'));
+            }
             $parameters['aiModel'] = $aiModel;
         } else {
             $qb->andWhere($qb->expr()->isNull('e.aiModel'));
         }
 
         if ($infrastructure) {
-            $qb->andWhere($qb->expr()->orX(
-                $qb->expr()->eq('e.infrastructure', ':infrastructure'),
-                $qb->expr()->isNull('e.infrastructure'))
-            );
+            if ($treatUnspecifiedModelOrInfrastructure) {
+                $qb->andWhere($qb->expr()->orX(
+                    $qb->expr()->eq('e.infrastructure', ':infrastructure'),
+                    $qb->expr()->isNull('e.infrastructure'))
+                );
+            } else {
+                $qb->andWhere($qb->expr()->eq('e.infrastructure', ':infrastructure'));
+            }
             $parameters['infrastructure'] = $infrastructure;
         } else {
             $qb->andWhere($qb->expr()->isNull('e.infrastructure'));
