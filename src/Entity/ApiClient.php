@@ -7,6 +7,7 @@ use App\Repository\ApiClientRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use League\Bundle\OAuth2ServerBundle\Model\AbstractClient;
@@ -70,6 +71,18 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
 
     #[ORM\Column(type: 'boolean', options: ['default' => false], nullable: true)]
     private bool $treatUnspecifiedModelOrInfrastructure = false;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $jobLastRequestedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $jobLastTakendAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $jobLastSuccessAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $jobLastFailuredAt = null;
 
     public function __construct(string $name, string $identifier, ?string $secret)
     {
@@ -363,6 +376,54 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     public function setTreatUnspecifiedModelOrInfrastructure(bool $treatUnspecifiedModelOrInfrastructure): self
     {
         $this->treatUnspecifiedModelOrInfrastructure = $treatUnspecifiedModelOrInfrastructure;
+
+        return $this;
+    }
+
+    public function getJobLastRequestedAt(): ?DateTimeInterface
+    {
+        return $this->jobLastRequestedAt;
+    }
+
+    public function setJobLastRequestedAt(DateTimeInterface $jobLastRequestedAt): self
+    {
+        $this->jobLastRequestedAt = $jobLastRequestedAt;
+
+        return $this;
+    }
+
+    public function getJobLastTakendAt(): ?DateTimeInterface
+    {
+        return $this->jobLastTakendAt;
+    }
+
+    public function setJobLastTakendAt(DateTimeInterface $jobLastTakendAt): self
+    {
+        $this->jobLastTakendAt = $jobLastTakendAt;
+
+        return $this;
+    }
+
+    public function getJobLastSuccessAt(): ?DateTimeInterface
+    {
+        return $this->jobLastSuccessAt;
+    }
+
+    public function setJobLastSuccessAt(DateTimeInterface $jobLastSuccessAt): self
+    {
+        $this->jobLastSuccessAt = $jobLastSuccessAt;
+
+        return $this;
+    }
+
+    public function getJobLastFailuredAt(): ?DateTimeInterface
+    {
+        return $this->jobLastFailuredAt;
+    }
+
+    public function setJobLastFailuredAt(DateTimeInterface $jobLastFailuredAt): self
+    {
+        $this->jobLastFailuredAt = $jobLastFailuredAt;
 
         return $this;
     }

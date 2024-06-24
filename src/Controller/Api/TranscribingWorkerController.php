@@ -155,6 +155,7 @@ class TranscribingWorkerController extends AbstractController
         if ('KO' === $status) {
             $enrichment->setFailureCause($failureCause);
             $enrichment->setStatus(Enrichment::STATUS_FAILURE);
+            $enrichment->getTranscribedBy()->setJobLastFailuredAt(new DateTime());
             $entityManager->flush();
 
             return $this->json(['status' => 'OK']);
@@ -197,6 +198,7 @@ class TranscribingWorkerController extends AbstractController
 
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
+        $enrichment->getTranscribedBy()->setJobLastSuccessAt(new DateTime());
         $entityManager->persist($enrichment);
         $entityManager->flush();
         if ($this->autoDeleteMediaAfterTranscription) {
@@ -268,6 +270,8 @@ class TranscribingWorkerController extends AbstractController
 
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
+        $clientEntity->setJobLastRequestedAt(new DateTime());
+        $entityManager->flush();
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
@@ -292,8 +296,10 @@ class TranscribingWorkerController extends AbstractController
                     ->setTranscribedBy($clientEntity)
                     ->setTranscriptionTaskId(Uuid::fromString($taskId))
                 ;
+                $clientEntity->setJobLastTakendAt(new DateTime());
                 $entityManager->flush();
                 $enrichmentLock->release();
+
                 $transcriptionJobResponse = (new TranscriptionJobResponse())
                     ->setEnrichmentId($enrichment->getId())
                     ->setMediaTemporaryUrl($mediaTemporaryUrl)
