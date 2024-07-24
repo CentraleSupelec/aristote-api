@@ -1013,11 +1013,11 @@ class EnrichmentsController extends AbstractController
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $aiEvaluation = $content['aiEvaluation'] ?? null;
-        $aiModel = $content['aiModel'] ?? null;
-        $infrastructure = $content['infrastructure'] ?? null;
-        $language = $content['language'] ?? null;
-        $translateTo = $content['translateTo'] ?? null;
+        $aiEvaluation = $content['enrichmentParameters']['aiEvaluation'] ?? null;
+        $aiModel = $content['enrichmentParameters']['aiModel'] ?? null;
+        $infrastructure = $content['enrichmentParameters']['infrastructure'] ?? null;
+        $language = $content['enrichmentParameters']['language'] ?? null;
+        $translateTo = $content['enrichmentParameters']['translateTo'] ?? null;
 
         $enrichmentCreationUrlRequestPayload = (new EnrichmentCreationUrlRequestPayload())
             ->setUrl($content['url'])
