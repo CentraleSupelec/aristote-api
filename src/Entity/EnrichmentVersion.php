@@ -113,6 +113,14 @@ class EnrichmentVersion
     #[Assert\Url]
     private ?string $notificationWebhookUrl = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?string $language = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?string $translateTo = null;
+
     public function __construct()
     {
         $this->multipleChoiceQuestions = new ArrayCollection();
@@ -305,6 +313,30 @@ class EnrichmentVersion
     public function setAiEvaluation(?string $aiEvaluation): self
     {
         $this->aiEvaluation = $aiEvaluation;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(?string $language): self
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    public function getTranslateTo(): ?string
+    {
+        return $this->translateTo;
+    }
+
+    public function setTranslateTo(?string $translateTo): self
+    {
+        $this->translateTo = $translateTo;
 
         return $this;
     }

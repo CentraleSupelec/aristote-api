@@ -114,6 +114,8 @@ class FileUploadService
                 ->setEndUserIdentifier($enrichment->getEndUserIdentifier())
                 ->setAiModel($enrichment->getAiModel())
                 ->setInfrastructure($enrichment->getInfrastructure())
+                ->setLanguage($enrichment->getLanguage())
+                ->setTranslateTo($enrichment->getTranslateTo())
             ;
 
             $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount(1);

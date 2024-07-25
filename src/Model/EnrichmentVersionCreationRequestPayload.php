@@ -24,6 +24,9 @@ class EnrichmentVersionCreationRequestPayload
     #[OA\Property(property: 'multipleChoiceQuestions', type: 'array', items: new OA\Items(ref: new Model(type: MultipleChoiceQuestion::class, groups: ['enrichment_version_creation'])))]
     private readonly Collection $multipleChoiceQuestions;
 
+    #[OA\Property(property: 'translate', type: 'boolean')]
+    private ?bool $translate = null;
+
     public function __construct()
     {
         $this->multipleChoiceQuestions = new ArrayCollection();
@@ -73,6 +76,18 @@ class EnrichmentVersionCreationRequestPayload
     public function removeMultipleChoiceQuestion(MultipleChoiceQuestion $multipleChoiceQuestion): static
     {
         $this->multipleChoiceQuestions->removeElement($multipleChoiceQuestion);
+
+        return $this;
+    }
+
+    public function getTranslate(): ?bool
+    {
+        return $this->translate;
+    }
+
+    public function setTranslate(?bool $translate): self
+    {
+        $this->translate = $translate;
 
         return $this;
     }
