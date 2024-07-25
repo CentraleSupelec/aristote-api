@@ -671,22 +671,44 @@ class EnrichmentsController extends AbstractController
         $inputMultipleChoiceQuestions = $this->stringJsonObjectsToArray($request->request->get('multipleChoiceQuestions'));
 
         $enrichmentVersionMetadata = (new EnrichmentVersionMetadata())
-            ->setDescription($inputEnrichmentVersionMetadata['description'])
             ->setTitle($inputEnrichmentVersionMetadata['title'])
+            ->setDescription($inputEnrichmentVersionMetadata['description'])
             ->setDiscipline($inputEnrichmentVersionMetadata['discipline'])
             ->setMediaType($inputEnrichmentVersionMetadata['mediaType'])
             ->setTopics($inputEnrichmentVersionMetadata['topics'])
+            ->setTranslatedTitle($inputEnrichmentVersionMetadata['title'])
+            ->setTranslatedDescription($inputEnrichmentVersionMetadata['translatedDescription'])
+            ->setTranslatedTopics($inputEnrichmentVersionMetadata['translatedTopics'])
         ;
 
         $enrichmentVersion = (new EnrichmentVersion())
             ->setTranscript($newTranscript)
             ->setEnrichmentVersionMetadata($enrichmentVersionMetadata)
+            ->setDisciplines($enrichment->getDisciplines())
+            ->setMediaTypes($enrichment->getMediaTypes())
+            ->setLanguage($enrichment->getLanguage())
+            ->setTranslateTo($enrichment->getTranslateTo())
         ;
+
+        $translationRequested = filter_var($request->request->get('translate'), FILTER_VALIDATE_BOOLEAN);
+
+        if ($translationRequested) {
+            $enrichment
+                ->setStatus(Enrichment::STATUS_WAITING_TRANSLATION)
+                ->setTranslatedBy(null)
+                ->setTranslationStartedAt(null)
+                ->setTranslationEndedAt(null)
+                ->setTranslationTaskId(null)
+                ->setAiEvaluation(null)
+            ;
+        }
 
         foreach ($inputMultipleChoiceQuestions as $inputMultipleChoiceQuestion) {
             $multipleChoiceQuestion = (new MultipleChoiceQuestion())
                 ->setQuestion($inputMultipleChoiceQuestion['question'])
                 ->setExplanation($inputMultipleChoiceQuestion['explanation'])
+                ->setTranslatedQuestion($inputMultipleChoiceQuestion['translatedQuestion'])
+                ->setTranslatedExplanation($inputMultipleChoiceQuestion['translatedExplanation'])
             ;
             $answerPointer = $inputMultipleChoiceQuestion['answerPointer'];
             if ($answerPointer && $answerPointer['startAnswerPointer']) {
@@ -701,6 +723,7 @@ class EnrichmentsController extends AbstractController
                 $multipleChoiceQuestion->addChoice((new Choice())
                     ->setCorrectAnswer($choice['correctAnswer'])
                     ->setOptionText($choice['optionText'])
+                    ->setTranslatedOptionText($choice['translatedOptionText'])
                 );
             }
             $enrichmentVersion->addMultipleChoiceQuestion($multipleChoiceQuestion);
@@ -1267,15 +1290,23 @@ class EnrichmentsController extends AbstractController
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $aiEvaluation = $content['enrichmentParameters']['aiEvaluation'] ?? null;
+        $aiModel = $content['enrichmentParameters']['aiModel'] ?? null;
+        $infrastructure = $content['enrichmentParameters']['infrastructure'] ?? null;
+        $language = $content['enrichmentParameters']['language'] ?? null;
+        $translateTo = $content['enrichmentParameters']['translateTo'] ?? null;
+
         $enrichmentCreationRequestPayload = (new EnrichmentCreationRequestPayload())
             ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
             ->setNotificationWebhookUrl($content['notificationWebhookUrl'])
             ->setEnrichmentParameters((new EnrichmentParameters())
                 ->setDisciplines($content['enrichmentParameters']['disciplines'] ?? [])
                 ->setMediaTypes($content['enrichmentParameters']['mediaTypes'] ?? [])
-                ->setAiEvaluation($content['enrichmentParameters']['aiEvaluation'] ?? null)
-                ->setAiModel(null === $content['enrichmentParameters']['aiModel'] || '' === $content['enrichmentParameters']['aiModel'] ? null : $content['enrichmentParameters']['aiModel'])
-                ->setInfrastructure(null === $content['enrichmentParameters']['infrastructure'] || '' === $content['enrichmentParameters']['infrastructure'] ? null : $content['enrichmentParameters']['infrastructure'])
+                ->setAiEvaluation(null === $aiEvaluation || '' === $aiEvaluation ? null : $aiEvaluation)
+                ->setAiModel(null === $aiModel || '' === $aiModel ? null : $aiModel)
+                ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
+                ->setLanguage(null === $language || '' === $language ? null : $language)
+                ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
             )
         ;
 
@@ -1303,6 +1334,8 @@ class EnrichmentsController extends AbstractController
             ->setEndUserIdentifier($enrichmentCreationRequestPayload->getEndUserIdentifier())
             ->setAiModel($enrichmentCreationRequestPayload->getEnrichmentParameters()->getAiModel())
             ->setInfrastructure($enrichmentCreationRequestPayload->getEnrichmentParameters()->getInfrastructure())
+            ->setLanguage($enrichmentCreationRequestPayload->getEnrichmentParameters()->getLanguage())
+            ->setTranslateTo($enrichmentCreationRequestPayload->getEnrichmentParameters()->getTranslateTo())
         ;
 
         $initialVersion = $enrichmentVersionRepository->findOneBy(['id' => $enrichment->getInitialVersionId()]);
@@ -1322,6 +1355,8 @@ class EnrichmentsController extends AbstractController
             ->setEndUserIdentifier($enrichmentCreationRequestPayload->getEndUserIdentifier())
             ->setAiModel($enrichmentCreationRequestPayload->getEnrichmentParameters()->getAiModel())
             ->setInfrastructure($enrichmentCreationRequestPayload->getEnrichmentParameters()->getInfrastructure())
+            ->setLanguage($enrichmentCreationRequestPayload->getEnrichmentParameters()->getLanguage())
+            ->setTranslateTo($enrichmentCreationRequestPayload->getEnrichmentParameters()->getTranslateTo())
         ;
 
         $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount($enrichment->getAiGenerationCount() + 1);

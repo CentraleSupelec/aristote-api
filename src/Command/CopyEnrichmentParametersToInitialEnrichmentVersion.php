@@ -48,6 +48,8 @@ class CopyEnrichmentParametersToInitialEnrichmentVersion extends Command
                     ->setEndUserIdentifier($enrichment->getEndUserIdentifier())
                     ->setAiModel($enrichment->getAiModel())
                     ->setInfrastructure($enrichment->getInfrastructure())
+                    ->setLanguage($enrichment->getLanguage())
+                    ->setTranslateTo($enrichment->getTranslateTo())
                 ;
             }
             $this->entityManager->flush();
