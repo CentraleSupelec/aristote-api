@@ -37,10 +37,12 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -1690,6 +1692,135 @@ class EnrichmentsController extends AbstractController
         return $this->json(['status' => 'OK', 'enrichmentVersion' => $choice->getMultipleChoiceQuestion()->getEnrichmentVersion()], context: $options);
     }
 
+    #[OA\Tag(name: 'Enrichments')]
+    #[OA\Get(
+        description: 'Download the transcript of an enrichment version',
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns transcript in the specified format',
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad parameters',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'User is not authenticated',
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Not allowed to access this resource',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Entity not found',
+        content: new OA\JsonContent(
+            ref: new Model(type: ErrorsResponse::class),
+            type: 'object'
+        )
+    )]
+    #[OA\Parameter(
+        name: 'versionId',
+        description: 'Enrichment version ID',
+        in: 'path',
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Parameter(
+        name: 'format',
+        description: 'format (SRT/VTT)',
+        in: 'query',
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Parameter(
+        name: 'language',
+        description: 'language',
+        in: 'query',
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[Route('/enrichments/{enrichmentId}/versions/{versionId}/download_transcript', name: 'downlaod_transcript', methods: ['GET'])]
+    public function downloadTranscript(
+        string $enrichmentId,
+        string $versionId,
+        Request $request,
+        EnrichmentVersionRepository $enrichmentVersionRepository
+    ): Response {
+        if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
+            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+        }
+
+        $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
+        $uuidValidationErrorResponse = $this->validateUuid($versionId);
+        if ($uuidValidationErrorResponse instanceof JsonResponse) {
+            return $uuidValidationErrorResponse;
+        }
+
+        $enrichmentVersion = $enrichmentVersionRepository->findOneBy(['id' => $versionId]);
+
+        $enrichmentVersionAccessErrorResponse = $this->validateEnrichmentVersionAccess($enrichmentVersion, $versionId, $enrichmentId);
+        if ($enrichmentVersionAccessErrorResponse instanceof JsonResponse) {
+            return $enrichmentVersionAccessErrorResponse;
+        }
+
+        $format = $request->query->get('format', 'srt');
+
+        if (!in_array(strtolower($format), ['srt', 'vtt'])) {
+            return $this->json(['status' => 'KO', 'errors' => [sprintf("'%s' is not a supported format. Supported formats : SRT, VTT", $format)]], 403);
+        }
+
+        $language = $request->query->get('language');
+
+        if (in_array($language, [$enrichmentVersion->getLanguage(), $enrichmentVersion->getTranscript()->getLanguage(), null])) {
+            $pickTranslated = false;
+        } elseif ($language === $enrichmentVersion->getTranslateTo()) {
+            $pickTranslated = true;
+        } else {
+            return $this->json([
+                'status' => 'KO',
+                'errors' => [
+                    sprintf(
+                        "Couldn't find transcript in the specified language '%s'. "
+                        .'Found languages : %s. You can also leave this parameter empty to get the default transcript.',
+                        $language,
+                        implode(',', array_unique(
+                            array_filter(
+                                [$enrichmentVersion->getLanguage(), $enrichmentVersion->getTranslateTo(), $enrichmentVersion->getTranscript()->getLanguage()],
+                                fn ($value) => null !== $value
+                            )
+                        ))
+                    ),
+                ]], 400);
+        }
+
+        $content = 'srt' === $format ? $this->transcriptToSRT($enrichmentVersion->getTranscript(), $pickTranslated)
+            : $this->transcriptToVTT($enrichmentVersion->getTranscript(), $pickTranslated);
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'transcript');
+        file_put_contents($tempFile, $content);
+
+        $binaryFileResponse = new BinaryFileResponse($tempFile);
+        $binaryFileResponse->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            sprintf('%s.%s', $enrichmentVersion->getEnrichment()->getMedia()->getOriginalFileName(), $format)
+        );
+
+        $binaryFileResponse->deleteFileAfterSend(true);
+
+        return $binaryFileResponse;
+    }
+
     private function validateUuid(string $id): ?JsonResponse
     {
         $constraintViolationList = $this->validator->validate($id, new Uuid());
@@ -1779,5 +1910,54 @@ class EnrichmentsController extends AbstractController
         } else {
             return json_decode(sprintf('[%s]', $jsonString), true, 512, JSON_THROW_ON_ERROR);
         }
+    }
+
+    private function convertTime(int $seconds, string $millisecondsSeparator): string
+    {
+        $hours = str_pad(floor($seconds / 3600), 2, '0', STR_PAD_LEFT);
+        $minutes = str_pad(floor(($seconds % 3600) / 60), 2, '0', STR_PAD_LEFT);
+        $secs = str_pad(floor($seconds % 60), 2, '0', STR_PAD_LEFT);
+        $millis = str_pad(floor(($seconds - floor($seconds)) * 1000), 3, '0', STR_PAD_LEFT);
+
+        return sprintf('%s:%s:%s%s%s', $hours, $minutes, $secs, $millisecondsSeparator, $millis);
+    }
+
+    private function transcriptToSRT(Transcript $transcript, bool $pickTranslated = false)
+    {
+        $srtOutput = '';
+        $sentences = json_decode($transcript->getSentences(), true, 512, JSON_THROW_ON_ERROR);
+
+        foreach ($sentences as $index => $sentence) {
+            $start = $this->convertTime($sentence['start'], ',');
+            $end = $this->convertTime($sentence['end'], ',');
+            $srtOutput .= sprintf(
+                "%d\n%s --> %s\n%s\n\n",
+                $index + 1,
+                $start,
+                $end,
+                $sentence[$pickTranslated ? 'translatedText' : 'text']
+            );
+        }
+
+        return $srtOutput;
+    }
+
+    private function transcriptToVTT(Transcript $transcript, bool $pickTranslated = false)
+    {
+        $srtOutput = 'WEBVTT\n\n';
+        $sentences = json_decode($transcript->getSentences(), true, 512, JSON_THROW_ON_ERROR);
+
+        foreach ($sentences as $sentence) {
+            $start = $this->convertTime($sentence['start'], '.');
+            $end = $this->convertTime($sentence['end'], '.');
+            $srtOutput .= sprintf(
+                "%s --> %s\n%s\n\n",
+                $start,
+                $end,
+                $sentence[$pickTranslated ? 'translatedText' : 'text']
+            );
+        }
+
+        return $srtOutput;
     }
 }
