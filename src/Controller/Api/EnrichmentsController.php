@@ -733,7 +733,7 @@ class EnrichmentsController extends AbstractController
 
         $enrichment->addVersion($enrichmentVersion);
 
-        $errors = $this->validator->validate($enrichment);
+        $errors = $this->validator->validate($enrichment, groups: ['Default']);
 
         if (count($errors) > 0) {
             $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
@@ -996,7 +996,7 @@ class EnrichmentsController extends AbstractController
     #[OA\RequestBody(
         content: new OA\JsonContent(
             type: 'object',
-            ref: new Model(type: EnrichmentCreationUrlRequestPayload::class),
+            ref: new Model(type: EnrichmentCreationUrlRequestPayload::class, groups: ['Default', 'treatments']),
         )
     )]
     #[OA\Response(
@@ -1038,28 +1038,41 @@ class EnrichmentsController extends AbstractController
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $aiEvaluation = $content['enrichmentParameters']['aiEvaluation'] ?? null;
-        $aiModel = $content['enrichmentParameters']['aiModel'] ?? null;
-        $infrastructure = $content['enrichmentParameters']['infrastructure'] ?? null;
-        $language = $content['enrichmentParameters']['language'] ?? null;
-        $translateTo = $content['enrichmentParameters']['translateTo'] ?? null;
+        $enrichmentParameters = $content['enrichmentParameters'];
+        $aiEvaluation = $enrichmentParameters['aiEvaluation'] ?? null;
+        $aiModel = $enrichmentParameters['aiModel'] ?? null;
+        $infrastructure = $enrichmentParameters['infrastructure'] ?? null;
+        $language = $enrichmentParameters['language'] ?? null;
+        $translateTo = $enrichmentParameters['translateTo'] ?? null;
+        $generateMetadata = $enrichmentParameters['generateMetadata'] ?? true;
+        $generateQuiz = $enrichmentParameters['generateQuiz'] ?? true;
+        $generateNotes = $enrichmentParameters['generateNotes'] ?? false;
 
         $enrichmentCreationUrlRequestPayload = (new EnrichmentCreationUrlRequestPayload())
             ->setUrl($content['url'])
             ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
             ->setNotificationWebhookUrl($content['notificationWebhookUrl'])
             ->setEnrichmentParameters((new EnrichmentParameters())
-                ->setDisciplines($content['enrichmentParameters']['disciplines'] ?? [])
-                ->setMediaTypes($content['enrichmentParameters']['mediaTypes'] ?? [])
+                ->setDisciplines($enrichmentParameters['disciplines'] ?? [])
+                ->setMediaTypes($enrichmentParameters['mediaTypes'] ?? [])
                 ->setAiEvaluation(null === $aiEvaluation || '' === $aiEvaluation ? null : $aiEvaluation)
                 ->setAiModel(null === $aiModel || '' === $aiModel ? null : $aiModel)
                 ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
                 ->setLanguage(null === $language || '' === $language ? null : $language)
                 ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
+                ->setGenerateMetadata($generateMetadata)
+                ->setGenerateQuiz($generateQuiz)
+                ->setGenerateNotes($generateNotes)
             )
         ;
 
-        $errors = $this->validator->validate($enrichmentCreationUrlRequestPayload);
+        $groups = ['Default'];
+
+        if ($generateMetadata) {
+            $groups[] = 'metadata';
+        }
+
+        $errors = $this->validator->validate($enrichmentCreationUrlRequestPayload, groups: $groups);
         if (count($errors) > 0) {
             $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
 
@@ -1082,7 +1095,17 @@ class EnrichmentsController extends AbstractController
             ->setInfrastructure($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getInfrastructure())
             ->setLanguage($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getLanguage())
             ->setTranslateTo($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getTranslateTo())
+            ->setGenerateMetadata($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getGenerateMetadata())
+            ->setGenerateQuiz($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getGenerateQuiz())
+            ->setGenerateNotes($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getGenerateNotes())
         ;
+
+        $errors = $this->validator->validate($enrichment, groups: $groups);
+        if (count($errors) > 0) {
+            $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
+
+            return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
+        }
 
         $entityManager->persist($enrichment);
         $entityManager->flush();
@@ -1101,7 +1124,7 @@ class EnrichmentsController extends AbstractController
         content: [
             new OA\MediaType(
                 mediaType: 'multipart/form-data',
-                schema: new OA\Schema(ref: new Model(type: EnrichmentCreationFileUploadRequestPayload::class))
+                schema: new OA\Schema(ref: new Model(type: EnrichmentCreationFileUploadRequestPayload::class, groups: ['Default', 'treatments']))
             ),
         ]
     )]
@@ -1163,6 +1186,9 @@ class EnrichmentsController extends AbstractController
         $infrastructure = $inputEnrichmentParameters['infrastructure'] ?? null;
         $language = $inputEnrichmentParameters['language'] ?? null;
         $translateTo = $inputEnrichmentParameters['translateTo'] ?? null;
+        $generateMetadata = $inputEnrichmentParameters['generateMetadata'] ?? true;
+        $generateQuiz = $inputEnrichmentParameters['generateQuiz'] ?? true;
+        $generateNotes = $inputEnrichmentParameters['generateNotes'] ?? false;
 
         $enrichmentCreationFileUploadRequestPayload = (new EnrichmentCreationFileUploadRequestPayload())
             ->setFile($file)
@@ -1176,11 +1202,19 @@ class EnrichmentsController extends AbstractController
                 ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
                 ->setLanguage(null === $language || '' === $language ? null : $language)
                 ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
+                ->setGenerateMetadata($generateMetadata)
+                ->setGenerateQuiz($generateQuiz)
+                ->setGenerateNotes($generateNotes)
             )
         ;
 
-        $errors = $this->validator->validate($enrichmentCreationFileUploadRequestPayload);
+        $groups = ['Default'];
 
+        if ($generateMetadata) {
+            $groups[] = 'metadata';
+        }
+
+        $errors = $this->validator->validate($enrichmentCreationFileUploadRequestPayload, groups: $groups);
         if (count($errors) > 0) {
             $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
 
@@ -1201,6 +1235,9 @@ class EnrichmentsController extends AbstractController
                 ->setInfrastructure($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getInfrastructure())
                 ->setLanguage($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getLanguage())
                 ->setTranslateTo($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getTranslateTo())
+                ->setGenerateMetadata($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getGenerateMetadata())
+                ->setGenerateQuiz($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getGenerateQuiz())
+                ->setGenerateNotes($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getGenerateNotes())
         ;
 
         try {
@@ -1212,7 +1249,7 @@ class EnrichmentsController extends AbstractController
             ], 400);
         }
 
-        $errors = $this->validator->validate($enrichment);
+        $errors = $this->validator->validate($enrichment, groups: $groups);
         if (count($errors) > 0) {
             return $this->json([
                 'status' => 'KO',
@@ -1237,7 +1274,7 @@ class EnrichmentsController extends AbstractController
     #[OA\RequestBody(
         content: new OA\JsonContent(
             type: 'object',
-            ref: new Model(type: EnrichmentCreationRequestPayload::class),
+            ref: new Model(type: EnrichmentCreationRequestPayload::class, groups: ['Default']),
         )
     )]
     #[OA\Response(

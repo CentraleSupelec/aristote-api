@@ -75,6 +75,9 @@ class AiEnrichmentWorkerCommand extends Command
             if (isset($job['transcript'])) {
                 $disciplines = $job['disciplines'];
                 $mediaTypes = $job['mediaTypes'];
+                $generateMetadata = $job['generateMetadata'];
+                $generateQuiz = $job['generateQuiz'];
+                $generateNotes = $job['$generateNotes'];
                 $symfonyStyle->info(sprintf('Got 1 job : Enrichment Version ID => %s', $enrichmentVersionId));
             } else {
                 $requestOptions = [
@@ -96,73 +99,85 @@ class AiEnrichmentWorkerCommand extends Command
         $symfonyStyle->info('Generating AI enrichment ...');
 
         sleep(1);
+        
+        $generated = [
+            'taskId' => $taskId,
+            'status' => 'OK',
+        ];
+
+        if ($generateMetadata) {
+            $generated['enrichmentVersionMetadata'] = [
+                'title' => 'Worker enrichment',
+                'description' => 'This is an example of an enrichment version',
+                'topics' => ['Random topic 1', 'Random topic 2'],
+                'discipline' => $disciplines[0],
+                'mediaType' => $mediaTypes[0],
+            ];
+        }
+
+        if ($generateQuiz) {
+            $generated['multipleChoiceQuestions'] = [
+                [
+                    'question' => 'Question 1',
+                    'explanation' => 'Question 1 explanation',
+                    'choices' => [
+                        [
+                            'optionText' => 'Option 1',
+                            'correctAnswer' => true,
+                        ],
+                        [
+                            'optionText' => 'Option 2',
+                            'correctAnswer' => false,
+                        ],
+                        [
+                            'optionText' => 'Option 3',
+                            'correctAnswer' => false,
+                        ],
+                        [
+                            'optionText' => 'Option 4',
+                            'correctAnswer' => false,
+                        ],
+                    ],
+                    'answerPointer' => [
+                        'startAnswerPointer' => '00:01:30',
+                        'stopAnswerPointer' => '00:01:37',
+                    ],
+                ],
+                [
+                    'question' => 'Question 2',
+                    'explanation' => 'Question 2 explanation',
+                    'choices' => [
+                        [
+                            'optionText' => 'Option 1',
+                            'correctAnswer' => true,
+                        ],
+                        [
+                            'optionText' => 'Option 2',
+                            'correctAnswer' => false,
+                        ],
+                        [
+                            'optionText' => 'Option 3',
+                            'correctAnswer' => false,
+                        ],
+                        [
+                            'optionText' => 'Option 4',
+                            'correctAnswer' => false,
+                        ],
+                    ],
+                    'answerPointer' => [
+                        'startAnswerPointer' => '00:02:34',
+                        'stopAnswerPointer' => '00:02:43',
+                    ],
+                ],
+            ];
+        }
+
+        if ($generateNotes) {
+            $generated['notes'] = 'This reunion lasted 3 hours. The main themes discussed are : ...';
+        }
 
         $requestOptions = [
-            'body' => json_encode([
-                'enrichmentVersionMetadata' => [
-                    'title' => 'Worker enrichment',
-                    'description' => 'This is an example of an enrichment version',
-                    'topics' => ['Random topic 1', 'Random topic 2'],
-                    'discipline' => $disciplines[0],
-                    'mediaType' => $mediaTypes[0],
-                ],
-                'multipleChoiceQuestions' => [
-                    [
-                        'question' => 'Question 1',
-                        'explanation' => 'Question 1 explanation',
-                        'choices' => [
-                            [
-                                'optionText' => 'Option 1',
-                                'correctAnswer' => true,
-                            ],
-                            [
-                                'optionText' => 'Option 2',
-                                'correctAnswer' => false,
-                            ],
-                            [
-                                'optionText' => 'Option 3',
-                                'correctAnswer' => false,
-                            ],
-                            [
-                                'optionText' => 'Option 4',
-                                'correctAnswer' => false,
-                            ],
-                        ],
-                        'answerPointer' => [
-                            'startAnswerPointer' => '00:01:30',
-                            'stopAnswerPointer' => '00:01:37',
-                        ],
-                    ],
-                    [
-                        'question' => 'Question 2',
-                        'explanation' => 'Question 2 explanation',
-                        'choices' => [
-                            [
-                                'optionText' => 'Option 1',
-                                'correctAnswer' => true,
-                            ],
-                            [
-                                'optionText' => 'Option 2',
-                                'correctAnswer' => false,
-                            ],
-                            [
-                                'optionText' => 'Option 3',
-                                'correctAnswer' => false,
-                            ],
-                            [
-                                'optionText' => 'Option 4',
-                                'correctAnswer' => false,
-                            ],
-                        ],
-                        'answerPointer' => [
-                            'startAnswerPointer' => '00:02:34',
-                            'stopAnswerPointer' => '00:02:43',
-                        ],
-                    ],
-                ],
-                'taskId' => $taskId,
-                'status' => 'OK',
-            ]),
+            'body' => json_encode($generated),
         ];
 
         try {

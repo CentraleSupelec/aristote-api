@@ -31,6 +31,18 @@ class AiEnrichmentJobResponse
     #[Groups(groups: ['enrichment_job'])]
     private array $disciplines = [];
 
+    #[OA\Property(property: 'generateMetadata', description: 'Request metadata generation', type: 'boolean')]
+    #[Groups(groups: ['enrichment_job'])]
+    private bool $generateMetadata = false;
+
+    #[OA\Property(property: 'generateQuiz', description: 'Request quiz generation', type: 'boolean')]
+    #[Groups(groups: ['enrichment_job'])]
+    private bool $generateQuiz = false;
+
+    #[OA\Property(property: 'generateNotes', description: 'Request notes generation', type: 'boolean')]
+    #[Groups(groups: ['enrichment_job'])]
+    private bool $generateNotes = false;
+
     public function getEnrichmentId(): ?Uuid
     {
         return $this->enrichmentId;
@@ -87,6 +99,42 @@ class AiEnrichmentJobResponse
     public function setTranscript(?Transcript $transcript): self
     {
         $this->transcript = $transcript;
+
+        return $this;
+    }
+
+    public function getGenerateMetadata(): bool
+    {
+        return $this->generateMetadata;
+    }
+
+    public function setGenerateMetadata(bool $generateMetadata): self
+    {
+        $this->generateMetadata = $generateMetadata;
+
+        return $this;
+    }
+
+    public function getGenerateQuiz(): bool
+    {
+        return $this->generateQuiz;
+    }
+
+    public function setGenerateQuiz(bool $generateQuiz): self
+    {
+        $this->generateQuiz = $generateQuiz;
+
+        return $this;
+    }
+
+    public function getGenerateNotes(): bool
+    {
+        return $this->generateNotes;
+    }
+
+    public function setGenerateNotes(bool $generateNotes): self
+    {
+        $this->generateNotes = $generateNotes;
 
         return $this;
     }

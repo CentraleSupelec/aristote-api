@@ -121,6 +121,10 @@ class EnrichmentVersion
     #[Groups(groups: ['enrichment_versions'])]
     private ?string $translateTo = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(groups: ['enrichment_versions'])]
+    private ?string $notes = null;
+
     public function __construct()
     {
         $this->multipleChoiceQuestions = new ArrayCollection();
@@ -139,7 +143,10 @@ class EnrichmentVersion
     public function setEnrichmentVersionMetadata(?EnrichmentVersionMetadata $enrichmentVersionMetadata): static
     {
         $this->enrichmentVersionMetadata = $enrichmentVersionMetadata;
-        $enrichmentVersionMetadata->setEnrichmentVersion($this);
+
+        if ($enrichmentVersionMetadata) {
+            $enrichmentVersionMetadata->setEnrichmentVersion($this);
+        }
 
         return $this;
     }
@@ -337,6 +344,18 @@ class EnrichmentVersion
     public function setTranslateTo(?string $translateTo): self
     {
         $this->translateTo = $translateTo;
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
 
         return $this;
     }

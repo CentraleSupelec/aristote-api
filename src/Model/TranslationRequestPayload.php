@@ -18,11 +18,11 @@ use Symfony\Component\Uid\Uuid;
 class TranslationRequestPayload
 {
     #[OA\Property(property: 'enrichmentVersionMetadata', type: 'object', ref: new Model(type: EnrichmentVersionMetadata::class, groups: ['translation_post']))]
-    #[Groups(groups: ['default'])]
+    #[Groups(groups: ['Default'])]
     private ?EnrichmentVersionMetadata $enrichmentVersionMetadata = null;
 
     #[OA\Property(property: 'multipleChoiceQuestions', type: 'array', items: new OA\Items(ref: new Model(type: MultipleChoiceQuestion::class, groups: ['translation_post'])))]
-    #[Groups(groups: ['default'])]
+    #[Groups(groups: ['Default'])]
     private readonly Collection $multipleChoiceQuestions;
 
     #[OA\Property(property: 'transcriptFile', type: 'file')]
@@ -35,15 +35,15 @@ class TranslationRequestPayload
     private ?Transcript $transcript = null;
 
     #[OA\Property(property: 'taskId', type: 'string')]
-    #[Groups(groups: ['default'])]
+    #[Groups(groups: ['Default'])]
     private ?Uuid $taskId = null;
 
     #[OA\Property(property: 'failureCause', type: 'string')]
-    #[Groups(groups: ['default'])]
+    #[Groups(groups: ['Default'])]
     private ?string $failureCause = null;
 
     #[OA\Property(property: 'status', type: 'string')]
-    #[Groups(groups: ['default'])]
+    #[Groups(groups: ['Default'])]
     private ?string $status = null;
 
     public function __construct()

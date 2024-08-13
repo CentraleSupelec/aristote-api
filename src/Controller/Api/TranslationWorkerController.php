@@ -61,11 +61,11 @@ class TranslationWorkerController extends AbstractController
         content: [
             new OA\MediaType(
                 mediaType: 'multipart/form-data',
-                schema: new OA\Schema(ref: new Model(type: TranslationRequestPayload::class, groups: ['default', 'multipart']))
+                schema: new OA\Schema(ref: new Model(type: TranslationRequestPayload::class, groups: ['Default', 'multipart']))
             ),
             new OA\JsonContent(
                 type: 'object',
-                ref: new Model(type: TranslationRequestPayload::class, groups: ['default', 'json']),
+                ref: new Model(type: TranslationRequestPayload::class, groups: ['Default', 'json']),
             ),
         ],
     )]

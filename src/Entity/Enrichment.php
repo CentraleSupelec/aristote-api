@@ -193,13 +193,13 @@ class Enrichment
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'disciplines', description: 'Disciplines', type: 'array', items: new OA\Items(type: 'string'))]
     #[Groups(groups: ['enrichments'])]
-    #[Assert\Count(min: 1, minMessage: 'At least one discipline is expected')]
+    #[Assert\Count(min: 1, minMessage: 'At least one discipline is expected', groups: ['metadata'])]
     private ?array $disciplines = [];
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'mediaTypes', description: 'Meida Types', type: 'array', items: new OA\Items(type: 'string'))]
     #[Groups(groups: ['enrichments'])]
-    #[Assert\Count(min: 1, minMessage: 'At least one media type is expected')]
+    #[Assert\Count(min: 1, minMessage: 'At least one media type is expected', groups: ['metadata'])]
     private ?array $mediaTypes = [];
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -279,6 +279,15 @@ class Enrichment
 
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 3, nullable: true)]
     private ?string $evaluationMark = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $generateMetadata = false;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $generateQuiz = false;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $generateNotes = false;
 
     public function __construct()
     {
@@ -763,6 +772,42 @@ class Enrichment
     public function setEvaluationMark(?string $evaluationMark): self
     {
         $this->evaluationMark = $evaluationMark;
+
+        return $this;
+    }
+
+    public function getGenerateMetadata(): bool
+    {
+        return $this->generateMetadata;
+    }
+
+    public function setGenerateMetadata(bool $generateMetadata): self
+    {
+        $this->generateMetadata = $generateMetadata;
+
+        return $this;
+    }
+
+    public function getGenerateQuiz(): bool
+    {
+        return $this->generateQuiz;
+    }
+
+    public function setGenerateQuiz(bool $generateQuiz): self
+    {
+        $this->generateQuiz = $generateQuiz;
+
+        return $this;
+    }
+
+    public function getGenerateNotes(): bool
+    {
+        return $this->generateNotes;
+    }
+
+    public function setGenerateNotes(bool $generateNotes): self
+    {
+        $this->generateNotes = $generateNotes;
 
         return $this;
     }

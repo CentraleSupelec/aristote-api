@@ -106,11 +106,9 @@ class TranslationWorkerCommand extends Command
             'taskId' => $taskId,
             'status' => 'OK',
         ];
-        dump($body);
+
         $requestOptions = [
-            'body' =>
-                // $body
-                json_encode($body, JSON_PRETTY_PRINT),
+            'body' => json_encode($body, JSON_PRETTY_PRINT),
             'headers' => [
                 'Content-Type' => 'application/json',
             ],

@@ -176,6 +176,8 @@ class AiEnrichmentsWorkerController extends AbstractController
                 $enrichmentVersion->addMultipleChoiceQuestion($multipleChoiceQuestion);
             }
 
+            $enrichmentVersion->setNotes($aiEnrichmentRequestPayload->getNotes());
+
             $targetStatus = Enrichment::STATUS_SUCCESS;
             if ($enrichment->getTranslateTo()) {
                 $targetStatus = Enrichment::STATUS_WAITING_TRANSLATION;
@@ -343,6 +345,9 @@ class AiEnrichmentsWorkerController extends AbstractController
                     ->setTranscript($latestEnrichmentVersion->getTranscript())
                     ->setDisciplines($enrichment->getDisciplines())
                     ->setMediaTypes($enrichment->getMediaTypes())
+                    ->setGenerateMetadata($enrichment->getGenerateMetadata())
+                    ->setGenerateQuiz($enrichment->getGenerateQuiz())
+                    ->setGenerateNotes($enrichment->getGenerateNotes())
                 ;
 
                 return $this->json($aiEnrichmentJobResponse, context: $options);

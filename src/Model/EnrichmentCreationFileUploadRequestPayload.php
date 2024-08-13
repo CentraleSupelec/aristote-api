@@ -4,6 +4,7 @@ namespace App\Model;
 
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[OA\Schema()]
@@ -11,9 +12,11 @@ class EnrichmentCreationFileUploadRequestPayload extends EnrichmentCreationReque
 {
     #[OA\Property(property: 'file', description: 'A file', type: 'file')]
     #[Assert\NotBlank]
+    #[Groups(['Default'])]
     private ?UploadedFile $file = null;
 
     #[OA\Property(property: 'originalFileName', type: 'string')]
+    #[Groups(['Default'])]
     private ?string $originalFileName = null;
 
     public function getFile(): ?UploadedFile

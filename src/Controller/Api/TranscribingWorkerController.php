@@ -191,9 +191,19 @@ class TranscribingWorkerController extends AbstractController
         ;
 
         $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount(1);
-        $enrichment->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT)->setTransribingEndedAt(new DateTime());
 
-        $errors = $this->validator->validate($enrichment);
+        $targetStatus = Enrichment::STATUS_SUCCESS;
+        if ($enrichment->getGenerateMetadata() || $enrichment->getGenerateQuiz() || $enrichment->getGenerateNotes()) {
+            $targetStatus = Enrichment::STATUS_WAITING_AI_ENRICHMENT;
+        } elseif ($enrichment->getTranslateTo()) {
+            $targetStatus = Enrichment::STATUS_WAITING_TRANSLATION;
+        } elseif ($enrichment->getAiEvaluation()) {
+            $targetStatus = Enrichment::STATUS_WAITING_AI_EVALUATION;
+        }
+
+        $enrichment->setStatus($targetStatus)->setTransribingEndedAt(new DateTime());
+
+        $errors = $this->validator->validate($enrichment, groups: ['Default']);
 
         if (count($errors) > 0) {
             $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
