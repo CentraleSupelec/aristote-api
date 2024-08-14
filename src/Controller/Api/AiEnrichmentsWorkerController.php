@@ -23,6 +23,7 @@ use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,6 +33,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\Uuid as UuidConstraint;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -119,7 +121,12 @@ class AiEnrichmentsWorkerController extends AbstractController
         HttpClientInterface $httpClient,
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_PROCESSING_WORKER)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
@@ -154,7 +161,12 @@ class AiEnrichmentsWorkerController extends AbstractController
             if (!$enrichmentVersion->getId()->equals($latestEnrichmentVersion->getId()) || !$enrichmentVersion->isAiGenerated()) {
                 return $this->json([
                     'status' => 'KO',
-                    'errors' => ['This enrichment version is not a placeholder AI generated version waiting for AI Enrichment'],
+                    'errors' => [
+                        [
+                            'path' => 'versionId',
+                            'message' => 'This enrichment version is not a placeholder AI generated version waiting for AI Enrichment',
+                        ],
+                    ],
                 ], 403);
             }
 
@@ -177,6 +189,7 @@ class AiEnrichmentsWorkerController extends AbstractController
             }
 
             $enrichmentVersion->setNotes($aiEnrichmentRequestPayload->getNotes());
+            $enrichmentVersion->setTranslatedNotes($aiEnrichmentRequestPayload->getTranslatedNotes());
 
             $targetStatus = Enrichment::STATUS_SUCCESS;
             if ($enrichment->getTranslateTo()) {
@@ -189,7 +202,10 @@ class AiEnrichmentsWorkerController extends AbstractController
 
             $errors = $this->validator->validate($enrichmentVersion);
             if (count($errors) > 0) {
-                $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
+                $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                    'message' => $error->getMessage(),
+                    'path' => $error->getPropertyPath(),
+                ], iterator_to_array($errors));
 
                 return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
             }
@@ -225,14 +241,12 @@ class AiEnrichmentsWorkerController extends AbstractController
 
             return $this->json(['status' => 'OK']);
         } else {
-            $errors = $form->getErrors(deep: true);
-            $errorMessages = [];
-            foreach ($errors as $error) {
-                /* @var FormError $error */
-                $errorMessages[] = sprintf("Error on field '%s' : %s", $error->getOrigin()->getName(), $error->getMessage());
-            }
+            $errorsArray = array_map(fn (FormError $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getOrigin()->getName(),
+            ], iterator_to_array($form->getErrors(deep: true)));
 
-            return $this->json(['status' => 'KO', 'errors' => $errorMessages], 400);
+            return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
     }
 
@@ -286,7 +300,12 @@ class AiEnrichmentsWorkerController extends AbstractController
         EnrichmentVersionRepository $enrichmentVersionRepository
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_PROCESSING_WORKER)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $taskId = $request->query->get('taskId');
@@ -310,12 +329,22 @@ class AiEnrichmentsWorkerController extends AbstractController
             );
 
             if (!$enrichment instanceof Enrichment) {
-                return $this->json(['status' => 'KO', 'errors' => ['No job currently available']], 404);
+                return $this->json(['status' => 'KO', 'errors' => [
+                    [
+                        'path' => null,
+                        'message' => 'No job currently available',
+                    ],
+                ]], 404);
             }
             $latestEnrichmentVersion = $enrichmentVersionRepository->findLatestVersionByEnrichmentId($enrichment->getId());
 
             if (!$latestEnrichmentVersion->isAiGenerated()) {
-                return $this->json(['status' => 'KO', 'errors' => [sprintf('No enrichment version prepared for the eligible enrichment (%s), please report this issue', $enrichment->getId())]], 404);
+                return $this->json(['status' => 'KO', 'errors' => [
+                    [
+                        'path' => null,
+                        'message' => sprintf('No enrichment version prepared for the eligible enrichment (%s), please report this issue', $enrichment->getId()),
+                    ],
+                ]], 404);
             }
 
             $enrichmentLock = $lockFactory->createLock(sprintf('enrichment-%s', $enrichment->getId()));
@@ -354,7 +383,12 @@ class AiEnrichmentsWorkerController extends AbstractController
             }
         }
 
-        return $this->json(['status' => 'KO', 'errors' => ['No job currently available']], 404);
+        return $this->json(['status' => 'KO', 'errors' => [
+            [
+                'path' => null,
+                'message' => 'No job currently available',
+            ],
+        ]], 404);
     }
 
     private function validateUuid(string $id): ?JsonResponse
@@ -362,7 +396,12 @@ class AiEnrichmentsWorkerController extends AbstractController
         $constraintViolationList = $this->validator->validate($id, new UuidConstraint());
 
         if ($constraintViolationList->count() > 0) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf("'%s' is not a valid UUID", $id)]], 400);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'id',
+                    'message' => sprintf("'%s' is not a valid UUID", $id),
+                ],
+            ]], 400);
         }
 
         return null;
@@ -371,14 +410,22 @@ class AiEnrichmentsWorkerController extends AbstractController
     private function validateEnrichmentVersionAccess(?EnrichmentVersion $enrichmentVersion, string $enrichmentVersionId, string $enrichmentId, string $taskId): ?JsonResponse
     {
         if (!$enrichmentVersion instanceof EnrichmentVersion) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment version with ID '%s' has been found", $enrichmentVersionId)]], 404);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'id',
+                    'message' => sprintf("No enrichment version with ID '%s' has been found", $enrichmentVersionId),
+                ],
+            ]], 404);
         }
 
         $enrichment = $enrichmentVersion->getEnrichment();
 
         if ($enrichment->getId()->toRfc4122() !== $enrichmentId) {
             return $this->json(['status' => 'KO', 'errors' => [
-                sprintf('The enrichment id %s in the url is incorrect', $enrichmentVersionId, $enrichmentId),
+                [
+                    'path' => 'id',
+                    'message' => sprintf('The enrichment id %s in the url is incorrect', $enrichmentVersionId, $enrichmentId),
+                ],
             ]], 403);
         }
 
@@ -386,7 +433,12 @@ class AiEnrichmentsWorkerController extends AbstractController
             $enrichment->getAiProcessedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')
             || (string) $enrichment->getAiProcessingTaskId() !== $taskId
         ) {
-            return $this->json(['status' => 'KO', 'errors' => ['You are not allowed to access this enrichment version']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'id',
+                    'message' => 'You are not allowed to access this enrichment version',
+                ],
+            ]], 403);
         }
 
         return null;

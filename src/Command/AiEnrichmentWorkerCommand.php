@@ -99,7 +99,7 @@ class AiEnrichmentWorkerCommand extends Command
         $symfonyStyle->info('Generating AI enrichment ...');
 
         sleep(1);
-        
+
         $generated = [
             'taskId' => $taskId,
             'status' => 'OK',

@@ -28,19 +28,31 @@ class PaginationUtils
     {
         $errors = [];
         if (!in_array($sort, $possibleSortFields)) {
-            $errors[] = sprintf("Sort field '%s' is not supported, supported fields are : [%s]", $sort, implode(', ', $possibleSortFields));
+            $errors[] = [
+                'path' => 'sort',
+                'message' => sprintf("Sort field '%s' is not supported, supported fields are : [%s]", $sort, implode(', ', $possibleSortFields)),
+            ];
         }
 
         if (!in_array(strtolower($order), Constants::SORT_ORDER_OPTIONS)) {
-            $errors[] = sprintf("Sort order '%s' is not valid, valid values are : 'DESC' or 'ASC'", $order);
+            $errors[] = [
+                'path' => 'order',
+                'message' => sprintf("Sort order '%s' is not valid, valid values are : 'DESC' or 'ASC'", $order),
+            ];
         }
 
         if ($size < 1) {
-            $errors[] = sprintf("Size '%s' is not valid, it should be an integer >= 1", $size);
+            $errors[] = [
+                'path' => 'size',
+                'message' => sprintf("Size '%s' is not valid, it should be an integer >= 1", $size),
+            ];
         }
 
         if ($page < 1) {
-            $errors[] = sprintf("Page '%s' is not valid, it should be an integer >= 1", $page);
+            $errors[] = [
+                'path' => 'page',
+                'message' => sprintf("Page '%s' is not valid, it should be an integer >= 1", $page),
+            ];
         }
 
         return $errors;

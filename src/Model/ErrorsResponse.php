@@ -10,7 +10,18 @@ class ErrorsResponse
     #[OA\Property(property: 'status', type: 'string', description: 'KO')]
     private ?string $status = null;
 
-    #[OA\Property(property: 'errors', description: 'Error messages', type: 'array', items: new OA\Items(type: 'string'))]
+    #[OA\Property(property: 'errors', description: 'Error messages', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(
+            property: 'path',
+            description: 'path',
+            type: 'string'
+        ),
+        new OA\Property(
+            property: 'message',
+            description: 'message',
+            type: 'string',
+        ),
+    ]))]
     private array $errors = [];
 
     public function getStatus(): ?string

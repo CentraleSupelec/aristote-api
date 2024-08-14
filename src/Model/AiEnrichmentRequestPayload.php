@@ -22,6 +22,9 @@ class AiEnrichmentRequestPayload
     #[OA\Property(property: 'notes', type: 'string')]
     private ?string $notes = null;
 
+    #[OA\Property(property: 'translatedNotes', type: 'string')]
+    private ?string $translatedNotes = null;
+
     #[OA\Property(property: 'taskId', type: 'string')]
     private ?Uuid $taskId = null;
 
@@ -80,6 +83,18 @@ class AiEnrichmentRequestPayload
     public function setNotes(?string $notes): self
     {
         $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getTranslatedNotes(): ?string
+    {
+        return $this->translatedNotes;
+    }
+
+    public function setTranslatedNotes(?string $translatedNotes): self
+    {
+        $this->translatedNotes = $translatedNotes;
 
         return $this;
     }

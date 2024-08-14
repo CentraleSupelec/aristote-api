@@ -24,6 +24,12 @@ class EnrichmentVersionCreationRequestPayload
     #[OA\Property(property: 'multipleChoiceQuestions', type: 'array', items: new OA\Items(ref: new Model(type: MultipleChoiceQuestion::class, groups: ['enrichment_version_creation'])))]
     private readonly Collection $multipleChoiceQuestions;
 
+    #[OA\Property(property: 'notes', type: 'string')]
+    private ?bool $notes = null;
+
+    #[OA\Property(property: 'translatedNotes', type: 'string')]
+    private ?bool $translatedNotes = null;
+
     #[OA\Property(property: 'translate', type: 'boolean')]
     private ?bool $translate = null;
 
@@ -88,6 +94,30 @@ class EnrichmentVersionCreationRequestPayload
     public function setTranslate(?bool $translate): self
     {
         $this->translate = $translate;
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getTranslatedNotes(): ?string
+    {
+        return $this->translatedNotes;
+    }
+
+    public function setTranslatedNotes(?string $translatedNotes): self
+    {
+        $this->translatedNotes = $translatedNotes;
 
         return $this;
     }

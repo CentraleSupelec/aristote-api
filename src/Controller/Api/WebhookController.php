@@ -57,14 +57,12 @@ class WebhookController extends AbstractController
         if ($form->isValid()) {
             return $this->json(['status' => 'OK']);
         } else {
-            $errors = $form->getErrors(deep: true);
-            $errorMessages = [];
-            foreach ($errors as $error) {
-                /* @var FormError $error */
-                $errorMessages[] = sprintf("Error on field '%s' : %s", $error->getOrigin()->getName(), $error->getMessage());
-            }
+            $errorsArray = array_map(fn (FormError $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getOrigin()->getName(),
+            ], iterator_to_array($form->getErrors(deep: true)));
 
-            return $this->json(['status' => 'KO', 'errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
+            return $this->json(['status' => 'KO', 'errors' => $errorsArray], Response::HTTP_BAD_REQUEST);
         }
     }
 }
