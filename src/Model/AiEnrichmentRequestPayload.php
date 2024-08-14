@@ -19,6 +19,12 @@ class AiEnrichmentRequestPayload
     #[OA\Property(property: 'multipleChoiceQuestions', type: 'array', items: new OA\Items(ref: new Model(type: MultipleChoiceQuestion::class, groups: ['ai_enrichment_post'])))]
     private readonly Collection $multipleChoiceQuestions;
 
+    #[OA\Property(property: 'notes', type: 'string')]
+    private ?string $notes = null;
+
+    #[OA\Property(property: 'translatedNotes', type: 'string')]
+    private ?string $translatedNotes = null;
+
     #[OA\Property(property: 'taskId', type: 'string')]
     private ?Uuid $taskId = null;
 
@@ -65,6 +71,30 @@ class AiEnrichmentRequestPayload
     public function removeMultipleChoiceQuestion(MultipleChoiceQuestion $multipleChoiceQuestion): static
     {
         $this->multipleChoiceQuestions->removeElement($multipleChoiceQuestion);
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getTranslatedNotes(): ?string
+    {
+        return $this->translatedNotes;
+    }
+
+    public function setTranslatedNotes(?string $translatedNotes): self
+    {
+        $this->translatedNotes = $translatedNotes;
 
         return $this;
     }

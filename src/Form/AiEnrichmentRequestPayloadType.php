@@ -14,11 +14,15 @@ class AiEnrichmentRequestPayloadType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('enrichmentVersionMetadata', EnrichmentVersionMetadataType::class)
+            ->add('enrichmentVersionMetadata', EnrichmentVersionMetadataType::class, [
+                'required' => false,
+                'empty_data' => null,
+            ])
             ->add('multipleChoiceQuestions', CollectionType::class, [
                 'entry_type' => MultipleChoiceQuestionType::class,
                 'allow_add' => true,
             ])
+            ->add('notes')
             ->add('taskId', UuidType::class)
             ->add('failureCause')
             ->add('status')

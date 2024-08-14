@@ -65,7 +65,16 @@ class FileUploadService
                 ->setSubtitleFile($uploadedFile)
                 ->setFileDirectory($directory)
             ;
-            $targetStatus = Enrichment::STATUS_WAITING_AI_ENRICHMENT;
+
+            $targetStatus = Enrichment::STATUS_SUCCESS;
+            if ($enrichment->getGenerateMetadata() || $enrichment->getGenerateQuiz() || $enrichment->getGenerateNotes()) {
+                $targetStatus = Enrichment::STATUS_WAITING_AI_ENRICHMENT;
+            } elseif ($enrichment->getTranslateTo()) {
+                $targetStatus = Enrichment::STATUS_WAITING_TRANSLATION;
+            } elseif ($enrichment->getAiEvaluation()) {
+                $targetStatus = Enrichment::STATUS_WAITING_AI_EVALUATION;
+            }
+
             $parsingVttFailed = false;
 
             try {

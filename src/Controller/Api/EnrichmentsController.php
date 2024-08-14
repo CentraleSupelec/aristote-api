@@ -48,6 +48,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Uuid;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/v1')]
@@ -149,7 +150,12 @@ class EnrichmentsController extends AbstractController
     public function getEnrichments(Request $request, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $sort = $request->query->get('sort', 'createdAt');
@@ -222,7 +228,12 @@ class EnrichmentsController extends AbstractController
     public function getAiModelInfrastructureCombinations(ApiClientRepository $apiClientRepository): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $cominations = $apiClientRepository->getDistinctCombinations();
@@ -281,7 +292,12 @@ class EnrichmentsController extends AbstractController
     public function getEnrichmentByID(string $id, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($id);
@@ -365,7 +381,12 @@ class EnrichmentsController extends AbstractController
         EnrichmentUtils $enrichmentUtils
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to delete this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to delete this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($id);
@@ -507,7 +528,12 @@ class EnrichmentsController extends AbstractController
         EnrichmentRepository $enrichmentRepository
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($id);
@@ -624,7 +650,12 @@ class EnrichmentsController extends AbstractController
         EntityManagerInterface $entityManager,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($id);
@@ -644,7 +675,12 @@ class EnrichmentsController extends AbstractController
         if ($initialVersion) {
             return $this->json([
                 'status' => 'KO',
-                'errors' => ['No initial version found for the enrichment. Please wait for the generation of the initial version before pushing a new one'],
+                'errors' => [
+                    [
+                        'path' => 'id',
+                        'message' => 'No initial version found for the enrichment. Please wait for the generation of the initial version before pushing a new one',
+                    ],
+                ],
             ], 403);
         }
 
@@ -669,28 +705,32 @@ class EnrichmentsController extends AbstractController
             ;
         }
 
-        $inputEnrichmentVersionMetadata = json_decode($request->request->get('enrichmentVersionMetadata'), true, 512, JSON_THROW_ON_ERROR);
-        $inputMultipleChoiceQuestions = $this->stringJsonObjectsToArray($request->request->get('multipleChoiceQuestions'));
-
-        $enrichmentVersionMetadata = (new EnrichmentVersionMetadata())
-            ->setTitle($inputEnrichmentVersionMetadata['title'])
-            ->setDescription($inputEnrichmentVersionMetadata['description'])
-            ->setDiscipline($inputEnrichmentVersionMetadata['discipline'])
-            ->setMediaType($inputEnrichmentVersionMetadata['mediaType'])
-            ->setTopics($inputEnrichmentVersionMetadata['topics'])
-            ->setTranslatedTitle($inputEnrichmentVersionMetadata['title'])
-            ->setTranslatedDescription($inputEnrichmentVersionMetadata['translatedDescription'])
-            ->setTranslatedTopics($inputEnrichmentVersionMetadata['translatedTopics'])
-        ;
-
         $enrichmentVersion = (new EnrichmentVersion())
             ->setTranscript($newTranscript)
-            ->setEnrichmentVersionMetadata($enrichmentVersionMetadata)
             ->setDisciplines($enrichment->getDisciplines())
             ->setMediaTypes($enrichment->getMediaTypes())
             ->setLanguage($enrichment->getLanguage())
             ->setTranslateTo($enrichment->getTranslateTo())
         ;
+
+        $inputEnrichmentVersionMetadata = $request->request->get('enrichmentVersionMetadata');
+
+        if ($inputEnrichmentVersionMetadata) {
+            $inputEnrichmentVersionMetadata = json_decode($inputEnrichmentVersionMetadata, true, 512, JSON_THROW_ON_ERROR);
+
+            $enrichmentVersionMetadata = (new EnrichmentVersionMetadata())
+                ->setTitle($inputEnrichmentVersionMetadata['title'])
+                ->setDescription($inputEnrichmentVersionMetadata['description'])
+                ->setDiscipline($inputEnrichmentVersionMetadata['discipline'])
+                ->setMediaType($inputEnrichmentVersionMetadata['mediaType'])
+                ->setTopics($inputEnrichmentVersionMetadata['topics'])
+                ->setTranslatedTitle($inputEnrichmentVersionMetadata['title'])
+                ->setTranslatedDescription($inputEnrichmentVersionMetadata['translatedDescription'])
+                ->setTranslatedTopics($inputEnrichmentVersionMetadata['translatedTopics'])
+            ;
+
+            $enrichmentVersion->setEnrichmentVersionMetadata($enrichmentVersionMetadata);
+        }
 
         $translationRequested = filter_var($request->request->get('translate'), FILTER_VALIDATE_BOOLEAN);
 
@@ -704,6 +744,8 @@ class EnrichmentsController extends AbstractController
                 ->setAiEvaluation(null)
             ;
         }
+
+        $inputMultipleChoiceQuestions = $this->stringJsonObjectsToArray($request->request->get('multipleChoiceQuestions'));
 
         foreach ($inputMultipleChoiceQuestions as $inputMultipleChoiceQuestion) {
             $multipleChoiceQuestion = (new MultipleChoiceQuestion())
@@ -731,12 +773,21 @@ class EnrichmentsController extends AbstractController
             $enrichmentVersion->addMultipleChoiceQuestion($multipleChoiceQuestion);
         }
 
+        $notes = $request->request->get('notes');
+        $enrichmentVersion->setNotes($notes);
+
+        $translatedNotes = $request->request->get('translatedNotes');
+        $enrichmentVersion->setTranslatedNotes($translatedNotes);
+
         $enrichment->addVersion($enrichmentVersion);
 
-        $errors = $this->validator->validate($enrichment);
+        $errors = $this->validator->validate($enrichment, groups: ['Default']);
 
         if (count($errors) > 0) {
-            $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
+            $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getPropertyPath(),
+            ], iterator_to_array($errors));
 
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
@@ -797,7 +848,12 @@ class EnrichmentsController extends AbstractController
     public function getLatestEnrichmentVersionByEnrichmentID(string $id, EnrichmentVersionRepository $enrichmentVersionRepository, EnrichmentRepository $enrichmentRepository): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($id);
@@ -815,7 +871,12 @@ class EnrichmentsController extends AbstractController
         $enrichmentVersions = $enrichmentVersionRepository->findBy(['enrichment' => $id], ['createdAt' => 'DESC']);
 
         if ([] === $enrichmentVersions) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf("No version for enrichment with ID '%s' has been found", $id)]], 404);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'id',
+                    'message' => sprintf("No version for enrichment with ID '%s' has been found", $id),
+                ],
+            ]], 404);
         }
 
         $options = [
@@ -876,7 +937,12 @@ class EnrichmentsController extends AbstractController
     public function getEnrichmentVersionByID(string $enrichmentId, string $versionId, EnrichmentRepository $enrichmentRepository, EnrichmentVersionRepository $enrichmentVersionRepository): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
@@ -958,7 +1024,12 @@ class EnrichmentsController extends AbstractController
     public function deleteEnrichmentVersion(string $enrichmentId, string $versionId, EnrichmentRepository $enrichmentRepository, EnrichmentVersionRepository $enrichmentVersionRepository, EntityManagerInterface $entityManager): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
@@ -979,7 +1050,12 @@ class EnrichmentsController extends AbstractController
         }
 
         if ($enrichmentVersion->isInitialVersion()) {
-            return $this->json(['status' => 'KO', 'errors' => "Can't delete initial version"], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'versionId',
+                    'message' => "Can't delete initial version",
+                ],
+            ]], 403);
         }
 
         $entityManager->remove($enrichmentVersion);
@@ -996,7 +1072,7 @@ class EnrichmentsController extends AbstractController
     #[OA\RequestBody(
         content: new OA\JsonContent(
             type: 'object',
-            ref: new Model(type: EnrichmentCreationUrlRequestPayload::class),
+            ref: new Model(type: EnrichmentCreationUrlRequestPayload::class, groups: ['Default', 'treatments']),
         )
     )]
     #[OA\Response(
@@ -1034,34 +1110,56 @@ class EnrichmentsController extends AbstractController
     public function createEnrichmentFromUrl(Request $request, FileUploadService $fileUploadService, MessageBusInterface $messageBus, ApiClientManager $apiClientManager, EntityManagerInterface $entityManager): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $aiEvaluation = $content['enrichmentParameters']['aiEvaluation'] ?? null;
-        $aiModel = $content['enrichmentParameters']['aiModel'] ?? null;
-        $infrastructure = $content['enrichmentParameters']['infrastructure'] ?? null;
-        $language = $content['enrichmentParameters']['language'] ?? null;
-        $translateTo = $content['enrichmentParameters']['translateTo'] ?? null;
+        $enrichmentParameters = $content['enrichmentParameters'];
+        $aiEvaluation = $enrichmentParameters['aiEvaluation'] ?? null;
+        $aiModel = $enrichmentParameters['aiModel'] ?? null;
+        $infrastructure = $enrichmentParameters['infrastructure'] ?? null;
+        $language = $enrichmentParameters['language'] ?? null;
+        $translateTo = $enrichmentParameters['translateTo'] ?? null;
+        $generateMetadata = $enrichmentParameters['generateMetadata'] ?? true;
+        $generateQuiz = $enrichmentParameters['generateQuiz'] ?? true;
+        $generateNotes = $enrichmentParameters['generateNotes'] ?? false;
 
         $enrichmentCreationUrlRequestPayload = (new EnrichmentCreationUrlRequestPayload())
             ->setUrl($content['url'])
             ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
             ->setNotificationWebhookUrl($content['notificationWebhookUrl'])
             ->setEnrichmentParameters((new EnrichmentParameters())
-                ->setDisciplines($content['enrichmentParameters']['disciplines'] ?? [])
-                ->setMediaTypes($content['enrichmentParameters']['mediaTypes'] ?? [])
+                ->setDisciplines($enrichmentParameters['disciplines'] ?? [])
+                ->setMediaTypes($enrichmentParameters['mediaTypes'] ?? [])
                 ->setAiEvaluation(null === $aiEvaluation || '' === $aiEvaluation ? null : $aiEvaluation)
                 ->setAiModel(null === $aiModel || '' === $aiModel ? null : $aiModel)
                 ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
                 ->setLanguage(null === $language || '' === $language ? null : $language)
                 ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
+                ->setGenerateMetadata($generateMetadata)
+                ->setGenerateQuiz($generateQuiz)
+                ->setGenerateNotes($generateNotes)
             )
         ;
 
-        $errors = $this->validator->validate($enrichmentCreationUrlRequestPayload);
+        $groups = ['Default'];
+
+        if ($generateMetadata) {
+            $groups[] = 'metadata';
+        }
+
+        $errors = $this->validator->validate($enrichmentCreationUrlRequestPayload, groups: $groups);
+
         if (count($errors) > 0) {
-            $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
+            $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getPropertyPath(),
+            ], iterator_to_array($errors));
 
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
@@ -1082,7 +1180,21 @@ class EnrichmentsController extends AbstractController
             ->setInfrastructure($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getInfrastructure())
             ->setLanguage($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getLanguage())
             ->setTranslateTo($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getTranslateTo())
+            ->setGenerateMetadata($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getGenerateMetadata())
+            ->setGenerateQuiz($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getGenerateQuiz())
+            ->setGenerateNotes($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getGenerateNotes())
         ;
+
+        $errors = $this->validator->validate($enrichment, groups: $groups);
+
+        if (count($errors) > 0) {
+            $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getPropertyPath(),
+            ], iterator_to_array($errors));
+
+            return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
+        }
 
         $entityManager->persist($enrichment);
         $entityManager->flush();
@@ -1101,7 +1213,7 @@ class EnrichmentsController extends AbstractController
         content: [
             new OA\MediaType(
                 mediaType: 'multipart/form-data',
-                schema: new OA\Schema(ref: new Model(type: EnrichmentCreationFileUploadRequestPayload::class))
+                schema: new OA\Schema(ref: new Model(type: EnrichmentCreationFileUploadRequestPayload::class, groups: ['Default', 'treatments']))
             ),
         ]
     )]
@@ -1146,7 +1258,12 @@ class EnrichmentsController extends AbstractController
         MimeTypeUtils $mimeTypeUtils
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         /** @var UploadedFile $file */
@@ -1163,6 +1280,9 @@ class EnrichmentsController extends AbstractController
         $infrastructure = $inputEnrichmentParameters['infrastructure'] ?? null;
         $language = $inputEnrichmentParameters['language'] ?? null;
         $translateTo = $inputEnrichmentParameters['translateTo'] ?? null;
+        $generateMetadata = $inputEnrichmentParameters['generateMetadata'] ?? true;
+        $generateQuiz = $inputEnrichmentParameters['generateQuiz'] ?? true;
+        $generateNotes = $inputEnrichmentParameters['generateNotes'] ?? false;
 
         $enrichmentCreationFileUploadRequestPayload = (new EnrichmentCreationFileUploadRequestPayload())
             ->setFile($file)
@@ -1176,13 +1296,25 @@ class EnrichmentsController extends AbstractController
                 ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
                 ->setLanguage(null === $language || '' === $language ? null : $language)
                 ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
+                ->setGenerateMetadata($generateMetadata)
+                ->setGenerateQuiz($generateQuiz)
+                ->setGenerateNotes($generateNotes)
             )
         ;
 
-        $errors = $this->validator->validate($enrichmentCreationFileUploadRequestPayload);
+        $groups = ['Default'];
+
+        if ($generateMetadata) {
+            $groups[] = 'metadata';
+        }
+
+        $errors = $this->validator->validate($enrichmentCreationFileUploadRequestPayload, groups: $groups);
 
         if (count($errors) > 0) {
-            $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
+            $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getPropertyPath(),
+            ], iterator_to_array($errors));
 
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
@@ -1201,6 +1333,9 @@ class EnrichmentsController extends AbstractController
                 ->setInfrastructure($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getInfrastructure())
                 ->setLanguage($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getLanguage())
                 ->setTranslateTo($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getTranslateTo())
+                ->setGenerateMetadata($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getGenerateMetadata())
+                ->setGenerateQuiz($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getGenerateQuiz())
+                ->setGenerateNotes($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getGenerateNotes())
         ;
 
         try {
@@ -1208,15 +1343,26 @@ class EnrichmentsController extends AbstractController
         } catch (UploadFileUnsupportedTypeException $exception) {
             return $this->json([
                 'status' => 'KO',
-                'errors' => [$exception->getMessage()],
+                'errors' => [
+                    [
+                        'path' => 'file',
+                        'message' => $exception->getMessage(),
+                    ],
+                ],
             ], 400);
         }
 
-        $errors = $this->validator->validate($enrichment);
+        $errors = $this->validator->validate($enrichment, groups: $groups);
+
         if (count($errors) > 0) {
+            $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getPropertyPath(),
+            ], iterator_to_array($errors));
+
             return $this->json([
                 'status' => 'KO',
-                'errors' => array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors)),
+                'errors' => $errorsArray,
             ], 400);
         }
         $entityManager->persist($enrichment);
@@ -1237,7 +1383,7 @@ class EnrichmentsController extends AbstractController
     #[OA\RequestBody(
         content: new OA\JsonContent(
             type: 'object',
-            ref: new Model(type: EnrichmentCreationRequestPayload::class),
+            ref: new Model(type: EnrichmentCreationRequestPayload::class, groups: ['Default']),
         )
     )]
     #[OA\Response(
@@ -1276,7 +1422,12 @@ class EnrichmentsController extends AbstractController
         EnrichmentVersionRepository $enrichmentVersionRepository
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
@@ -1313,8 +1464,12 @@ class EnrichmentsController extends AbstractController
         ;
 
         $errors = $this->validator->validate($enrichmentCreationRequestPayload);
+
         if (count($errors) > 0) {
-            $errorsArray = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
+            $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getPropertyPath(),
+            ], iterator_to_array($errors));
 
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
@@ -1420,7 +1575,12 @@ class EnrichmentsController extends AbstractController
     ): Response {
         $multipleChoiceQuestion = null;
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
@@ -1441,7 +1601,12 @@ class EnrichmentsController extends AbstractController
         }
 
         if (!$enrichmentVersion->isAiGenerated()) {
-            return $this->json(['status' => 'KO', 'errors' => ['You cannot evaluate an enrichment version that was not generated by AI']], 400);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'versionId',
+                    'message' => 'You cannot evaluate an enrichment version that was not generated by AI',
+                ],
+            ]], 400);
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
@@ -1546,7 +1711,12 @@ class EnrichmentsController extends AbstractController
         MultipleChoiceQuestionRepository $multipleChoiceQuestionRepository
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
@@ -1572,7 +1742,12 @@ class EnrichmentsController extends AbstractController
         }
 
         if (!$multipleChoiceQuestion->getEnrichmentVersion()->isAiGenerated()) {
-            return $this->json(['status' => 'KO', 'errors' => ['You cannot evaluate a MCQ of an enrichment version that was not generated by AI']], 400);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'versionId',
+                    'message' => 'You cannot evaluate a MCQ of an enrichment version that was not generated by AI',
+                ],
+            ]], 400);
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
@@ -1644,7 +1819,12 @@ class EnrichmentsController extends AbstractController
         ChoiceRepository $choiceRepository
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
@@ -1677,7 +1857,12 @@ class EnrichmentsController extends AbstractController
         }
 
         if (!$choice->getMultipleChoiceQuestion()->getEnrichmentVersion()->isAiGenerated()) {
-            return $this->json(['status' => 'KO', 'errors' => ['You cannot evaluate a MCQ of an enrichment version that was not generated by AI']], 400);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'versionId',
+                    'message' => 'You cannot evaluate a MCQ of an enrichment version that was not generated by AI',
+                ],
+            ]], 400);
         }
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
@@ -1754,7 +1939,12 @@ class EnrichmentsController extends AbstractController
         EnrichmentVersionRepository $enrichmentVersionRepository
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
-            return $this->json(['status' => 'KO', 'errors' => ['User not authorized to access this resource']], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => 'User not authorized to access this resource',
+                ],
+            ]], 403);
         }
 
         $uuidValidationErrorResponse = $this->validateUuid($enrichmentId);
@@ -1777,7 +1967,11 @@ class EnrichmentsController extends AbstractController
         $format = $request->query->get('format', 'srt');
 
         if (!in_array(strtolower($format), ['srt', 'vtt'])) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf("'%s' is not a supported format. Supported formats : SRT, VTT", $format)]], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'format' => sprintf("'%s' is not a supported format. Supported formats : SRT, VTT", $format),
+                ],
+            ]], 403);
         }
 
         $language = $request->query->get('language');
@@ -1790,17 +1984,19 @@ class EnrichmentsController extends AbstractController
             return $this->json([
                 'status' => 'KO',
                 'errors' => [
-                    sprintf(
-                        "Couldn't find transcript in the specified language '%s'. "
-                        .'Found languages : %s. You can also leave this parameter empty to get the default transcript.',
-                        $language,
-                        implode(',', array_unique(
-                            array_filter(
-                                [$enrichmentVersion->getLanguage(), $enrichmentVersion->getTranslateTo(), $enrichmentVersion->getTranscript()->getLanguage()],
-                                fn ($value) => null !== $value
-                            )
-                        ))
-                    ),
+                    [
+                        'language' => sprintf(
+                            "Couldn't find transcript in the specified language '%s'. "
+                            .'Found languages : %s. You can also leave this parameter empty to get the default transcript.',
+                            $language,
+                            implode(',', array_unique(
+                                array_filter(
+                                    [$enrichmentVersion->getLanguage(), $enrichmentVersion->getTranslateTo(), $enrichmentVersion->getTranscript()->getLanguage()],
+                                    fn ($value) => null !== $value
+                                )
+                            ))
+                        ),
+                    ],
                 ]], 400);
         }
 
@@ -1826,7 +2022,12 @@ class EnrichmentsController extends AbstractController
         $constraintViolationList = $this->validator->validate($id, new Uuid());
 
         if ($constraintViolationList->count() > 0) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf("'%s' is not a valid UUID", $id)]], 400);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'id',
+                    'message' => sprintf("'%s' is not a valid UUID", $id),
+                ],
+            ]], 400);
         }
 
         return null;
@@ -1835,15 +2036,30 @@ class EnrichmentsController extends AbstractController
     private function validateEnrichmentAccess(?Enrichment $enrichment, string $enrichmentId): ?JsonResponse
     {
         if (!$enrichment instanceof Enrichment) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf("No enrichment with ID '%s' has been found", $enrichmentId)]], 404);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'id',
+                    'message' => sprintf("No enrichment with ID '%s' has been found", $enrichmentId),
+                ],
+            ]], 404);
         }
 
         if ($enrichment->isDeleted()) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf("The enrichment that you want to get '%s' has been deleted", $enrichmentId)]], 404);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => 'id',
+                    'message' => sprintf("The enrichment that you want to get '%s' has been deleted", $enrichmentId),
+                ],
+            ]], 404);
         }
 
         if ($enrichment->getCreatedBy()->getIdentifier() !== $this->security->getToken()->getAttribute('oauth_client_id')) {
-            return $this->json(['status' => 'KO', 'errors' => [sprintf('You are not allowed to access enrichment %s', $enrichmentId)]], 403);
+            return $this->json(['status' => 'KO', 'errors' => [
+                [
+                    'path' => null,
+                    'message' => sprintf('You are not allowed to access enrichment %s', $enrichmentId),
+                ],
+            ]], 403);
         }
 
         return null;
@@ -1857,7 +2073,10 @@ class EnrichmentsController extends AbstractController
             return $this->validateEnrichmentAccess($enrichment, $enrichmentId);
         } else {
             return $this->json(['status' => 'KO', 'errors' => [
-                sprintf('The enrichment version %s has not been found or the enrichment id %s in the url is incorrect', $enrichmentVersionId, $enrichmentId),
+                [
+                    'path' => 'id',
+                    'message' => sprintf('The enrichment version %s has not been found or the enrichment id %s in the url is incorrect', $enrichmentVersionId, $enrichmentId),
+                ],
             ]], 403);
         }
     }
@@ -1874,7 +2093,10 @@ class EnrichmentsController extends AbstractController
             return $this->validateEnrichmentAccess($enrichment, $enrichmentId);
         } else {
             return $this->json(['status' => 'KO', 'errors' => [
-                sprintf('The multiple choice question %s has not been found or one of the enrichment version id %s or enrichment id %s in the url is incorrect', $mcqId, $enrichmentVersionId, $enrichmentId),
+                [
+                    'path' => 'id',
+                    'message' => sprintf('The multiple choice question %s has not been found or one of the enrichment version id %s or enrichment id %s in the url is incorrect', $mcqId, $enrichmentVersionId, $enrichmentId),
+                ],
             ]], 403);
         }
     }
@@ -1896,15 +2118,22 @@ class EnrichmentsController extends AbstractController
             return $this->validateEnrichmentAccess($enrichment, $enrichmentId);
         } else {
             return $this->json(['status' => 'KO', 'errors' => [
-                sprintf('The choice %s has not been found or one of the multiple choice question %s or the enrichment version id %s or enrichment id %s in the url is incorrect',
-                    $choiceId, $mcqId, $enrichmentVersionId, $enrichmentId
-                ),
+                [
+                    'path' => 'id',
+                    'message' => sprintf('The choice %s has not been found or one of the multiple choice question %s or the enrichment version id %s or enrichment id %s in the url is incorrect',
+                        $choiceId, $mcqId, $enrichmentVersionId, $enrichmentId
+                    ),
+                ],
             ]], 403);
         }
     }
 
-    private function stringJsonObjectsToArray(string $jsonString)
+    private function stringJsonObjectsToArray(?string $jsonString)
     {
+        if (null === $jsonString) {
+            return [];
+        }
+
         if (str_starts_with($jsonString, '[')) {
             return json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR);
         } else {
