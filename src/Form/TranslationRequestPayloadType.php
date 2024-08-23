@@ -26,6 +26,7 @@ class TranslationRequestPayloadType extends AbstractType
                 ]
             )
             ->add('transcriptFile', FileType::class)
+            ->add('notes')
             ->add('taskId', UuidType::class)
             ->add('failureCause')
             ->add('status')

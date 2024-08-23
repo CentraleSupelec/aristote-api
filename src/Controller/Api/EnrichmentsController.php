@@ -2000,8 +2000,7 @@ class EnrichmentsController extends AbstractController
                 ]], 400);
         }
 
-        $content = 'srt' === $format ? $this->transcriptToSRT($enrichmentVersion->getTranscript(), $pickTranslated)
-            : $this->transcriptToVTT($enrichmentVersion->getTranscript(), $pickTranslated);
+        $content = $this->transcriptToSubtitles($enrichmentVersion->getTranscript(), $pickTranslated, $format);
 
         $tempFile = tempnam(sys_get_temp_dir(), 'transcript');
         file_put_contents($tempFile, $content);
@@ -2151,42 +2150,76 @@ class EnrichmentsController extends AbstractController
         return sprintf('%s:%s:%s%s%s', $hours, $minutes, $secs, $millisecondsSeparator, $millis);
     }
 
-    private function transcriptToSRT(Transcript $transcript, bool $pickTranslated = false)
+    private function subtitlesLine(string $format, string $start, string $end, string $text, int $index): string
     {
-        $srtOutput = '';
-        $sentences = json_decode($transcript->getSentences(), true, 512, JSON_THROW_ON_ERROR);
-
-        foreach ($sentences as $index => $sentence) {
-            $start = $this->convertTime($sentence['start'], ',');
-            $end = $this->convertTime($sentence['end'], ',');
-            $srtOutput .= sprintf(
+        if ('srt' === $format) {
+            return sprintf(
                 "%d\n%s --> %s\n%s\n\n",
-                $index + 1,
+                $index,
                 $start,
                 $end,
-                $sentence[$pickTranslated ? 'translatedText' : 'text']
+                $text
             );
-        }
-
-        return $srtOutput;
-    }
-
-    private function transcriptToVTT(Transcript $transcript, bool $pickTranslated = false)
-    {
-        $srtOutput = 'WEBVTT\n\n';
-        $sentences = json_decode($transcript->getSentences(), true, 512, JSON_THROW_ON_ERROR);
-
-        foreach ($sentences as $sentence) {
-            $start = $this->convertTime($sentence['start'], '.');
-            $end = $this->convertTime($sentence['end'], '.');
-            $srtOutput .= sprintf(
+        } else {
+            return sprintf(
                 "%s --> %s\n%s\n\n",
                 $start,
                 $end,
-                $sentence[$pickTranslated ? 'translatedText' : 'text']
+                $text
             );
         }
+    }
 
-        return $srtOutput;
+    private function transcriptToSubtitles(Transcript $transcript, bool $pickTranslated = false, string $format = 'srt'): string
+    {
+        if ('vtt' === $format) {
+            $result = "WEBVTT\n\n";
+            $timeSeprator = '.';
+        } elseif ('srt' === $format) {
+            $result = '';
+            $timeSeprator = ',';
+        } else {
+            return null;
+        }
+
+        $sentences = json_decode($transcript->getSentences(), true, 512, JSON_THROW_ON_ERROR);
+        $lineIndex = 0;
+
+        foreach ($sentences as $sentence) {
+            if (array_key_exists('words', $sentence)) {
+                $words = $sentence['words'];
+                $line = '';
+                $ind = 0;
+
+                foreach ($words as $wordIndex => $word) {
+                    $wordText = $word[$pickTranslated ? 'translatedText' : 'text'];
+
+                    if (0 === $ind) {
+                        $start = $this->convertTime($word['start'], $timeSeprator);
+                        $line .= ltrim((string) $wordText);
+                    } else {
+                        $line .= $wordText;
+                    }
+
+                    ++$ind;
+                    if (
+                        str_ends_with((string) $wordText, '.')
+                        || str_ends_with((string) $wordText, '.')
+                        || $wordIndex === (is_countable($words) ? count($words) : 0) - 1
+                        || ($ind > 12 && !str_starts_with((string) $words[$wordIndex + 1][$pickTranslated ? 'translatedText' : 'text'], "'"))
+                    ) {
+                        $result .= $this->subtitlesLine($format, $start, $this->convertTime($word['end'], $timeSeprator), $line, ++$lineIndex);
+                        $ind = 0;
+                        $line = '';
+                    }
+                }
+            } else {
+                $start = $this->convertTime($sentence['start'], $timeSeprator);
+                $end = $this->convertTime($sentence['end'], $timeSeprator);
+                $result .= $this->subtitlesLine($format, $start, $end, $sentence[$pickTranslated ? 'translatedText' : 'text'], ++$lineIndex);
+            }
+        }
+
+        return $result;
     }
 }

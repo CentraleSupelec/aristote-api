@@ -6,6 +6,7 @@ use App\Constants;
 use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
+use App\Entity\EnrichmentVersionMetadata;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
 use App\Form\TranslationRequestPayloadType;
@@ -171,6 +172,8 @@ class TranslationWorkerController extends AbstractController
                 $requestBody['multipleChoiceQuestions'] = json_decode($mcqs, true, 512, JSON_THROW_ON_ERROR);
             }
 
+            $requestBody['notes'] = $request->request->get('notes');
+
             $requestBody['taskId'] = $request->request->get('taskId');
             $requestBody['status'] = $request->request->get('status');
             $requestBody['failureCause'] = $request->request->get('failureCause');
@@ -228,11 +231,15 @@ class TranslationWorkerController extends AbstractController
                 ;
             }
 
-            $enrichmentVersion->getEnrichmentVersionMetadata()
-                ->setTranslatedTitle($translationRequestPayload->getEnrichmentVersionMetadata()->getTitle())
-                ->setTranslatedDescription($translationRequestPayload->getEnrichmentVersionMetadata()->getDescription())
-                ->setTranslatedTopics($translationRequestPayload->getEnrichmentVersionMetadata()->getTopics())
-            ;
+            $enrichmentVersion->setTranslatedNotes($translationRequestPayload->getNotes());
+
+            if ($enrichmentVersion->getEnrichmentVersionMetadata() instanceof EnrichmentVersionMetadata) {
+                $enrichmentVersion->getEnrichmentVersionMetadata()
+                    ->setTranslatedTitle($translationRequestPayload->getEnrichmentVersionMetadata()->getTitle())
+                    ->setTranslatedDescription($translationRequestPayload->getEnrichmentVersionMetadata()->getDescription())
+                    ->setTranslatedTopics($translationRequestPayload->getEnrichmentVersionMetadata()->getTopics())
+                ;
+            }
 
             $translatedMultipleChoiceQuestions = $translationRequestPayload->getMultipleChoiceQuestions();
 
@@ -437,6 +444,7 @@ class TranslationWorkerController extends AbstractController
                     ->setTranscript($latestEnrichmentVersion->getTranscript())
                     ->setMultipleChoiceQuestions($latestEnrichmentVersion->getMultipleChoiceQuestions())
                     ->setEnrichmentVersionMetadata($latestEnrichmentVersion->getEnrichmentVersionMetadata())
+                    ->setNotes($latestEnrichmentVersion->getNotes())
                     ->setLanguage($enrichment->getLanguage())
                     ->setTranslateTo($enrichment->getTranslateTo())
                 ;

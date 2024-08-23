@@ -35,6 +35,10 @@ class TranslationJobResponse
     #[Groups(groups: ['translation_job'])]
     private ?EnrichmentVersionMetadata $enrichmentVersionMetadata = null;
 
+    #[Groups(groups: ['translation_job'])]
+    #[OA\Property(property: 'notes', type: 'string')]
+    private ?string $notes = null;
+
     #[OA\Property(property: 'language', type: 'string')]
     #[Groups(groups: ['translation_job'])]
     private ?string $language = null;
@@ -107,6 +111,18 @@ class TranslationJobResponse
     public function setEnrichmentVersionMetadata(?EnrichmentVersionMetadata $enrichmentVersionMetadata): static
     {
         $this->enrichmentVersionMetadata = $enrichmentVersionMetadata;
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
 
         return $this;
     }
