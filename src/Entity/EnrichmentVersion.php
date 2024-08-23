@@ -84,13 +84,13 @@ class EnrichmentVersion
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'disciplines', description: 'Disciplines', type: 'array', items: new OA\Items(type: 'string'))]
     #[Groups(groups: ['enrichment_versions'])]
-    #[Assert\Count(min: 1, minMessage: 'At least one discipline is expected')]
+    #[Assert\Count(min: 1, minMessage: 'At least one discipline is expected', groups: ['metadata'])]
     private ?array $disciplines = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     #[OA\Property(property: 'mediaTypes', description: 'Meida Types', type: 'array', items: new OA\Items(type: 'string'))]
     #[Groups(groups: ['enrichment_versions'])]
-    #[Assert\Count(min: 1, minMessage: 'At least one media type is expected')]
+    #[Assert\Count(min: 1, minMessage: 'At least one media type is expected', groups: ['metadata'])]
     private ?array $mediaTypes = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

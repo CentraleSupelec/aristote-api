@@ -34,6 +34,10 @@ class TranslationRequestPayload
     #[Groups(groups: ['json'])]
     private ?Transcript $transcript = null;
 
+    #[Groups(groups: ['Default'])]
+    #[OA\Property(property: 'notes', type: 'string')]
+    private ?string $notes = null;
+
     #[OA\Property(property: 'taskId', type: 'string')]
     #[Groups(groups: ['Default'])]
     private ?Uuid $taskId = null;
@@ -143,6 +147,18 @@ class TranslationRequestPayload
     public function setTranscript(?Transcript $transcript): static
     {
         $this->transcript = $transcript;
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
 
         return $this;
     }
