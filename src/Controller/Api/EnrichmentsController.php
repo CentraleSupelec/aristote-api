@@ -1611,14 +1611,16 @@ class EnrichmentsController extends AbstractController
 
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        $enrichmentVersion->getEnrichmentVersionMetadata()
-            ->setThumbUpTitle($content['enrichmentVersionMetadata']['thumbUpTitle'])
-            ->setThumbUpDescription($content['enrichmentVersionMetadata']['thumbUpDescription'])
-            ->setThumbUpDiscipline($content['enrichmentVersionMetadata']['thumbUpDiscipline'])
-            ->setThumbUpMediaType($content['enrichmentVersionMetadata']['thumbUpMediaType'])
-            ->setThumbUpTopics($content['enrichmentVersionMetadata']['thumbUpTopics'])
-            ->setUserFeedback($content['enrichmentVersionMetadata']['userFeedback'])
-        ;
+        if ($enrichmentVersion->getEnrichmentVersionMetadata() instanceof EnrichmentVersionMetadata && null !== $content['enrichmentVersionMetadata']) {
+            $enrichmentVersion->getEnrichmentVersionMetadata()
+                ->setThumbUpTitle($content['enrichmentVersionMetadata']['thumbUpTitle'])
+                ->setThumbUpDescription($content['enrichmentVersionMetadata']['thumbUpDescription'])
+                ->setThumbUpDiscipline($content['enrichmentVersionMetadata']['thumbUpDiscipline'])
+                ->setThumbUpMediaType($content['enrichmentVersionMetadata']['thumbUpMediaType'])
+                ->setThumbUpTopics($content['enrichmentVersionMetadata']['thumbUpTopics'])
+                ->setUserFeedback($content['enrichmentVersionMetadata']['userFeedback'])
+            ;
+        }
 
         foreach ($enrichmentVersion->getMultipleChoiceQuestions() as $multipleChoiceQuestion) {
             $inputMultipleChoiceQuestion = array_values(array_filter($content['multipleChoiceQuestions'], fn (array $currentMultipleChoiceQuestion) => $multipleChoiceQuestion->getId()->toRfc4122() === $currentMultipleChoiceQuestion['id']));
