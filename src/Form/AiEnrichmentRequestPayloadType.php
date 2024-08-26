@@ -16,7 +16,6 @@ class AiEnrichmentRequestPayloadType extends AbstractType
         $builder
             ->add('enrichmentVersionMetadata', EnrichmentVersionMetadataType::class, [
                 'required' => false,
-                'empty_data' => null,
             ])
             ->add('multipleChoiceQuestions', CollectionType::class, [
                 'entry_type' => MultipleChoiceQuestionType::class,

@@ -1650,7 +1650,7 @@ class EnrichmentsController extends AbstractController
             AbstractNormalizer::GROUPS => ['enrichment_versions', 'enrichment_versions_with_transcript'],
         ];
 
-        return $this->json(['status' => 'OK', 'enrichmentVersion' => $multipleChoiceQuestion->getEnrichmentVersion()], context: $options);
+        return $this->json(['status' => 'OK', 'enrichmentVersion' => $enrichmentVersion], context: $options);
     }
 
     #[OA\Tag(name: 'Enrichments')]

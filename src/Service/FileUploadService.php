@@ -85,7 +85,7 @@ class FileUploadService
 
             if ($parsingVttFailed) {
                 try {
-                    $subtitles = new SubripFile($uploadedFile->getPathname());
+                    $subtitles = new SubripFile(_filename: $uploadedFile->getPathname(), _requireStrictFileFormat: false);
                 } catch (Exception $exception) {
                     $this->logger->error($exception->getMessage());
                     throw new UploadFileUnsupportedTypeException("Couldn't parse subtitles file");
