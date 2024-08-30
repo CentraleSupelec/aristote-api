@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -31,7 +32,7 @@ class Media
     #[Groups(groups: ['enrichments'])]
     private ?string $mimeType = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: Types::INTEGER, length: 255)]
     private ?int $size = null;
 
     #[ORM\Column(type: 'string', length: 255)]

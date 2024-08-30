@@ -2010,7 +2010,7 @@ class EnrichmentsController extends AbstractController
         $binaryFileResponse = new BinaryFileResponse($tempFile);
         $binaryFileResponse->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            sprintf('%s.%s', $enrichmentVersion->getEnrichment()->getMedia()->getOriginalFileName(), $format)
+            pathinfo($enrichmentVersion->getEnrichment()->getMedia()->getOriginalFileName())['filename'].'.'.$format
         );
 
         $binaryFileResponse->deleteFileAfterSend(true);

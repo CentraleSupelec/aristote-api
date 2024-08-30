@@ -21,7 +21,7 @@ class PaginationUtils
     {
         $lastPage = (int) ceil($totalItemCount / $size);
 
-        return $page === $lastPage;
+        return $page === $lastPage || 0 === $totalItemCount;
     }
 
     public function paginationRequestParametersValidator(array $possibleSortFields, string $sort, string $order, int $size, int $page): array
