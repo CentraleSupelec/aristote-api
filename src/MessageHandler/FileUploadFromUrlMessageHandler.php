@@ -40,7 +40,7 @@ class FileUploadFromUrlMessageHandler
         }
 
         try {
-            $uploadedFile = new UploadedFile($temporaryFilePath, $url);
+            $uploadedFile = new UploadedFile($temporaryFilePath, basename(parse_url($url, PHP_URL_PATH)));
             if ('application/x-empty' === $uploadedFile->getMimeType()) {
                 $errorMessage = "Uploaded file mimetype is 'application/x-empty'. Please report this issue.";
 
