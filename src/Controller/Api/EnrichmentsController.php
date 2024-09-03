@@ -2184,7 +2184,12 @@ class EnrichmentsController extends AbstractController
             return null;
         }
 
-        $sentences = json_decode($transcript->getSentences(), true, 512, JSON_THROW_ON_ERROR);
+        $sentences = json_decode(
+            $pickTranslated ? $transcript->getTranslatedSentences() : $transcript->getSentences(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
         $lineIndex = 0;
 
         foreach ($sentences as $sentence) {
@@ -2194,7 +2199,7 @@ class EnrichmentsController extends AbstractController
                 $ind = 0;
 
                 foreach ($words as $wordIndex => $word) {
-                    $wordText = $word[$pickTranslated ? 'translatedText' : 'text'];
+                    $wordText = $word['text'];
 
                     if (0 === $ind) {
                         $start = $this->convertTime($word['start'], $timeSeprator);
@@ -2208,7 +2213,7 @@ class EnrichmentsController extends AbstractController
                         str_ends_with((string) $wordText, '.')
                         || str_ends_with((string) $wordText, '.')
                         || $wordIndex === (is_countable($words) ? count($words) : 0) - 1
-                        || ($ind > 12 && !str_starts_with((string) $words[$wordIndex + 1][$pickTranslated ? 'translatedText' : 'text'], "'"))
+                        || ($ind > 12 && !str_starts_with((string) $words[$wordIndex + 1]['text'], "'"))
                     ) {
                         $result .= $this->subtitlesLine($format, $start, $this->convertTime($word['end'], $timeSeprator), $line, ++$lineIndex);
                         $ind = 0;
@@ -2218,7 +2223,7 @@ class EnrichmentsController extends AbstractController
             } else {
                 $start = $this->convertTime($sentence['start'], $timeSeprator);
                 $end = $this->convertTime($sentence['end'], $timeSeprator);
-                $result .= $this->subtitlesLine($format, $start, $end, $sentence[$pickTranslated ? 'translatedText' : 'text'], ++$lineIndex);
+                $result .= $this->subtitlesLine($format, $start, $end, $sentence['text'], ++$lineIndex);
             }
         }
 
