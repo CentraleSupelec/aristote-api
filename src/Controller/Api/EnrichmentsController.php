@@ -2142,7 +2142,7 @@ class EnrichmentsController extends AbstractController
         }
     }
 
-    private function convertTime(int $seconds, string $millisecondsSeparator): string
+    private function convertTime(float $seconds, string $millisecondsSeparator): string
     {
         $hours = str_pad(floor($seconds / 3600), 2, '0', STR_PAD_LEFT);
         $minutes = str_pad(floor(($seconds % 3600) / 60), 2, '0', STR_PAD_LEFT);
