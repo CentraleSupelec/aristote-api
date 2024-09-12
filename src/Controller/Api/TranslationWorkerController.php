@@ -282,6 +282,7 @@ class TranslationWorkerController extends AbstractController
 
                 return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
             }
+            $entityManager->flush();
 
             if (Enrichment::STATUS_SUCCESS === $targetStatus) {
                 $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
