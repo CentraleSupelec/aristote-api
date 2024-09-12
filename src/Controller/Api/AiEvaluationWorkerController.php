@@ -206,6 +206,8 @@ class AiEvaluationWorkerController extends AbstractController
                 ->setFailureCause($enrichment->getFailureCause())
                 ->setInitialVersionId($enrichmentVersion->getId())
             ;
+            $entityManager->flush();
+
             try {
                 $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
 
