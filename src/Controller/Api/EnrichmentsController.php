@@ -8,6 +8,7 @@ use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\EnrichmentVersionMetadata;
+use App\Entity\Media;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
 use App\Exception\UploadFileUnsupportedTypeException;
@@ -400,7 +401,10 @@ class EnrichmentsController extends AbstractController
         if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
-        $enrichment->getMedia()->setOriginalFileName(null);
+
+        if ($enrichment->getMedia() instanceof Media) {
+            $enrichment->getMedia()->setOriginalFileName(null);
+        }
 
         $enrichment
             ->setDeleted(true)
