@@ -40,7 +40,16 @@ class FileUploadFromUrlMessageHandler
         }
 
         try {
-            $uploadedFile = new UploadedFile($temporaryFilePath, basename(parse_url($url, PHP_URL_PATH)));
+            $headers = get_headers($url, 1);
+            if (array_key_exists('Content-Disposition', $headers)) {
+                $filename = explode('filename=', (string) $headers['Content-Disposition'])[1];
+            } else {
+                if (array_key_exists('Location', $headers)) {
+                    $url = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
+                }
+                $filename = basename(parse_url((string) $url, PHP_URL_PATH));
+            }
+            $uploadedFile = new UploadedFile($temporaryFilePath, $filename);
             if ('application/x-empty' === $uploadedFile->getMimeType()) {
                 $errorMessage = "Uploaded file mimetype is 'application/x-empty'. Please report this issue.";
 

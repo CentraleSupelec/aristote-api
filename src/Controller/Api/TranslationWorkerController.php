@@ -446,7 +446,7 @@ class TranslationWorkerController extends AbstractController
                     ->setMultipleChoiceQuestions($latestEnrichmentVersion->getMultipleChoiceQuestions())
                     ->setEnrichmentVersionMetadata($latestEnrichmentVersion->getEnrichmentVersionMetadata())
                     ->setNotes($latestEnrichmentVersion->getNotes())
-                    ->setLanguage($enrichment->getLanguage())
+                    ->setLanguage($enrichment->getLanguage() ?? $latestEnrichmentVersion->getTranscript()->getLanguage())
                     ->setTranslateTo($enrichment->getTranslateTo())
                 ;
 
