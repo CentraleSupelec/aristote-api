@@ -7,16 +7,17 @@ use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\Transcript;
 use App\Model\EnrichmentTranscriptRequestPayload;
+use App\Model\EnrichmentWebhookPayload;
 use App\Model\ErrorsResponse;
 use App\Model\TranscriptionJobResponse;
 use App\Repository\EnrichmentRepository;
-use App\Repository\EnrichmentVersionRepository;
 use App\Service\ApiClientManager;
 use App\Service\FileUploadService;
 use App\Service\ScopeAuthorizationCheckerService;
 use App\Utils\PaginationUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use League\Flysystem\FilesystemOperator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -33,6 +34,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\Uuid as UuidConstraint;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/v1')]
 class TranscribingWorkerController extends AbstractController
@@ -117,12 +119,11 @@ class TranscribingWorkerController extends AbstractController
     public function createInitialEnrichmentVersionsByEnrichmentID(
         string $id,
         Request $request,
-        ApiClientManager $apiClientManager,
-        EnrichmentVersionRepository $enrichmentVersionRepository,
         EnrichmentRepository $enrichmentRepository,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
-        FilesystemOperator $mediaStorage
+        FilesystemOperator $mediaStorage,
+        HttpClientInterface $httpClient,
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSCRIPTION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -232,8 +233,36 @@ class TranscribingWorkerController extends AbstractController
         $enrichment->getTranscribedBy()->setJobLastSuccessAt(new DateTime());
         $entityManager->persist($enrichment);
         $entityManager->flush();
+
         if ($this->autoDeleteMediaAfterTranscription) {
             $mediaStorage->delete($enrichment->getMedia()->getFileDirectory().'/'.$enrichment->getMedia()->getFileName());
+        }
+
+        if (Enrichment::STATUS_SUCCESS === $targetStatus) {
+            $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
+                ->setId($enrichment->getId())
+                ->setStatus($enrichment->getStatus())
+                ->setFailureCause($enrichment->getFailureCause())
+                ->setInitialVersionId($enrichmentVersion->getId())
+            ;
+            try {
+                $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
+
+                $response = $httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [
+                    'body' => $serialized,
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                    ],
+                ]);
+
+                $enrichment->setNotificationStatus($response->getStatusCode());
+                if (200 === $response->getStatusCode()) {
+                    $enrichment->setNotifiedAt(new DateTime());
+                }
+            } catch (Exception $e) {
+                $this->logger->error($e->getMessage());
+                $enrichment->setNotificationStatus($e->getCode());
+            }
         }
 
         return $this->json(['status' => 'OK', 'id' => $enrichmentVersion->getId()]);
