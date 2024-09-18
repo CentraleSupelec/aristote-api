@@ -1478,8 +1478,15 @@ class EnrichmentsController extends AbstractController
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
 
+        $targetStatus = Enrichment::STATUS_SUCCESS;
+        if ($enrichment->getGenerateMetadata() || $enrichment->getGenerateQuiz() || $enrichment->getGenerateNotes()) {
+            $targetStatus = Enrichment::STATUS_WAITING_AI_ENRICHMENT;
+        } elseif ($enrichmentCreationRequestPayload->getEnrichmentParameters()->getTranslateTo()) {
+            $targetStatus = Enrichment::STATUS_WAITING_TRANSLATION;
+        }
+
         $enrichment
-            ->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT)
+            ->setStatus($targetStatus)
             ->setAiProcessedBy(null)
             ->setAiEnrichmentStartedAt(null)
             ->setAiEnrichmentEndedAt(null)
