@@ -7,6 +7,7 @@ use App\Entity\Enrichment;
 use App\Message\FileUploadFromUrlMessage;
 use App\Repository\EnrichmentRepository;
 use App\Service\FileUploadService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -27,7 +28,7 @@ class FileUploadFromUrlMessageHandler
     public function __invoke(FileUploadFromUrlMessage $fileUploadFromUrlMessage): void
     {
         $enrichment = $this->enrichmentRepository->findOneBy(['id' => $fileUploadFromUrlMessage->getEnrichmentId()]);
-        $enrichment->setStatus(Enrichment::STATUS_UPLOADING_MEDIA);
+        $enrichment->setStatus(Enrichment::STATUS_UPLOADING_MEDIA)->setUploadStartedAt(new DateTime());
         $this->entityManager->flush();
 
         $url = $fileUploadFromUrlMessage->getEnrichmentCreationUrlRequestPayload()->getUrl();
@@ -59,7 +60,7 @@ class FileUploadFromUrlMessageHandler
                 $this->handleUploadFailure($enrichment, new Exception($errorMessage), $errorMessage);
             } else {
                 $enrichment = $this->fileUploadService->uploadFile($uploadedFile, $fileUploadFromUrlMessage->getApiClient(), $enrichment);
-                $enrichment->setMediaUrl(null);
+                $enrichment->setMediaUrl(null)->setUploadEndedAt(new DateTime());
                 $this->entityManager->flush();
             }
             unlink($temporaryFilePath);
@@ -84,6 +85,9 @@ class FileUploadFromUrlMessageHandler
             'ssl' => [
                 'verify_peer' => false,
                 'verify_peer_name' => false,
+            ],
+            'http' => [
+                'timeout' => 600,
             ],
         ]);
 

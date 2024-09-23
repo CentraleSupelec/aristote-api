@@ -204,6 +204,14 @@ class Enrichment
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(groups: ['enrichments_with_status'])]
+    private ?DateTimeInterface $uploadStartedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
+    private ?DateTimeInterface $uploadEndedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?DateTimeInterface $aiEnrichmentStartedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -496,6 +504,30 @@ class Enrichment
     public function setFailureCause(?string $failureCause): self
     {
         $this->failureCause = $failureCause;
+
+        return $this;
+    }
+
+    public function getUploadStartedAt(): ?DateTimeInterface
+    {
+        return $this->uploadStartedAt;
+    }
+
+    public function setUploadStartedAt(?DateTimeInterface $uploadStartedAt): self
+    {
+        $this->uploadStartedAt = $uploadStartedAt;
+
+        return $this;
+    }
+
+    public function getUploadEndedAt(): ?DateTimeInterface
+    {
+        return $this->uploadEndedAt;
+    }
+
+    public function setUploadEndedAt(?DateTimeInterface $uploadEndedAt): self
+    {
+        $this->uploadEndedAt = $uploadEndedAt;
 
         return $this;
     }
