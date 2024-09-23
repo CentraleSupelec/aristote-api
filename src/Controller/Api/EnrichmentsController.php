@@ -314,7 +314,7 @@ class EnrichmentsController extends AbstractController
         }
 
         $options = [
-            AbstractNormalizer::GROUPS => ['enrichments'],
+            AbstractNormalizer::GROUPS => ['enrichments', 'enrichments_with_status'],
         ];
 
         return $this->json($enrichment, context: $options);
