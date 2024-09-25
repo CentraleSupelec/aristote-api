@@ -31,7 +31,21 @@ class EnrichmentCleanUp extends Command
         $symfonyStyle = new SymfonyStyle($input, $output);
 
         $enrichments = $this->enrichmentRepository->findEnrichmentsWithMaxTriesAtWaitingStatus();
-        $symfonyStyle->info(sprintf('%s enrichments to pass to failure status', count($enrichments)));
+        $symfonyStyle->info(sprintf('%s enrichments to pass to failure status because max retries reached', count($enrichments)));
+
+        foreach ($enrichments as $enrichment) {
+            /* @var Enrichment $enrichment */
+            $enrichment
+                ->setStatus(Enrichment::STATUS_FAILURE)
+                ->setFailureCause(sprintf('Max retries reached (%s)', $enrichment->getRetries()))
+            ;
+        }
+
+        $this->entityManager->flush();
+        $symfonyStyle->success(sprintf('Successfully passed %s enrichments to failure status', count($enrichments)));
+
+        $enrichments = $this->enrichmentRepository->findEnrichmentsInUploadingStatusForMoreThanXMinutes();
+        $symfonyStyle->info(sprintf('%s enrichments to pass to failure status because uploading took so long', count($enrichments)));
 
         foreach ($enrichments as $enrichment) {
             /* @var Enrichment $enrichment */

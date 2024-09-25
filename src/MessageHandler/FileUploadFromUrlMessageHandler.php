@@ -34,23 +34,16 @@ class FileUploadFromUrlMessageHandler
         $url = $fileUploadFromUrlMessage->getEnrichmentCreationUrlRequestPayload()->getUrl();
 
         try {
-            $temporaryFilePath = $this->getFileFromUrl($url);
+            $fileDetails = $this->getFileFromUrl($url);
+            $temporaryFilePath = $fileDetails['filePath'];
+            $fileName = $fileDetails['fileName'];
         } catch (Exception $exception) {
             $this->handleUploadFailure($enrichment, $exception, "Couldn't get file from URL");
             throw $exception;
         }
 
         try {
-            $headers = get_headers($url, 1);
-            if (array_key_exists('Content-Disposition', $headers)) {
-                $filename = explode('filename=', (string) $headers['Content-Disposition'])[1];
-            } else {
-                if (array_key_exists('Location', $headers)) {
-                    $url = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
-                }
-                $filename = basename(parse_url((string) $url, PHP_URL_PATH));
-            }
-            $uploadedFile = new UploadedFile($temporaryFilePath, $filename);
+            $uploadedFile = new UploadedFile($temporaryFilePath, $fileName);
             if ('application/x-empty' === $uploadedFile->getMimeType()) {
                 $errorMessage = "Uploaded file mimetype is 'application/x-empty'. Please report this issue.";
 
@@ -73,10 +66,8 @@ class FileUploadFromUrlMessageHandler
         }
     }
 
-    private function getFileFromUrl(string $fileUrl): string
+    private function getFileFromUrl(string $fileUrl): array
     {
-        $fileName = uniqid('file');
-
         if (!is_dir(Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH)) {
             mkdir(Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, 0777, true);
         }
@@ -91,11 +82,40 @@ class FileUploadFromUrlMessageHandler
             ],
         ]);
 
-        $fileContents = file_get_contents($fileUrl, false, $context);
-        $filePath = sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $fileName);
+        $stream = fopen($fileUrl, 'r', false, $context);
+
+        if (!$stream) {
+            throw new Exception('Failed to open the stream.');
+        }
+
+        $metaData = stream_get_meta_data($stream);
+        $headers = $metaData['wrapper_data'];
+        $fileContents = stream_get_contents($stream);
+        fclose($stream);
+
+        $fileName = null;
+        foreach ($headers as $header) {
+            if (false !== stripos((string) $header, 'Content-Disposition:')) {
+                $parts = explode('filename=', (string) $header);
+                if (count($parts) > 1) {
+                    $fileName = trim($parts[1], '"');
+                }
+                break;
+            }
+        }
+
+        if (!$fileName) {
+            $fileName = basename(parse_url($fileUrl, PHP_URL_PATH));
+        }
+        $temporaryFileName = uniqid('file');
+
+        $filePath = sprintf('%s/%s', Constants::TEMPORARY_STORAGE_FOR_WORKER_PATH, $temporaryFileName);
         file_put_contents($filePath, $fileContents);
 
-        return $filePath;
+        return [
+            'filePath' => $filePath,
+            'fileName' => $fileName,
+        ];
     }
 
     private function handleUploadFailure(Enrichment $enrichment, Exception $exception, string $errorMessage)

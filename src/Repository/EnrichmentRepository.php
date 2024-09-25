@@ -266,4 +266,28 @@ class EnrichmentRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findEnrichmentsInUploadingStatusForMoreThanXMinutes(): array
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb
+            ->where($qb->expr()->eq('e.status', ':statusUploadingMedia'))
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->isNull('e.uploadStartedAt'),
+                    $qb->expr()->lte(
+                        'e.uploadStartedAt',
+                        ':uploadThreshold'
+                    )
+                )
+            )
+            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
+            ->setParameters([
+                'statusUploadingMedia' => Enrichment::STATUS_UPLOADING_MEDIA,
+                'uploadThreshold' => (new DateTime())->modify('-60 minutes'),
+                'deleted' => false,
+            ]);
+
+        return $qb->getQuery()->getResult();
+    }
 }
