@@ -51,7 +51,7 @@ class EnrichmentCleanUp extends Command
             /* @var Enrichment $enrichment */
             $enrichment
                 ->setStatus(Enrichment::STATUS_FAILURE)
-                ->setFailureCause(sprintf('Max retries reached (%s)', $enrichment->getRetries()))
+                ->setFailureCause('Uploading took too long')
             ;
         }
         $this->entityManager->flush();
