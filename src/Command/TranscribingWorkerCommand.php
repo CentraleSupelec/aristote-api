@@ -99,8 +99,7 @@ class TranscribingWorkerCommand extends Command
 
         $requestOptions = [
             'body' => [
-                // 'transcript' => fopen('public/transcript.json', 'r'),
-                'transcript' => fopen('public/astro.json', 'r'),
+                'transcript' => fopen('public/transcript.json', 'r'),
                 'taskId' => $taskId,
                 'status' => 'OK',
             ],
