@@ -1387,7 +1387,7 @@ class EnrichmentsController extends AbstractController
     #[OA\RequestBody(
         content: new OA\JsonContent(
             type: 'object',
-            ref: new Model(type: EnrichmentCreationRequestPayload::class, groups: ['Default']),
+            ref: new Model(type: EnrichmentCreationRequestPayload::class, groups: ['Default', 'treatments']),
         )
     )]
     #[OA\Response(
@@ -1420,7 +1420,6 @@ class EnrichmentsController extends AbstractController
     public function createNewAiEnrichment(
         string $enrichmentId,
         Request $request,
-        ApiClientManager $apiClientManager,
         EntityManagerInterface $entityManager,
         EnrichmentRepository $enrichmentRepository,
         EnrichmentVersionRepository $enrichmentVersionRepository
@@ -1452,6 +1451,9 @@ class EnrichmentsController extends AbstractController
         $infrastructure = $content['enrichmentParameters']['infrastructure'] ?? null;
         $language = $content['enrichmentParameters']['language'] ?? null;
         $translateTo = $content['enrichmentParameters']['translateTo'] ?? null;
+        $generateMetadata = $content['enrichmentParameters']['generateMetadata'] ?? $enrichment->getGenerateMetadata();
+        $generateQuiz = $content['enrichmentParameters']['generateQuiz'] ?? $enrichment->getGenerateQuiz();
+        $generateNotes = $content['enrichmentParameters']['generateNotes'] ?? $enrichment->getGenerateNotes();
 
         $enrichmentCreationRequestPayload = (new EnrichmentCreationRequestPayload())
             ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
@@ -1464,6 +1466,9 @@ class EnrichmentsController extends AbstractController
                 ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
                 ->setLanguage(null === $language || '' === $language ? null : $language)
                 ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
+                ->setGenerateMetadata($generateMetadata)
+                ->setGenerateQuiz($generateQuiz)
+                ->setGenerateNotes($generateNotes)
             )
         ;
 
@@ -1479,7 +1484,7 @@ class EnrichmentsController extends AbstractController
         }
 
         $targetStatus = Enrichment::STATUS_SUCCESS;
-        if ($enrichment->getGenerateMetadata() || $enrichment->getGenerateQuiz() || $enrichment->getGenerateNotes()) {
+        if ($enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateMetadata() || $enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateQuiz() || $enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateNotes()) {
             $targetStatus = Enrichment::STATUS_WAITING_AI_ENRICHMENT;
         } elseif ($enrichmentCreationRequestPayload->getEnrichmentParameters()->getTranslateTo()) {
             $targetStatus = Enrichment::STATUS_WAITING_TRANSLATION;
@@ -1495,6 +1500,9 @@ class EnrichmentsController extends AbstractController
             ->setAiEvaluationStartedAt(null)
             ->setAiEvaluationEndedAt(null)
             ->setAiEvaluationTaskId(null)
+            ->setTranslatedBy(null)
+            ->setTranslationStartedAt(null)
+            ->setTranslationStartedAt(null)
             ->setNotificationWebhookUrl($enrichmentCreationRequestPayload->getNotificationWebhookUrl())
             ->setDisciplines($enrichmentCreationRequestPayload->getEnrichmentParameters()->getDisciplines())
             ->setMediaTypes($enrichmentCreationRequestPayload->getEnrichmentParameters()->getMediaTypes())
@@ -1504,14 +1512,20 @@ class EnrichmentsController extends AbstractController
             ->setInfrastructure($enrichmentCreationRequestPayload->getEnrichmentParameters()->getInfrastructure())
             ->setLanguage($enrichmentCreationRequestPayload->getEnrichmentParameters()->getLanguage())
             ->setTranslateTo($enrichmentCreationRequestPayload->getEnrichmentParameters()->getTranslateTo())
+            ->setGenerateMetadata($enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateMetadata())
+            ->setGenerateQuiz($enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateQuiz())
+            ->setGenerateNotes($enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateNotes())
         ;
 
-        $initialVersion = $enrichmentVersionRepository->findOneBy(['id' => $enrichment->getInitialVersionId()]);
+        $latestVersion = $enrichmentVersionRepository->findBy(['enrichment' => $enrichmentId], ['createdAt' => 'DESC'])[0];
+
         $newTranscript = (new Transcript())
-                ->setText($initialVersion->getTranscript()->getText())
-                ->setLanguage($initialVersion->getTranscript()->getLanguage())
-                ->setOriginalFilename($initialVersion->getTranscript()->getOriginalFilename())
-                ->setSentences($initialVersion->getTranscript()->getSentences())
+                ->setText($latestVersion->getTranscript()->getText())
+                ->setTranslatedText($latestVersion->getTranscript()->getTranslatedText())
+                ->setLanguage($latestVersion->getTranscript()->getLanguage())
+                ->setOriginalFilename($latestVersion->getTranscript()->getOriginalFilename())
+                ->setSentences($latestVersion->getTranscript()->getSentences())
+                ->setTranslatedSentences($latestVersion->getTranscript()->getTranslatedSentences())
         ;
         $enrichmentVersion = (new EnrichmentVersion())
             ->setAiGenerated(true)
