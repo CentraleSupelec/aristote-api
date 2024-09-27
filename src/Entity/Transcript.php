@@ -122,7 +122,7 @@ class Transcript
         return $this;
     }
 
-    public function getSentences(): string
+    public function getSentences(): ?string
     {
         return $this->sentences;
     }
@@ -134,7 +134,7 @@ class Transcript
         return $this;
     }
 
-    public function getTranslatedSentences(): string
+    public function getTranslatedSentences(): ?string
     {
         return $this->translatedSentences;
     }
