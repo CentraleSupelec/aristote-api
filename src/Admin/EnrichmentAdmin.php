@@ -4,6 +4,7 @@ namespace App\Admin;
 
 use App\Entity\Enrichment;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Datagrid\DatagridInterface;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -17,10 +18,12 @@ class EnrichmentAdmin extends AbstractAdmin
     {
         $list
             ->add('id', null, ['label' => 'ID'])
+            ->add('createdBy', null, ['label' => 'Créé par', 'disabled' => true])
             ->add('status', null, ['label' => 'Statut'])
             ->add('endUserIdentifier', null, ['label' => 'Utilisateur'])
             ->add('aiModel', null, ['label' => 'Modèle IA'])
             ->add('infrastructure', null, ['label' => 'Infrastructure'])
+            ->add('createdAt', null, ['label' => 'Créé le'])
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'show' => [],
@@ -35,6 +38,7 @@ class EnrichmentAdmin extends AbstractAdmin
     {
         $form
             ->add('id', TextType::class, ['label' => 'ID', 'disabled' => true])
+            ->add('createdBy', TextType::class, ['label' => 'Créé par', 'disabled' => true])
             ->add('status', ChoiceType::class, [
                 'label' => 'Statut',
                 'choices' => Enrichment::getPossibleStatuses(),
@@ -55,6 +59,7 @@ class EnrichmentAdmin extends AbstractAdmin
     {
         $show
             ->add('id', TextType::class, ['label' => 'ID'])
+            ->add('createdBy', null, ['label' => 'Créé par'])
             ->add('status', null, ['label' => 'Statut'])
             ->add('endUserIdentifier', null, ['label' => 'Utilisateur'])
             ->add('aiModel', null, ['label' => 'Modèle IA'])
@@ -65,6 +70,15 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('generateMetadata', null, ['label' => 'Génération de métadonnées'])
             ->add('generateQuiz', null, ['label' => 'Génération de quiz'])
             ->add('generateNotes', null, ['label' => 'Prise de notes'])
+            ->add('createdAt', null, ['label' => 'Date de création'])
+            ->add('uploadStartedAt', null, ['label' => 'Début de téléversement'])
+            ->add('uploadEndedAt', null, ['label' => 'Fin de téléversement'])
+            ->add('transribingStartedAt', null, ['label' => 'Début de transcription'])
+            ->add('transribingEndedAt', null, ['label' => 'Fin de transcription'])
+            ->add('aiEnrichmentStartedAt', null, ['label' => "Début d'enrichissement"])
+            ->add('aiEnrichmentEndedAt', null, ['label' => "Fin d'enrichissement"])
+            ->add('translationStartedAt', null, ['label' => 'Début de traduction'])
+            ->add('translationEndedAt', null, ['label' => 'Fin de traduction'])
         ;
     }
 
@@ -72,6 +86,7 @@ class EnrichmentAdmin extends AbstractAdmin
     {
         $filter
             ->add('id')
+            ->add('createdBy')
             ->add('status')
             ->add('endUserIdentifier')
             ->add('aiModel')
@@ -79,5 +94,11 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('language')
             ->add('translateTo')
         ;
+    }
+
+    protected function configureDefaultSortValues(array &$sortValues): void
+    {
+        $sortValues[DatagridInterface::SORT_BY] = 'createdAt';
+        $sortValues[DatagridInterface::SORT_ORDER] = 'DESC';
     }
 }
