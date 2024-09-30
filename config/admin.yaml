@@ -42,3 +42,13 @@ services:
         group: Utilisateurs
         label: Infrastructures
     public: true
+
+  admin.enrichment:
+    class: App\Admin\EnrichmentAdmin
+    tags:
+      - name: sonata.admin
+        model_class: App\Entity\Enrichment
+        manager_type: orm
+        group: Enrichissements
+        label: Enrichissements
+    public: true
