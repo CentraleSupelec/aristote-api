@@ -1,0 +1,11 @@
+{% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
+
+{% block field %}
+    {% if portal_url %}
+        <a href={{ portal_url ~ '/enrichments/' ~ object.id }} target='_blank'>
+            {{ object.id }}
+        </a>
+    {% else %}
+        {{ object.id }}
+    {% endif %}
+{% endblock %}

@@ -17,7 +17,10 @@ class EnrichmentAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $list): void
     {
         $list
-            ->add('id', null, ['label' => 'ID'])
+            ->add('id', null, [
+                'label' => 'ID',
+                'template' => 'sonata/CRUD/enrichment_id.html.twig',
+            ])
             ->add('createdBy', null, ['label' => 'Créé par', 'disabled' => true])
             ->add('status', null, ['label' => 'Statut'])
             ->add('endUserIdentifier', null, ['label' => 'Utilisateur'])
@@ -52,6 +55,8 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('generateMetadata', null, ['label' => 'Génération de métadonnées'])
             ->add('generateQuiz', null, ['label' => 'Génération de quiz'])
             ->add('generateNotes', null, ['label' => 'Prise de notes'])
+            ->add('failureCause', null, ['label' => "Cause d'erreur"])
+            ->add('deleted', null, ['label' => 'Supprimé'])
         ;
     }
 
@@ -79,6 +84,9 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('aiEnrichmentEndedAt', null, ['label' => "Fin d'enrichissement"])
             ->add('translationStartedAt', null, ['label' => 'Début de traduction'])
             ->add('translationEndedAt', null, ['label' => 'Fin de traduction'])
+            ->add('failureCause', null, ['label' => "Cause d'erreur"])
+            ->add('mediaUrl', null, ['label' => 'Média URL'])
+            ->add('deleted', null, ['label' => 'Supprimé'])
         ;
     }
 
@@ -93,6 +101,7 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('infrastructure')
             ->add('language')
             ->add('translateTo')
+            ->add('deleted')
         ;
     }
 
