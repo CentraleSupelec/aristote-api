@@ -17,6 +17,7 @@ use App\Service\ApiClientManager;
 use App\Service\ScopeAuthorizationCheckerService;
 use App\Utils\PaginationUtils;
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -343,7 +344,7 @@ class AiEvaluationWorkerController extends AbstractController
 
             $enrichmentLock = $lockFactory->createLock(sprintf('evaluating-enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
-                if (Enrichment::STATUS_WAITING_AI_EVALUATION !== $enrichment->getStatus()) {
+                if ($enrichment->getAiEvaluationEndedAt() instanceof DateTimeInterface) {
                     $enrichment->setRetries($enrichment->getRetries() + 1);
                 }
 

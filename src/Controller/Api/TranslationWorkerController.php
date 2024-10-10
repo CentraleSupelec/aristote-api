@@ -20,6 +20,7 @@ use App\Service\ApiClientManager;
 use App\Service\ScopeAuthorizationCheckerService;
 use App\Utils\PaginationUtils;
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use League\Flysystem\FilesystemOperator;
@@ -426,7 +427,7 @@ class TranslationWorkerController extends AbstractController
 
             $enrichmentLock = $lockFactory->createLock(sprintf('translating-enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
-                if (Enrichment::STATUS_WAITING_TRANSLATION !== $enrichment->getStatus()) {
+                if ($enrichment->getTranslationStartedAt() instanceof DateTimeInterface) {
                     $enrichment->setRetries($enrichment->getRetries() + 1);
                 }
 

@@ -16,6 +16,7 @@ use App\Service\FileUploadService;
 use App\Service\ScopeAuthorizationCheckerService;
 use App\Utils\PaginationUtils;
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use League\Flysystem\FilesystemOperator;
@@ -356,7 +357,7 @@ class TranscribingWorkerController extends AbstractController
                 $mediaFilePath = sprintf('%s/%s', $enrichment->getMedia()->getFileDirectory(), $enrichment->getMedia()->getFileName());
                 $mediaTemporaryUrl = $fileUploadService->generatePublicLink($mediaFilePath);
 
-                if (Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION !== $enrichment->getStatus()) {
+                if ($enrichment->getTransribingStartedAt() instanceof DateTimeInterface) {
                     $enrichment->setRetries($enrichment->getRetries() + 1);
                 }
 
