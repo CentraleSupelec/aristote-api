@@ -1174,6 +1174,7 @@ class EnrichmentsController extends AbstractController
         $enrichment = (new Enrichment())
             ->setStatus(Enrichment::STATUS_WAITING_MEIDA_UPLOAD)
             ->setCreatedBy($clientEntity)
+            ->setLatestEnrichmentRequestedAt(new DateTime())
             ->setMediaUrl($enrichmentCreationUrlRequestPayload->getUrl())
             ->setNotificationWebhookUrl($enrichmentCreationUrlRequestPayload->getNotificationWebhookUrl())
             ->setDisciplines($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getDisciplines())
@@ -1328,6 +1329,7 @@ class EnrichmentsController extends AbstractController
 
         $enrichment = (new Enrichment())
                 ->setCreatedBy($clientEntity)
+                ->setLatestEnrichmentRequestedAt(new DateTime())
                 ->setNotificationWebhookUrl($enrichmentCreationFileUploadRequestPayload->getNotificationWebhookUrl())
                 ->setDisciplines($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getDisciplines())
                 ->setMediaTypes($enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getMediaTypes())
@@ -1503,6 +1505,7 @@ class EnrichmentsController extends AbstractController
             ->setTranslatedBy(null)
             ->setTranslationStartedAt(null)
             ->setTranslationStartedAt(null)
+            ->setLatestEnrichmentRequestedAt(new DateTime())
             ->setNotificationWebhookUrl($enrichmentCreationRequestPayload->getNotificationWebhookUrl())
             ->setDisciplines($enrichmentCreationRequestPayload->getEnrichmentParameters()->getDisciplines())
             ->setMediaTypes($enrichmentCreationRequestPayload->getEnrichmentParameters()->getMediaTypes())

@@ -62,6 +62,7 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('generateNotes', null, ['label' => 'Prise de notes'])
             ->add('failureCause', null, ['label' => "Cause d'erreur"])
             ->add('deleted', null, ['label' => 'Supprimé'])
+            ->add('latestEnrichmentRequestedAt', null, ['label' => "Date de denière demande d'enrichissement"])
             ->add('contributors', CollectionType::class, [
                 'label' => 'Contributeurs',
                 'allow_add' => true,
@@ -89,6 +90,7 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('generateQuiz', null, ['label' => 'Génération de quiz'])
             ->add('generateNotes', null, ['label' => 'Prise de notes'])
             ->add('createdAt', null, ['label' => 'Date de création'])
+            ->add('latestEnrichmentRequestedAt', null, ['label' => "Date de denière demande d'enrichissement"])
             ->add('uploadStartedAt', null, ['label' => 'Début de téléversement'])
             ->add('uploadEndedAt', null, ['label' => 'Fin de téléversement'])
             ->add('transribingStartedAt', null, ['label' => 'Début de transcription'])
