@@ -177,6 +177,11 @@ class AiEnrichmentsWorkerController extends AbstractController
                 $entityManager->flush();
 
                 return $this->json(['status' => 'OK']);
+            } elseif ('UNAVAILABLE' === $aiEnrichmentRequestPayload->getStatus()) {
+                $enrichment->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT);
+                $entityManager->flush();
+
+                return $this->json(['status' => 'OK']);
             }
 
             $enrichmentVersion->setEnrichmentVersionMetadata($aiEnrichmentRequestPayload->getEnrichmentVersionMetadata());

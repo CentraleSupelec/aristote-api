@@ -42,8 +42,14 @@ class EnrichmentRepository extends ServiceEntityRepository
         ;
 
         if ($endUserIdentifier) {
-            $qb->andWhere('e.endUserIdentifier = :endUserIdentifier')
-                ->setParameter('endUserIdentifier', $endUserIdentifier);
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    'e.endUserIdentifier = :endUserIdentifier',
+                    $qb->expr()->like('e.contributors', ':endUserIdentifierJson')
+                )
+            )
+                ->setParameter('endUserIdentifier', $endUserIdentifier)
+                ->setParameter('endUserIdentifierJson', '%'.$endUserIdentifier.'%');
         }
 
         $qb->orderBy(sprintf('e.%s', $sortField), $sortDirection);
@@ -106,7 +112,8 @@ class EnrichmentRepository extends ServiceEntityRepository
 
         $qb
             ->setParameters($parameters)
-            ->orderBy('e.createdAt', 'ASC')
+            ->orderBy('e.priority', 'DESC')
+            ->addOrderBy('e.latestEnrichmentRequestedAt', 'ASC')
         ;
 
         $enrichments = $qb->getQuery()->getResult();
@@ -140,7 +147,8 @@ class EnrichmentRepository extends ServiceEntityRepository
             'maxRetries' => $this->maxRetries,
             'deleted' => false,
         ])
-            ->orderBy('e.createdAt', 'ASC')
+            ->orderBy('e.priority', 'DESC')
+            ->addOrderBy('e.latestEnrichmentRequestedAt', 'ASC')
         ;
 
         $enrichments = $qb->getQuery()->getResult();
@@ -178,7 +186,8 @@ class EnrichmentRepository extends ServiceEntityRepository
                 'maxRetries' => $this->maxRetries,
                 'deleted' => false,
             ])
-            ->orderBy('e.createdAt', 'ASC')
+            ->orderBy('e.priority', 'DESC')
+            ->addOrderBy('e.latestEnrichmentRequestedAt', 'ASC')
         ;
 
         $enrichments = $qb->getQuery()->getResult();
@@ -212,7 +221,8 @@ class EnrichmentRepository extends ServiceEntityRepository
                 'maxRetries' => $this->maxRetries,
                 'deleted' => false,
             ])
-            ->orderBy('e.createdAt', 'ASC')
+            ->orderBy('e.priority', 'DESC')
+            ->addOrderBy('e.latestEnrichmentRequestedAt', 'ASC')
         ;
 
         $enrichments = $qb->getQuery()->getResult();

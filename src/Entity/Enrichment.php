@@ -204,6 +204,10 @@ class Enrichment
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(groups: ['enrichments_with_status'])]
+    private ?DateTimeInterface $latestEnrichmentRequestedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(groups: ['enrichments_with_status'])]
     private ?DateTimeInterface $uploadStartedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -254,6 +258,11 @@ class Enrichment
     #[Groups(groups: ['enrichments'])]
     private ?string $endUserIdentifier = null;
 
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    #[OA\Property(property: 'contributors', description: 'Contributors', type: 'array', items: new OA\Items(type: 'string'))]
+    #[Groups(groups: ['enrichments'])]
+    private ?array $contributors = [];
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(groups: ['enrichments'])]
     private ?string $aiModel = null;
@@ -265,6 +274,9 @@ class Enrichment
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
     #[Groups(groups: ['enrichments'])]
     private int $retries = 0;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 1])]
+    private int $priority = 1;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Assert\Choice(callback: [self::class, 'getSupportedLanguages'], multiple: false, message: "The chosen language is not supported. Supported languages are : ['fr', 'en']")]
@@ -283,6 +295,7 @@ class Enrichment
     private ?DateTimeInterface $deletedAt = null;
 
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    #[Groups(groups: ['enrichments'])]
     private int $aiGenerationCount = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 3, nullable: true)]
@@ -508,6 +521,18 @@ class Enrichment
         return $this;
     }
 
+    public function getLatestEnrichmentRequestedAt(): ?DateTimeInterface
+    {
+        return $this->latestEnrichmentRequestedAt;
+    }
+
+    public function setLatestEnrichmentRequestedAt(?DateTimeInterface $latestEnrichmentRequestedAt): self
+    {
+        $this->latestEnrichmentRequestedAt = $latestEnrichmentRequestedAt;
+
+        return $this;
+    }
+
     public function getUploadStartedAt(): ?DateTimeInterface
     {
         return $this->uploadStartedAt;
@@ -700,6 +725,18 @@ class Enrichment
         return $this;
     }
 
+    public function getContributors(): ?array
+    {
+        return $this->contributors;
+    }
+
+    public function setContributors(?array $contributors): self
+    {
+        $this->contributors = $contributors;
+
+        return $this;
+    }
+
     public function getAiModel(): ?string
     {
         return $this->aiModel;
@@ -732,6 +769,18 @@ class Enrichment
     public function setRetries(int $retries): self
     {
         $this->retries = $retries;
+
+        return $this;
+    }
+
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(int $priority): self
+    {
+        $this->priority = $priority;
 
         return $this;
     }

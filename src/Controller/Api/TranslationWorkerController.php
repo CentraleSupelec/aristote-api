@@ -216,6 +216,11 @@ class TranslationWorkerController extends AbstractController
                 $entityManager->flush();
 
                 return $this->json(['status' => 'OK']);
+            } elseif ('UNAVAILABLE' === $translationRequestPayload->getStatus()) {
+                $enrichment->setStatus(Enrichment::STATUS_WAITING_TRANSLATION);
+                $entityManager->flush();
+
+                return $this->json(['status' => 'OK']);
             }
 
             if ($translationRequestPayload->getTranscriptFile() instanceof UploadedFile) {

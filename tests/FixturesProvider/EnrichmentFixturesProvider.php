@@ -2,6 +2,7 @@
 
 namespace App\Tests\FixturesProvider;
 
+use App\Entity\ApiClient;
 use App\Entity\Enrichment;
 use App\Entity\Video;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,9 +13,12 @@ class EnrichmentFixturesProvider
     ) {
     }
 
-    public static function getEnrichment(?EntityManagerInterface $entityManager): Enrichment
+    public static function getEnrichment(?EntityManagerInterface $entityManager, ApiClient $apiClient = null): Enrichment
     {
-        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient($entityManager);
+        if (!$apiClient instanceof ApiClient) {
+            $apiClient = ApiClientFixturesProvider::getApiClientScopeClient($entityManager);
+        }
+
         $enrichment = (new Enrichment())
             ->setMedia(
                 (new Video())

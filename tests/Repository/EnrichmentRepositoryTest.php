@@ -2,8 +2,11 @@
 
 namespace App\Tests\Service;
 
+use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
+use App\Repository\EnrichmentRepository;
 use App\Repository\EnrichmentVersionRepository;
+use App\Tests\FixturesProvider\EnrichmentFixturesProvider;
 use App\Tests\FixturesProvider\EnrichmentVersionsFixturesProvider;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -68,5 +71,61 @@ class EnrichmentRepositoryTest extends KernelTestCase
         $latestAiVersion = $enrichmentVersionRepository->findLatestAiVersionByEnrichmentId($enrichment->getId());
 
         $this->assertNull($latestAiVersion);
+    }
+
+    public function testFindOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(): void
+    {
+        $enrichment1 = EnrichmentFixturesProvider::getEnrichment($this->entityManager);
+        $enrichment2 = EnrichmentFixturesProvider::getEnrichment($this->entityManager, $enrichment1->getCreatedBy());
+        $enrichment3 = EnrichmentFixturesProvider::getEnrichment($this->entityManager, $enrichment1->getCreatedBy());
+        $enrichment4 = EnrichmentFixturesProvider::getEnrichment($this->entityManager, $enrichment1->getCreatedBy());
+        $enrichment5 = EnrichmentFixturesProvider::getEnrichment($this->entityManager, $enrichment1->getCreatedBy());
+
+        $enrichment1->setLatestEnrichmentRequestedAt(new DateTime('-30 minute'))->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT);
+        $enrichment2->setLatestEnrichmentRequestedAt(new DateTime('-25 minute'))->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT);
+        $enrichment3->setLatestEnrichmentRequestedAt(new DateTime('-20 minute'))->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT);
+        $enrichment4->setLatestEnrichmentRequestedAt(new DateTime('-15 minute'))->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT);
+        $enrichment5->setLatestEnrichmentRequestedAt(new DateTime('-10 minute'))->setStatus(Enrichment::STATUS_WAITING_AI_ENRICHMENT);
+
+        $this->entityManager->flush();
+
+        /** @var EnrichmentRepository $enrichmentRepository */
+        $enrichmentRepository = $this->entityManager->getRepository(Enrichment::class);
+        $foundEnrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes();
+
+        $this->assertNotNull($foundEnrichment);
+        $this->assertEquals($foundEnrichment->getId(), $enrichment1->getId());
+
+        $enrichment3->setLatestEnrichmentRequestedAt(new DateTime('-40 minute'));
+        $this->entityManager->flush();
+
+        $foundEnrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes();
+
+        $this->assertNotNull($foundEnrichment);
+        $this->assertEquals($foundEnrichment->getId(), $enrichment3->getId());
+
+        $enrichment5->setPriority(5);
+        $this->entityManager->flush();
+
+        $foundEnrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes();
+
+        $this->assertNotNull($foundEnrichment);
+        $this->assertEquals($foundEnrichment->getId(), $enrichment5->getId());
+
+        $enrichment4->setPriority(4);
+        $this->entityManager->flush();
+
+        $foundEnrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes();
+
+        $this->assertNotNull($foundEnrichment);
+        $this->assertEquals($foundEnrichment->getId(), $enrichment5->getId());
+
+        $enrichment4->setPriority(5);
+        $this->entityManager->flush();
+
+        $foundEnrichment = $enrichmentRepository->findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes();
+
+        $this->assertNotNull($foundEnrichment);
+        $this->assertEquals($foundEnrichment->getId(), $enrichment4->getId());
     }
 }
