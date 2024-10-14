@@ -1,0 +1,5 @@
+validation:
+  ai_model_infrastructure_constraint:
+    ai_model_not_found: Le modèle IA spécifié n'a pas été trouvé
+    infrastructure_not_found: L'infrastructure spécifiée n'a pas été trouvée
+    no_enrichment_client_found: Aucun worker d'enrichissement avec les valeurs modèle/infrastructure spécifiés n'a été trouvé

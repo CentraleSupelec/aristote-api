@@ -32,4 +32,9 @@ class Subtitle extends Media
 
         return $this;
     }
+
+    public function getDuration(): ?int
+    {
+        return null;
+    }
 }
