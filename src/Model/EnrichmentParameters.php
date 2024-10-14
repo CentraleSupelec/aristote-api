@@ -4,11 +4,13 @@ namespace App\Model;
 
 use App\Constants;
 use App\Entity\Enrichment;
+use App\Validator\Constraints as AppAssert;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[OA\Schema()]
+#[AppAssert\AiModelInfrastructureConstraint()]
 class EnrichmentParameters
 {
     #[OA\Property(property: 'mediaTypes', description: 'List of media types', type: 'array', items: new OA\Items(type: 'string'))]

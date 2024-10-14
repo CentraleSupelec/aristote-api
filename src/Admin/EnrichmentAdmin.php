@@ -30,6 +30,7 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('infrastructure', null, ['label' => 'Infrastructure'])
             ->add('deleted', null, ['label' => 'Supprimé'])
             ->add('retries', null, ['label' => 'Essais'])
+            ->add('media.duration', null, ['label' => 'Durée'])
             ->add('createdAt', null, ['label' => 'Créé le'])
             ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
@@ -60,6 +61,7 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('generateMetadata', null, ['label' => 'Génération de métadonnées'])
             ->add('generateQuiz', null, ['label' => 'Génération de quiz'])
             ->add('generateNotes', null, ['label' => 'Prise de notes'])
+            ->add('aiEvaluation', null, ['label' => 'Modèle IA pour évalutation'])
             ->add('failureCause', null, ['label' => "Cause d'erreur"])
             ->add('deleted', null, ['label' => 'Supprimé'])
             ->add('latestEnrichmentRequestedAt', null, ['label' => "Date de denière demande d'enrichissement"])
