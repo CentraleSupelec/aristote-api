@@ -3,7 +3,6 @@
 namespace App\Controller\Api;
 
 use App\Constants;
-use App\Entity\AnswerPointer;
 use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
@@ -16,8 +15,11 @@ use App\Message\FileUploadFromUrlMessage;
 use App\Model\EnrichmentCreationFileUploadRequestPayload;
 use App\Model\EnrichmentCreationRequestPayload;
 use App\Model\EnrichmentCreationUrlRequestPayload;
+use App\Model\EnrichmentPaginationParameters;
 use App\Model\EnrichmentParameters;
 use App\Model\EnrichmentVersionCreationRequestPayload;
+use App\Model\EnrichmentVersionPaginationParameters;
+use App\Model\EnrichmentVersionUserEvaluationRequestPayload;
 use App\Model\ErrorsResponse;
 use App\Repository\ApiClientRepository;
 use App\Repository\ChoiceRepository;
@@ -44,6 +46,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -62,7 +66,7 @@ class EnrichmentsController extends AbstractController
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
         private readonly PaginationUtils $paginationUtils,
-        private readonly ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService
+        private readonly ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
     ) {
     }
 
@@ -148,8 +152,11 @@ class EnrichmentsController extends AbstractController
         schema: new OA\Schema(type: 'boolean')
     )]
     #[Route('/enrichments', name: 'enrichments', methods: ['GET'], options: ['expose' => true])]
-    public function getEnrichments(Request $request, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository): Response
-    {
+    public function getEnrichments(
+        #[MapQueryString(validationGroups: 'no_validation')] ?EnrichmentPaginationParameters $enrichmentPaginationParameters,
+        ApiClientManager $apiClientManager,
+        EnrichmentRepository $enrichmentRepository,
+    ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
                 [
@@ -159,29 +166,38 @@ class EnrichmentsController extends AbstractController
             ]], 403);
         }
 
-        $sort = $request->query->get('sort', 'createdAt');
-        $order = $request->query->get('order', 'DESC');
-        $size = $request->query->get('size', 50);
-        $page = $request->query->get('page', 1);
-        $endUserIdentifier = $request->query->get('endUserIdentifier');
-        $withStatus = $request->query->get('withStatus', 'false');
+        if ($enrichmentPaginationParameters instanceof EnrichmentPaginationParameters) {
+            $errors = $this->validator->validate($enrichmentPaginationParameters, groups: ['Default', 'enrichment']);
+
+            if (count($errors) > 0) {
+                $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                    'message' => $error->getMessage(),
+                    'path' => $error->getPropertyPath(),
+                ], iterator_to_array($errors));
+
+                return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
+            }
+        } else {
+            $enrichmentPaginationParameters = new EnrichmentPaginationParameters();
+        }
 
         $groups = ['enrichments'];
 
-        if ('true' === $withStatus) {
+        if ($enrichmentPaginationParameters->getWithStatus()) {
             $groups[] = 'enrichments_with_status';
-        }
-
-        $paginationParametersErrors = $this->paginationUtils->paginationRequestParametersValidator(Enrichment::getSortFields(), $sort, $order, $size, $page);
-
-        if ([] !== $paginationParametersErrors) {
-            return $this->json(['status' => 'KO', 'errors' => $paginationParametersErrors], 400);
         }
 
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
 
-        $enrichments = $enrichmentRepository->findByCreatedBy($clientEntity->getIdentifier(), $page, $size, $sort, $order, $endUserIdentifier);
+        $enrichments = $enrichmentRepository->findByCreatedBy(
+            $clientEntity->getIdentifier(),
+            $enrichmentPaginationParameters->getPage(),
+            $enrichmentPaginationParameters->getSize(),
+            $enrichmentPaginationParameters->getSort(),
+            $enrichmentPaginationParameters->getOrder(),
+            $enrichmentPaginationParameters->getEndUserIdentifier()
+        );
 
         $options = [
             AbstractNormalizer::GROUPS => $groups,
@@ -290,7 +306,7 @@ class EnrichmentsController extends AbstractController
         schema: new OA\Schema(type: 'string')
     )]
     #[Route('/enrichments/{id}', name: 'enrichment', methods: ['GET'])]
-    public function getEnrichmentByID(string $id, ApiClientManager $apiClientManager, EnrichmentRepository $enrichmentRepository): Response
+    public function getEnrichmentByID(string $id, EnrichmentRepository $enrichmentRepository): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -376,10 +392,9 @@ class EnrichmentsController extends AbstractController
     #[Route('/enrichments/{id}', name: 'delete_enrichment', methods: ['DELETE'])]
     public function deleteEnrichmentByID(
         string $id,
-        ApiClientManager $apiClientManager,
         EnrichmentRepository $enrichmentRepository,
         EntityManagerInterface $entityManager,
-        EnrichmentUtils $enrichmentUtils
+        EnrichmentUtils $enrichmentUtils,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -526,10 +541,9 @@ class EnrichmentsController extends AbstractController
     #[Route('/enrichments/{id}/versions', name: 'enrichment_versions', methods: ['GET'])]
     public function getEnrichmentVersionsByEnrichmentID(
         string $id,
-        Request $request,
-        ApiClientManager $apiClientManager,
+        #[MapQueryString(validationGroups: 'no_validation')] ?EnrichmentVersionPaginationParameters $enrichmentVersionPaginationParameters,
         EnrichmentVersionRepository $enrichmentVersionRepository,
-        EnrichmentRepository $enrichmentRepository
+        EnrichmentRepository $enrichmentRepository,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -545,20 +559,24 @@ class EnrichmentsController extends AbstractController
             return $uuidValidationErrorResponse;
         }
 
-        $sort = $request->query->get('sort', 'createdAt');
-        $order = $request->query->get('order', 'DESC');
-        $size = $request->query->get('size', 2);
-        $page = $request->query->get('page', 1);
-        $withTranscript = $request->query->get('withTranscript', 'true');
-        $groups = ['enrichment_versions'];
+        if ($enrichmentVersionPaginationParameters instanceof EnrichmentVersionPaginationParameters) {
+            $errors = $this->validator->validate($enrichmentVersionPaginationParameters, groups: ['Default', 'enrichment_version']);
 
-        $paginationParametersErrors = $this->paginationUtils->paginationRequestParametersValidator(EnrichmentVersion::getSortFields(), $sort, $order, $size, $page);
+            if (count($errors) > 0) {
+                $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                    'message' => $error->getMessage(),
+                    'path' => $error->getPropertyPath(),
+                ], iterator_to_array($errors));
 
-        if ([] !== $paginationParametersErrors) {
-            return $this->json(['status' => 'KO', 'errors' => $paginationParametersErrors], 400);
+                return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
+            }
+        } else {
+            $enrichmentVersionPaginationParameters = (new EnrichmentVersionPaginationParameters())->setSize(2);
         }
 
-        if ('true' === $withTranscript) {
+        $groups = ['enrichment_versions'];
+
+        if ($enrichmentVersionPaginationParameters->getWithTranscript()) {
             $groups[] = 'enrichment_versions_with_transcript';
         }
 
@@ -569,7 +587,13 @@ class EnrichmentsController extends AbstractController
             return $enrichmentAccessErrorResponse;
         }
 
-        $enrichmentVersions = $enrichmentVersionRepository->findByEnrichmentId($id, $page, $size, $sort, $order);
+        $enrichmentVersions = $enrichmentVersionRepository->findByEnrichmentId(
+            $id,
+            $enrichmentVersionPaginationParameters->getPage(),
+            $enrichmentVersionPaginationParameters->getSize(),
+            $enrichmentVersionPaginationParameters->getSort(),
+            $enrichmentVersionPaginationParameters->getOrder()
+        );
 
         $options = [
             AbstractNormalizer::GROUPS => $groups,
@@ -647,8 +671,8 @@ class EnrichmentsController extends AbstractController
     #[Route('/enrichments/{id}/versions', name: 'create_enrichment_version', methods: ['POST'])]
     public function createEnrichmentVersionsByEnrichmentID(
         string $id,
+        #[MapRequestPayload(validationGroups: 'no_validation')] EnrichmentVersionCreationRequestPayload $enrichmentVersionCreationRequestPayload,
         Request $request,
-        ApiClientManager $apiClientManager,
         EnrichmentVersionRepository $enrichmentVersionRepository,
         EnrichmentRepository $enrichmentRepository,
         EntityManagerInterface $entityManager,
@@ -665,6 +689,19 @@ class EnrichmentsController extends AbstractController
         $uuidValidationErrorResponse = $this->validateUuid($id);
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
+        }
+
+        $transcript = $request->files->get('transcript');
+
+        $errors = $this->validator->validate($enrichmentVersionCreationRequestPayload->setTranscript($transcript));
+
+        if (count($errors) > 0) {
+            $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getPropertyPath(),
+            ], iterator_to_array($errors));
+
+            return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
         }
 
         $enrichment = $enrichmentRepository->findOneBy(['id' => $id]);
@@ -688,11 +725,8 @@ class EnrichmentsController extends AbstractController
             ], 403);
         }
 
-        $inputTranscript = $request->files->get('transcript');
-
-        if (null !== $inputTranscript) {
-            // TODO: TEST THIS BRANCH
-            $transcriptContent = json_decode((string) $inputTranscript->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        if (($inputTranscript = $enrichmentVersionCreationRequestPayload->getTranscript()) instanceof UploadedFile) {
+            $transcriptContent = json_decode($inputTranscript->getContent(), true, 512, JSON_THROW_ON_ERROR);
             $newTranscript = (new Transcript())
                 ->setLanguage($transcriptContent['language'])
                 ->setText($transcriptContent['text'])
@@ -715,30 +749,12 @@ class EnrichmentsController extends AbstractController
             ->setMediaTypes($enrichment->getMediaTypes())
             ->setLanguage($enrichment->getLanguage())
             ->setTranslateTo($enrichment->getTranslateTo())
+            ->setEnrichmentVersionMetadata($enrichmentVersionCreationRequestPayload->getEnrichmentVersionMetadata())
+            ->setNotes($enrichmentVersionCreationRequestPayload->getNotes())
+            ->setTranslatedNotes($enrichmentVersionCreationRequestPayload->getTranslatedNotes())
         ;
 
-        $inputEnrichmentVersionMetadata = $request->request->get('enrichmentVersionMetadata');
-
-        if ($inputEnrichmentVersionMetadata) {
-            $inputEnrichmentVersionMetadata = json_decode($inputEnrichmentVersionMetadata, true, 512, JSON_THROW_ON_ERROR);
-
-            $enrichmentVersionMetadata = (new EnrichmentVersionMetadata())
-                ->setTitle($inputEnrichmentVersionMetadata['title'])
-                ->setDescription($inputEnrichmentVersionMetadata['description'])
-                ->setDiscipline($inputEnrichmentVersionMetadata['discipline'])
-                ->setMediaType($inputEnrichmentVersionMetadata['mediaType'])
-                ->setTopics($inputEnrichmentVersionMetadata['topics'])
-                ->setTranslatedTitle($inputEnrichmentVersionMetadata['title'])
-                ->setTranslatedDescription($inputEnrichmentVersionMetadata['translatedDescription'])
-                ->setTranslatedTopics($inputEnrichmentVersionMetadata['translatedTopics'])
-            ;
-
-            $enrichmentVersion->setEnrichmentVersionMetadata($enrichmentVersionMetadata);
-        }
-
-        $translationRequested = filter_var($request->request->get('translate'), FILTER_VALIDATE_BOOLEAN);
-
-        if ($translationRequested) {
+        if ($enrichmentVersionCreationRequestPayload->getTranslate()) {
             $enrichment
                 ->setStatus(Enrichment::STATUS_WAITING_TRANSLATION)
                 ->setTranslatedBy(null)
@@ -749,39 +765,9 @@ class EnrichmentsController extends AbstractController
             ;
         }
 
-        $inputMultipleChoiceQuestions = $this->stringJsonObjectsToArray($request->request->get('multipleChoiceQuestions'));
-
-        foreach ($inputMultipleChoiceQuestions as $inputMultipleChoiceQuestion) {
-            $multipleChoiceQuestion = (new MultipleChoiceQuestion())
-                ->setQuestion($inputMultipleChoiceQuestion['question'])
-                ->setExplanation($inputMultipleChoiceQuestion['explanation'])
-                ->setTranslatedQuestion($inputMultipleChoiceQuestion['translatedQuestion'])
-                ->setTranslatedExplanation($inputMultipleChoiceQuestion['translatedExplanation'])
-            ;
-            $answerPointer = $inputMultipleChoiceQuestion['answerPointer'];
-            if ($answerPointer && $answerPointer['startAnswerPointer']) {
-                $anwserPointerEntity = (new AnswerPointer())->setStartAnswerPointer($answerPointer['startAnswerPointer']);
-                if ($answerPointer['stopAnswerPointer']) {
-                    $anwserPointerEntity->setStopAnswerPointer($answerPointer['stopAnswerPointer']);
-                }
-                $multipleChoiceQuestion->setAnswerPointer($anwserPointerEntity);
-            }
-
-            foreach ($inputMultipleChoiceQuestion['choices'] as $choice) {
-                $multipleChoiceQuestion->addChoice((new Choice())
-                    ->setCorrectAnswer($choice['correctAnswer'])
-                    ->setOptionText($choice['optionText'])
-                    ->setTranslatedOptionText($choice['translatedOptionText'])
-                );
-            }
+        foreach ($enrichmentVersionCreationRequestPayload->getMultipleChoiceQuestions() as $multipleChoiceQuestion) {
             $enrichmentVersion->addMultipleChoiceQuestion($multipleChoiceQuestion);
         }
-
-        $notes = $request->request->get('notes');
-        $enrichmentVersion->setNotes($notes);
-
-        $translatedNotes = $request->request->get('translatedNotes');
-        $enrichmentVersion->setTranslatedNotes($translatedNotes);
 
         $enrichment->addVersion($enrichmentVersion);
 
@@ -1111,8 +1097,12 @@ class EnrichmentsController extends AbstractController
         description: 'User is not authenticated',
     )]
     #[Route('/enrichments/url', name: 'create_enrichment_from_url', methods: ['POST'])]
-    public function createEnrichmentFromUrl(Request $request, FileUploadService $fileUploadService, MessageBusInterface $messageBus, ApiClientManager $apiClientManager, EntityManagerInterface $entityManager): Response
-    {
+    public function createEnrichmentFromUrl(
+        #[MapRequestPayload(validationGroups: 'no_validation')] EnrichmentCreationUrlRequestPayload $enrichmentCreationUrlRequestPayload,
+        MessageBusInterface $messageBus,
+        ApiClientManager $apiClientManager,
+        EntityManagerInterface $entityManager,
+    ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
                 [
@@ -1122,38 +1112,9 @@ class EnrichmentsController extends AbstractController
             ]], 403);
         }
 
-        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $enrichmentParameters = $content['enrichmentParameters'];
-        $aiEvaluation = $enrichmentParameters['aiEvaluation'] ?? null;
-        $aiModel = $enrichmentParameters['aiModel'] ?? null;
-        $infrastructure = $enrichmentParameters['infrastructure'] ?? null;
-        $language = $enrichmentParameters['language'] ?? null;
-        $translateTo = $enrichmentParameters['translateTo'] ?? null;
-        $generateMetadata = $enrichmentParameters['generateMetadata'] ?? true;
-        $generateQuiz = $enrichmentParameters['generateQuiz'] ?? true;
-        $generateNotes = $enrichmentParameters['generateNotes'] ?? false;
-
-        $enrichmentCreationUrlRequestPayload = (new EnrichmentCreationUrlRequestPayload())
-            ->setUrl($content['url'])
-            ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
-            ->setNotificationWebhookUrl($content['notificationWebhookUrl'])
-            ->setEnrichmentParameters((new EnrichmentParameters())
-                ->setDisciplines($enrichmentParameters['disciplines'] ?? [])
-                ->setMediaTypes($enrichmentParameters['mediaTypes'] ?? [])
-                ->setAiEvaluation(null === $aiEvaluation || '' === $aiEvaluation ? null : $aiEvaluation)
-                ->setAiModel(null === $aiModel || '' === $aiModel ? null : $aiModel)
-                ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
-                ->setLanguage(null === $language || '' === $language ? null : $language)
-                ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
-                ->setGenerateMetadata($generateMetadata)
-                ->setGenerateQuiz($generateQuiz)
-                ->setGenerateNotes($generateNotes)
-            )
-        ;
-
         $groups = ['Default'];
 
-        if ($generateMetadata) {
+        if ($enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getGenerateMetadata()) {
             $groups[] = 'metadata';
         }
 
@@ -1260,7 +1221,7 @@ class EnrichmentsController extends AbstractController
         ApiClientManager $apiClientManager,
         EntityManagerInterface $entityManager,
         FilesystemOperator $mediaStorage,
-        MimeTypeUtils $mimeTypeUtils
+        MimeTypeUtils $mimeTypeUtils,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -1421,10 +1382,10 @@ class EnrichmentsController extends AbstractController
     #[Route('/enrichments/{enrichmentId}/new_ai_version', name: 'create_new_ai_enrichment', methods: ['POST'])]
     public function createNewAiEnrichment(
         string $enrichmentId,
-        Request $request,
+        #[MapRequestPayload(validationGroups: 'no_validation')] EnrichmentCreationRequestPayload $enrichmentCreationRequestPayload,
         EntityManagerInterface $entityManager,
         EnrichmentRepository $enrichmentRepository,
-        EnrichmentVersionRepository $enrichmentVersionRepository
+        EnrichmentVersionRepository $enrichmentVersionRepository,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -1446,33 +1407,6 @@ class EnrichmentsController extends AbstractController
         if ($enrichmentAccessErrorResponse instanceof JsonResponse) {
             return $enrichmentAccessErrorResponse;
         }
-
-        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $aiEvaluation = $content['enrichmentParameters']['aiEvaluation'] ?? null;
-        $aiModel = $content['enrichmentParameters']['aiModel'] ?? null;
-        $infrastructure = $content['enrichmentParameters']['infrastructure'] ?? null;
-        $language = $content['enrichmentParameters']['language'] ?? null;
-        $translateTo = $content['enrichmentParameters']['translateTo'] ?? null;
-        $generateMetadata = $content['enrichmentParameters']['generateMetadata'] ?? $enrichment->getGenerateMetadata();
-        $generateQuiz = $content['enrichmentParameters']['generateQuiz'] ?? $enrichment->getGenerateQuiz();
-        $generateNotes = $content['enrichmentParameters']['generateNotes'] ?? $enrichment->getGenerateNotes();
-
-        $enrichmentCreationRequestPayload = (new EnrichmentCreationRequestPayload())
-            ->setEndUserIdentifier(null === $content['endUserIdentifier'] || '' === $content['endUserIdentifier'] ? null : $content['endUserIdentifier'])
-            ->setNotificationWebhookUrl($content['notificationWebhookUrl'])
-            ->setEnrichmentParameters((new EnrichmentParameters())
-                ->setDisciplines($content['enrichmentParameters']['disciplines'] ?? [])
-                ->setMediaTypes($content['enrichmentParameters']['mediaTypes'] ?? [])
-                ->setAiEvaluation(null === $aiEvaluation || '' === $aiEvaluation ? null : $aiEvaluation)
-                ->setAiModel(null === $aiModel || '' === $aiModel ? null : $aiModel)
-                ->setInfrastructure(null === $infrastructure || '' === $infrastructure ? null : $infrastructure)
-                ->setLanguage(null === $language || '' === $language ? null : $language)
-                ->setTranslateTo(null === $translateTo || '' === $translateTo ? null : $translateTo)
-                ->setGenerateMetadata($generateMetadata)
-                ->setGenerateQuiz($generateQuiz)
-                ->setGenerateNotes($generateNotes)
-            )
-        ;
 
         $errors = $this->validator->validate($enrichmentCreationRequestPayload);
 
@@ -1597,9 +1531,9 @@ class EnrichmentsController extends AbstractController
     public function evaluateEnrichmentVersion(
         string $enrichmentId,
         string $versionId,
-        Request $request,
+        #[MapRequestPayload(validationGroups: 'no_validation')] EnrichmentVersionUserEvaluationRequestPayload $enrichmentVersionUserEvaluationRequestPayload,
         EntityManagerInterface $entityManager,
-        EnrichmentVersionRepository $enrichmentVersionRepository
+        EnrichmentVersionRepository $enrichmentVersionRepository,
     ): Response {
         $multipleChoiceQuestion = null;
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
@@ -1620,7 +1554,6 @@ class EnrichmentsController extends AbstractController
         if ($uuidValidationErrorResponse instanceof JsonResponse) {
             return $uuidValidationErrorResponse;
         }
-
         $enrichmentVersion = $enrichmentVersionRepository->findOneBy(['id' => $versionId]);
 
         $enrichmentVersionAccessErrorResponse = $this->validateEnrichmentVersionAccess($enrichmentVersion, $versionId, $enrichmentId);
@@ -1637,33 +1570,34 @@ class EnrichmentsController extends AbstractController
             ]], 400);
         }
 
-        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-
-        if ($enrichmentVersion->getEnrichmentVersionMetadata() instanceof EnrichmentVersionMetadata && null !== $content['enrichmentVersionMetadata']) {
+        if ($enrichmentVersion->getEnrichmentVersionMetadata() instanceof EnrichmentVersionMetadata && $enrichmentVersionUserEvaluationRequestPayload->getEnrichmentVersionMetadata() instanceof EnrichmentVersionMetadata) {
             $enrichmentVersion->getEnrichmentVersionMetadata()
-                ->setThumbUpTitle($content['enrichmentVersionMetadata']['thumbUpTitle'])
-                ->setThumbUpDescription($content['enrichmentVersionMetadata']['thumbUpDescription'])
-                ->setThumbUpDiscipline($content['enrichmentVersionMetadata']['thumbUpDiscipline'])
-                ->setThumbUpMediaType($content['enrichmentVersionMetadata']['thumbUpMediaType'])
-                ->setThumbUpTopics($content['enrichmentVersionMetadata']['thumbUpTopics'])
-                ->setUserFeedback($content['enrichmentVersionMetadata']['userFeedback'])
+                ->setThumbUpTitle($enrichmentVersionUserEvaluationRequestPayload->getEnrichmentVersionMetadata()->getThumbUpTitle())
+                ->setThumbUpDescription($enrichmentVersionUserEvaluationRequestPayload->getEnrichmentVersionMetadata()->getThumbUpDescription())
+                ->setThumbUpDiscipline($enrichmentVersionUserEvaluationRequestPayload->getEnrichmentVersionMetadata()->getThumbUpDiscipline())
+                ->setThumbUpMediaType($enrichmentVersionUserEvaluationRequestPayload->getEnrichmentVersionMetadata()->getThumbUpMediaType())
+                ->setThumbUpTopics($enrichmentVersionUserEvaluationRequestPayload->getEnrichmentVersionMetadata()->getThumbUpTopics())
+                ->setUserFeedback($enrichmentVersionUserEvaluationRequestPayload->getEnrichmentVersionMetadata()->getUserFeedback())
             ;
         }
 
         foreach ($enrichmentVersion->getMultipleChoiceQuestions() as $multipleChoiceQuestion) {
-            $inputMultipleChoiceQuestion = array_values(array_filter($content['multipleChoiceQuestions'], fn (array $currentMultipleChoiceQuestion) => $multipleChoiceQuestion->getId()->toRfc4122() === $currentMultipleChoiceQuestion['id']));
-
-            if ([] !== $inputMultipleChoiceQuestion) {
+            $evaluatedMultiutMultipleChoiceQuestion = $enrichmentVersionUserEvaluationRequestPayload->getMultipleChoiceQuestions()->findFirst(
+                fn (int $index, MultipleChoiceQuestion $currentMultipleChoiceQuestion) => $multipleChoiceQuestion->getId()->equals($currentMultipleChoiceQuestion->getId())
+            );
+            if ($evaluatedMultiutMultipleChoiceQuestion instanceof MultipleChoiceQuestion) {
                 $multipleChoiceQuestion
-                    ->setThumbUp($inputMultipleChoiceQuestion[0]['thumbUp'])
-                    ->setUserFeedback($inputMultipleChoiceQuestion[0]['userFeedback'])
+                    ->setThumbUp($evaluatedMultiutMultipleChoiceQuestion->getThumbUp())
+                    ->setUserFeedback($evaluatedMultiutMultipleChoiceQuestion->getUserFeedback())
                 ;
                 foreach ($multipleChoiceQuestion->getChoices() as $choice) {
-                    $inputChoice = array_values(array_filter($inputMultipleChoiceQuestion[0]['choices'], fn (array $currentChoice) => $choice->getId()->toRfc4122() === $currentChoice['id']));
+                    $evaluatedChoice = $evaluatedMultiutMultipleChoiceQuestion->getChoices()->findFirst(
+                        fn (int $index, Choice $currentChoice) => $choice->getId()->equals($currentChoice->getId())
+                    );
 
-                    if ([] !== $inputChoice) {
+                    if ($evaluatedChoice instanceof Choice) {
                         $choice
-                            ->setThumbUp($inputChoice[0]['thumbUp'])
+                            ->setThumbUp($evaluatedChoice->getThumbUp())
                         ;
                     }
                 }
@@ -1671,7 +1605,6 @@ class EnrichmentsController extends AbstractController
         }
 
         $enrichmentVersion->setLastEvaluationDate(new DateTime());
-
         $entityManager->flush();
 
         $options = [
@@ -1736,9 +1669,9 @@ class EnrichmentsController extends AbstractController
         string $enrichmentId,
         string $versionId,
         string $mcqId,
-        Request $request,
+        #[MapRequestPayload(validationGroups: 'no_validation')] MultipleChoiceQuestion $evaluatedMultipleChoiceQuestion,
         EntityManagerInterface $entityManager,
-        MultipleChoiceQuestionRepository $multipleChoiceQuestionRepository
+        MultipleChoiceQuestionRepository $multipleChoiceQuestionRepository,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -1780,8 +1713,10 @@ class EnrichmentsController extends AbstractController
             ]], 400);
         }
 
-        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $multipleChoiceQuestion->setThumbUp($content['thumbUp'])->setUserFeedback($content['userFeedback']);
+        $multipleChoiceQuestion
+            ->setThumbUp($evaluatedMultipleChoiceQuestion->getThumbUp())
+            ->setUserFeedback($evaluatedMultipleChoiceQuestion->getUserFeedback())
+        ;
 
         $entityManager->flush();
 
@@ -1844,9 +1779,9 @@ class EnrichmentsController extends AbstractController
         string $versionId,
         string $mcqId,
         string $choiceId,
-        Request $request,
+        #[MapRequestPayload(validationGroups: 'no_validation')] Choice $evaluatedChoice,
         EntityManagerInterface $entityManager,
-        ChoiceRepository $choiceRepository
+        ChoiceRepository $choiceRepository,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -1895,8 +1830,7 @@ class EnrichmentsController extends AbstractController
             ]], 400);
         }
 
-        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $choice->setThumbUp($content['thumbUp']);
+        $choice->setThumbUp($evaluatedChoice->getThumbUp());
 
         $entityManager->flush();
 
@@ -1966,7 +1900,8 @@ class EnrichmentsController extends AbstractController
         string $enrichmentId,
         string $versionId,
         Request $request,
-        EnrichmentVersionRepository $enrichmentVersionRepository
+        EnrichmentVersionRepository $enrichmentVersionRepository,
+        EnrichmentUtils $enrichmentUtils,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -2001,7 +1936,7 @@ class EnrichmentsController extends AbstractController
                 [
                     'format' => sprintf("'%s' is not a supported format. Supported formats : SRT, VTT", $format),
                 ],
-            ]], 403);
+            ]], 400);
         }
 
         $language = $request->query->get('language');
@@ -2030,7 +1965,7 @@ class EnrichmentsController extends AbstractController
                 ]], 400);
         }
 
-        $content = $this->transcriptToSubtitles($enrichmentVersion->getTranscript(), $pickTranslated, $format);
+        $content = $enrichmentUtils->transcriptToSubtitles($enrichmentVersion->getTranscript(), $pickTranslated, $format);
 
         $tempFile = tempnam(sys_get_temp_dir(), 'transcript');
         file_put_contents($tempFile, $content);
@@ -2155,106 +2090,5 @@ class EnrichmentsController extends AbstractController
                 ],
             ]], 403);
         }
-    }
-
-    private function stringJsonObjectsToArray(?string $jsonString)
-    {
-        if (null === $jsonString) {
-            return [];
-        }
-
-        if (str_starts_with($jsonString, '[')) {
-            return json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR);
-        } else {
-            return json_decode(sprintf('[%s]', $jsonString), true, 512, JSON_THROW_ON_ERROR);
-        }
-    }
-
-    private function convertTime(float $seconds, string $millisecondsSeparator): string
-    {
-        $hours = str_pad(floor($seconds / 3600), 2, '0', STR_PAD_LEFT);
-        $minutes = str_pad(floor(($seconds % 3600) / 60), 2, '0', STR_PAD_LEFT);
-        $secs = str_pad(floor($seconds % 60), 2, '0', STR_PAD_LEFT);
-        $millis = str_pad(floor(($seconds - floor($seconds)) * 1000), 3, '0', STR_PAD_LEFT);
-
-        return sprintf('%s:%s:%s%s%s', $hours, $minutes, $secs, $millisecondsSeparator, $millis);
-    }
-
-    private function subtitlesLine(string $format, string $start, string $end, string $text, int $index): string
-    {
-        if ('srt' === $format) {
-            return sprintf(
-                "%d\n%s --> %s\n%s\n\n",
-                $index,
-                $start,
-                $end,
-                $text
-            );
-        } else {
-            return sprintf(
-                "%s --> %s\n%s\n\n",
-                $start,
-                $end,
-                $text
-            );
-        }
-    }
-
-    private function transcriptToSubtitles(Transcript $transcript, bool $pickTranslated = false, string $format = 'srt'): string
-    {
-        if ('vtt' === $format) {
-            $result = "WEBVTT\n\n";
-            $timeSeprator = '.';
-        } elseif ('srt' === $format) {
-            $result = '';
-            $timeSeprator = ',';
-        } else {
-            return null;
-        }
-
-        $sentences = json_decode(
-            $pickTranslated ? $transcript->getTranslatedSentences() : $transcript->getSentences(),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-        $lineIndex = 0;
-
-        foreach ($sentences as $sentence) {
-            if (array_key_exists('words', $sentence)) {
-                $words = $sentence['words'];
-                $line = '';
-                $ind = 0;
-
-                foreach ($words as $wordIndex => $word) {
-                    $wordText = $word['text'];
-
-                    if (0 === $ind) {
-                        $start = $this->convertTime($word['start'], $timeSeprator);
-                        $line .= ltrim((string) $wordText);
-                    } else {
-                        $line .= $wordText;
-                    }
-
-                    ++$ind;
-                    if (
-                        str_ends_with((string) $wordText, '.')
-                        || str_ends_with((string) $wordText, '.')
-                        || $wordIndex === (is_countable($words) ? count($words) : 0) - 1
-                        || ($ind > 12 && !str_starts_with((string) $words[$wordIndex + 1]['text'], "'"))
-                    ) {
-                        $result .= $this->subtitlesLine($format, $start, $this->convertTime($word['end'], $timeSeprator), $line, ++$lineIndex);
-                        $ind = 0;
-                        $line = '';
-                    }
-                }
-            } else {
-                $start = $this->convertTime($sentence['start'], $timeSeprator);
-                $end = $this->convertTime($sentence['end'], $timeSeprator);
-                $result .= $this->subtitlesLine($format, $start, $end, $sentence['text'], ++$lineIndex);
-            }
-        }
-
-        return $result;
     }
 }

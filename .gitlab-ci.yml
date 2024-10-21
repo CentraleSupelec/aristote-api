@@ -47,6 +47,7 @@ tests:
     POSTGRES_PASSWORD: aristote
     POSTGRES_USER: api
   script:
+    - apk add ffmpeg
     - sh tests/init-test-database.sh
     - openssl genrsa -out config/jwt/private.key 2048
     - openssl rsa -in config/jwt/private.key -pubout -out config/jwt/public.key

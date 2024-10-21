@@ -46,7 +46,7 @@ class AiEnrichmentsWorkerController extends AbstractController
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
-        private readonly PaginationUtils $paginationUtils
+        private readonly PaginationUtils $paginationUtils,
     ) {
     }
 
@@ -302,7 +302,7 @@ class AiEnrichmentsWorkerController extends AbstractController
         LockFactory $lockFactory,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
-        EnrichmentVersionRepository $enrichmentVersionRepository
+        EnrichmentVersionRepository $enrichmentVersionRepository,
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_PROCESSING_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => [

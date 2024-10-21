@@ -22,7 +22,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class TranslationWorkerCommand extends Command
 {
     public function __construct(
-        private readonly EnrichmentWorkerService $enrichmentWorkerService
+        private readonly EnrichmentWorkerService $enrichmentWorkerService,
     ) {
         parent::__construct();
     }
@@ -80,11 +80,6 @@ class TranslationWorkerCommand extends Command
             throw new AristoteApiException('Enrichment ID or Enrichment version ID in AristoteApi response');
         }
 
-        // Simulate translating enrichment version
-        $symfonyStyle->info('Translating enrichment version ...');
-
-        sleep(1);
-
         $body = [
             'enrichmentVersionMetadata' => [
                 'title' => $this->translate($enrichmentVersionMetadata['title'], $translateTo),
@@ -92,16 +87,16 @@ class TranslationWorkerCommand extends Command
                 'topics' => array_map(fn (string $topic) => $this->translate($topic, $translateTo), $enrichmentVersionMetadata['topics']),
             ],
             'multipleChoiceQuestions' => array_map(fn (array $mcq) => [
-                    'id' => $mcq['id'],
-                    'question' => $this->translate($mcq['question'], $translateTo),
-                    'explanation' => $this->translate($mcq['explanation'], $translateTo),
-                    'choices' => array_map(
-                        fn (array $choice) => [
-                            'id' => $choice['id'],
-                            'optionText' => $this->translate($choice['optionText'], $translateTo),
-                        ], $mcq['choices']
-                    ),
-                ], $multipleChoiceQuestions
+                'id' => $mcq['id'],
+                'question' => $this->translate($mcq['question'], $translateTo),
+                'explanation' => $this->translate($mcq['explanation'], $translateTo),
+                'choices' => array_map(
+                    fn (array $choice) => [
+                        'id' => $choice['id'],
+                        'optionText' => $this->translate($choice['optionText'], $translateTo),
+                    ], $mcq['choices']
+                ),
+            ], $multipleChoiceQuestions
             ),
             'taskId' => $taskId,
             'status' => 'OK',

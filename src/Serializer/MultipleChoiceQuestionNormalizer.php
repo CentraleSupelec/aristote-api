@@ -14,7 +14,7 @@ class MultipleChoiceQuestionNormalizer implements NormalizerInterface
     ) {
     }
 
-    public function normalize($multipleChoiceQuestion, string $format = null, array $context = []): array
+    public function normalize($multipleChoiceQuestion, ?string $format = null, array $context = []): array
     {
         $data = $this->normalizer->normalize($multipleChoiceQuestion, $format, $context);
 
@@ -25,7 +25,7 @@ class MultipleChoiceQuestionNormalizer implements NormalizerInterface
         return $data;
     }
 
-    public function supportsNormalization($data, string $format = null, array $context = []): bool
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof MultipleChoiceQuestion;
     }

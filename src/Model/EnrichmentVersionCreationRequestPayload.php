@@ -43,7 +43,7 @@ class EnrichmentVersionCreationRequestPayload
         return $this->transcript;
     }
 
-    public function setTranscript(?UploadedFile $transcript): self
+    public function setTranscript(?UploadedFile $transcript): static
     {
         $this->transcript = $transcript;
 

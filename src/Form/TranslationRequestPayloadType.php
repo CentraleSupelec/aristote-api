@@ -21,8 +21,8 @@ class TranslationRequestPayloadType extends AbstractType
                 'allow_add' => true,
             ])
             ->add('transcript', TranscriptType::class, [
-                    'required' => false,
-                ]
+                'required' => false,
+            ]
             )
             ->add('transcriptFile', FileType::class)
             ->add('notes')

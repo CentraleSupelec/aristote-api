@@ -47,7 +47,7 @@ class AiEvaluationWorkerController extends AbstractController
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
-        private readonly PaginationUtils $paginationUtils
+        private readonly PaginationUtils $paginationUtils,
     ) {
     }
 
@@ -120,7 +120,7 @@ class AiEvaluationWorkerController extends AbstractController
         EnrichmentRepository $enrichmentRepository,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
-        HttpClientInterface $httpClient
+        HttpClientInterface $httpClient,
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_EVALUATION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -294,7 +294,7 @@ class AiEvaluationWorkerController extends AbstractController
         LockFactory $lockFactory,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
-        EnrichmentVersionRepository $enrichmentVersionRepository
+        EnrichmentVersionRepository $enrichmentVersionRepository,
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_EVALUATION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -399,7 +399,7 @@ class AiEvaluationWorkerController extends AbstractController
         return null;
     }
 
-    private function validateEnrichmentVersionAccess(EnrichmentVersion|null $enrichmentVersion, string $enrichmentVersionId, string $enrichmentId, string $taskId): ?JsonResponse
+    private function validateEnrichmentVersionAccess(?EnrichmentVersion $enrichmentVersion, string $enrichmentVersionId, string $enrichmentId, string $taskId): ?JsonResponse
     {
         if (!$enrichmentVersion instanceof EnrichmentVersion) {
             return $this->json(['status' => 'KO', 'errors' => [

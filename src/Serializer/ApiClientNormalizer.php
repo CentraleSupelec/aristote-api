@@ -14,7 +14,7 @@ class ApiClientNormalizer implements NormalizerInterface
     ) {
     }
 
-    public function normalize($apiClient, string $format = null, array $context = []): array
+    public function normalize($apiClient, ?string $format = null, array $context = []): array
     {
         $data = $this->normalizer->normalize($apiClient, $format, $context);
         if ($context['groups'] && in_array('enrichments_with_status', $context['groups'])) {
@@ -24,7 +24,7 @@ class ApiClientNormalizer implements NormalizerInterface
         return $data;
     }
 
-    public function supportsNormalization($data, string $format = null, array $context = []): bool
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof ApiClient;
     }

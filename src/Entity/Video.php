@@ -26,7 +26,7 @@ class Video extends Media
         return $this->videoFile;
     }
 
-    public function setVideoFile(File $videoFile = null): static
+    public function setVideoFile(?File $videoFile = null): static
     {
         $this->videoFile = $videoFile;
 

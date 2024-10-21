@@ -111,7 +111,7 @@ class Administrator implements Stringable, UserInterface, PasswordAuthenticatedU
         return $this;
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         $this->setPlainPassword(null);
     }
