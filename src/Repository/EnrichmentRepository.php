@@ -25,7 +25,7 @@ class EnrichmentRepository extends ServiceEntityRepository
         private readonly int $aiEvaluationWorkerTimeoutInMinutes,
         private readonly int $translationWorkerTimeoutInMinutes,
         ManagerRegistry $managerRegistry,
-        private readonly PaginatorInterface $paginator
+        private readonly PaginatorInterface $paginator,
     ) {
         parent::__construct($managerRegistry, Enrichment::class);
     }
@@ -57,7 +57,7 @@ class EnrichmentRepository extends ServiceEntityRepository
         return $this->paginator->paginate($qb, $page, $size);
     }
 
-    public function findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(string $aiModel = null, string $infrastructure = null, bool $treatUnspecifiedModelOrInfrastructure = false): ?Enrichment
+    public function findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(?string $aiModel = null, ?string $infrastructure = null, bool $treatUnspecifiedModelOrInfrastructure = false): ?Enrichment
     {
         $qb = $this->createQueryBuilder('e');
         $qb->where($qb->expr()->orX(
@@ -141,12 +141,12 @@ class EnrichmentRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
             ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
             ->setParameters([
-            'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
-            'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
-            'timeThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
-            'maxRetries' => $this->maxRetries,
-            'deleted' => false,
-        ])
+                'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
+                'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
+                'timeThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
+                'maxRetries' => $this->maxRetries,
+                'deleted' => false,
+            ])
             ->orderBy('e.priority', 'DESC')
             ->addOrderBy('e.latestEnrichmentRequestedAt', 'ASC')
         ;

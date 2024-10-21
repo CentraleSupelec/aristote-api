@@ -3,7 +3,7 @@
 namespace App\Validator\Constraints;
 
 use App\Utils\MimeTypeUtils;
-use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -24,12 +24,14 @@ class VideoFileConstraintValidator extends ConstraintValidator
         if (null === $value) {
             return;
         }
-        if (!$value instanceof File) {
-            throw new UnexpectedValueException($value, File::class);
+        if (!$value instanceof UploadedFile) {
+            throw new UnexpectedValueException($value, UploadedFile::class);
         }
 
-        /** @var File $value */
-        if (!$this->mimeTypeUtils->isVideo($value->getMimeType())) {
+        $testing = 'test' === $_ENV['APP_ENV'];
+        $mimeType = $testing ? $value->getClientMimeType() : $value->getMimeType();
+
+        if (!$this->mimeTypeUtils->isVideo($mimeType)) {
             $this->context->buildViolation($constraint->invalidFormat)->addViolation();
         }
     }

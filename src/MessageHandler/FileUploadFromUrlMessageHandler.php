@@ -21,7 +21,7 @@ class FileUploadFromUrlMessageHandler
         private readonly FileUploadService $fileUploadService,
         private readonly EnrichmentRepository $enrichmentRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 

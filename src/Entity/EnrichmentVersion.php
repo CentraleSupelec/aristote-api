@@ -24,10 +24,8 @@ class EnrichmentVersion
     public static function getSortFields(): array
     {
         return [
-            'text',
             'createdAt',
             'updatedAt',
-            'text',
         ];
     }
 
@@ -110,7 +108,7 @@ class EnrichmentVersion
     private ?string $infrastructure = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Assert\Url]
+    #[Assert\Url(requireTld: true)]
     private ?string $notificationWebhookUrl = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

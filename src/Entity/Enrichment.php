@@ -86,11 +86,11 @@ class Enrichment
     #[Groups(['enrichments'])]
     protected $createdAt;
 
-    #[ORM\ManyToOne(inversedBy: 'ownedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\ManyToOne(inversedBy: 'ownedEnrichments', targetEntity: ApiClient::class, cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false, referencedColumnName: 'identifier')]
     private ?ApiClient $createdBy = null;
 
-    #[ORM\ManyToOne(inversedBy: 'aiProcessedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\ManyToOne(inversedBy: 'aiProcessedEnrichments', targetEntity: ApiClient::class)]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     #[Groups(groups: ['enrichments_with_status'])]
     #[OA\Property(property: 'aiProcessedBy', type: 'object', properties: [
@@ -101,7 +101,7 @@ class Enrichment
     ])]
     private ?ApiClient $aiProcessedBy = null;
 
-    #[ORM\ManyToOne(inversedBy: 'aiEvaluatedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\ManyToOne(inversedBy: 'aiEvaluatedEnrichments', targetEntity: ApiClient::class)]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     #[Groups(groups: ['enrichments_with_status'])]
     #[OA\Property(property: 'aiEvaluatedBy', type: 'object', properties: [
@@ -115,7 +115,7 @@ class Enrichment
     #[ORM\Column(type: UuidType::NAME, nullable: true)]
     private ?Uuid $aiProcessingTaskId = null;
 
-    #[ORM\ManyToOne(inversedBy: 'transcribedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\ManyToOne(inversedBy: 'transcribedEnrichments', targetEntity: ApiClient::class)]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     #[Groups(groups: ['enrichments_with_status'])]
     #[OA\Property(property: 'transcribedBy', type: 'object', properties: [
@@ -126,7 +126,7 @@ class Enrichment
     ])]
     private ?ApiClient $transcribedBy = null;
 
-    #[ORM\ManyToOne(inversedBy: 'translatedEnrichments', targetEntity: ApiClient::class, )]
+    #[ORM\ManyToOne(inversedBy: 'translatedEnrichments', targetEntity: ApiClient::class)]
     #[ORM\JoinColumn(nullable: true, referencedColumnName: 'identifier')]
     #[Groups(groups: ['enrichments_with_status'])]
     #[OA\Property(property: 'translatedBy', type: 'object', properties: [
@@ -179,11 +179,11 @@ class Enrichment
     private ?Media $media = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Assert\Url]
+    #[Assert\Url(requireTld: true)]
     private ?string $mediaUrl = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Assert\Url]
+    #[Assert\Url(requireTld: true)]
     private ?string $notificationWebhookUrl = null;
 
     #[ORM\Column(type: 'string', nullable: true)]

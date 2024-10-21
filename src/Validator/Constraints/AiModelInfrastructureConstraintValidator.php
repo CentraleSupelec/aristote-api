@@ -19,7 +19,7 @@ class AiModelInfrastructureConstraintValidator extends ConstraintValidator
     public function __construct(
         private ApiClientRepository $apiClientRepository,
         private AiModelRepository $aiModelRepository,
-        private InfrastructureRepository $infrastructureRepository
+        private InfrastructureRepository $infrastructureRepository,
     ) {
         $this->apiClientRepository = $apiClientRepository;
         $this->aiModelRepository = $aiModelRepository;

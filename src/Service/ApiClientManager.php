@@ -20,7 +20,7 @@ class ApiClientManager implements ClientRepositoryInterface
     ) {
     }
 
-    public function getClientEntity($clientIdentifier): ApiClient|null
+    public function getClientEntity($clientIdentifier): ?ApiClient
     {
         return $this->apiClientRepository->findOneBy(['identifier' => $clientIdentifier]);
     }

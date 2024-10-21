@@ -26,7 +26,7 @@ class Audio extends Media
         return $this->audioFile;
     }
 
-    public function setAudioFile(File $audioFile = null): static
+    public function setAudioFile(?File $audioFile = null): static
     {
         $this->audioFile = $audioFile;
 

@@ -5,6 +5,7 @@ namespace App\Tests\FixturesProvider;
 use App\Entity\ApiClient;
 use App\Entity\Enrichment;
 use App\Entity\Video;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EnrichmentFixturesProvider
@@ -13,7 +14,7 @@ class EnrichmentFixturesProvider
     ) {
     }
 
-    public static function getEnrichment(?EntityManagerInterface $entityManager, ApiClient $apiClient = null): Enrichment
+    public static function getEnrichment(?EntityManagerInterface $entityManager, ?ApiClient $apiClient = null): Enrichment
     {
         if (!$apiClient instanceof ApiClient) {
             $apiClient = ApiClientFixturesProvider::getApiClientScopeClient($entityManager);
@@ -30,9 +31,10 @@ class EnrichmentFixturesProvider
             )
             ->setDisciplines(['Maths', 'Physics', 'Chemestry'])
             ->setMediaTypes(['Conference', 'Course', 'Webinar'])
-            ->setNotificationWebhookUrl('http://localhost:8080/api/webhook')
+            ->setNotificationWebhookUrl('http://localhost.fr/api/webhook')
             ->setStatus(Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION)
             ->setCreatedBy($apiClient)
+            ->setLatestEnrichmentRequestedAt(new DateTime())
         ;
 
         if (null !== $entityManager) {

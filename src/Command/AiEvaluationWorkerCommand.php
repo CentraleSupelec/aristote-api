@@ -23,7 +23,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class AiEvaluationWorkerCommand extends Command
 {
     public function __construct(
-        private readonly EnrichmentWorkerService $enrichmentWorkerService
+        private readonly EnrichmentWorkerService $enrichmentWorkerService,
     ) {
         parent::__construct();
     }

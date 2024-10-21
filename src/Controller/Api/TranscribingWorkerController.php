@@ -46,7 +46,7 @@ class TranscribingWorkerController extends AbstractController
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
-        private readonly PaginationUtils $paginationUtils
+        private readonly PaginationUtils $paginationUtils,
     ) {
     }
 
@@ -316,7 +316,7 @@ class TranscribingWorkerController extends AbstractController
         LockFactory $lockFactory,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
-        FileUploadService $fileUploadService
+        FileUploadService $fileUploadService,
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSCRIPTION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => [

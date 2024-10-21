@@ -22,7 +22,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class AiEnrichmentWorkerCommand extends Command
 {
     public function __construct(
-        private readonly EnrichmentWorkerService $enrichmentWorkerService
+        private readonly EnrichmentWorkerService $enrichmentWorkerService,
     ) {
         parent::__construct();
     }
@@ -77,7 +77,7 @@ class AiEnrichmentWorkerCommand extends Command
                 $mediaTypes = $job['mediaTypes'];
                 $generateMetadata = $job['generateMetadata'];
                 $generateQuiz = $job['generateQuiz'];
-                $generateNotes = $job['$generateNotes'];
+                $generateNotes = $job['generateNotes'];
                 $symfonyStyle->info(sprintf('Got 1 job : Enrichment Version ID => %s', $enrichmentVersionId));
             } else {
                 $requestOptions = [
@@ -94,11 +94,6 @@ class AiEnrichmentWorkerCommand extends Command
         } else {
             throw new AristoteApiException('No Enrichment version ID in AristoteApi response');
         }
-
-        // Simulate generation initial version
-        $symfonyStyle->info('Generating AI enrichment ...');
-
-        sleep(1);
 
         $generated = [
             'taskId' => $taskId,

@@ -24,6 +24,9 @@ class EnrichmentVersionRepository extends ServiceEntityRepository
         parent::__construct($managerRegistry, EnrichmentVersion::class);
     }
 
+    /**
+     * @return PaginationInterface<int, EnrichmentVersion>
+     */
     public function findByEnrichmentId(string $enrichmentId, int $page, int $size, string $sortField, string $sortDirection): PaginationInterface
     {
         $queryBuilder = $this->createQueryBuilder('ev')

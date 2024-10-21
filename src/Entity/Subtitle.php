@@ -22,7 +22,7 @@ class Subtitle extends Media
         return $this->subtitleFile;
     }
 
-    public function setSubtitleFile(File $subtitleFile = null): static
+    public function setSubtitleFile(?File $subtitleFile = null): static
     {
         $this->subtitleFile = $subtitleFile;
 

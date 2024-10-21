@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class EnrichmentCreationRequestPayload
 {
     #[OA\Property(property: 'notificationWebhookUrl', description: 'A webhook for receiving notifications about the status of enrichment generation', type: 'string')]
-    #[Assert\Url(message: 'The given notificationWebhookUrl is not a valid URL')]
+    #[Assert\Url(requireTld: true, message: 'The given notificationWebhookUrl is not a valid URL')]
     #[Assert\NotBlank(message: 'The parameter notificationWebhookUrl cannot be empty')]
     #[Groups(['Default'])]
     private ?string $notificationWebhookUrl = null;
@@ -42,7 +42,7 @@ class EnrichmentCreationRequestPayload
         return $this->enrichmentParameters;
     }
 
-    public function setEnrichmentParameters(?EnrichmentParameters $enrichmentParameters): static
+    public function setEnrichmentParameters(EnrichmentParameters $enrichmentParameters): static
     {
         $this->enrichmentParameters = $enrichmentParameters;
 

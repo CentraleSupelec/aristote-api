@@ -18,7 +18,7 @@ class CopyEnrichmentParametersToInitialEnrichmentVersion extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly EnrichmentRepository $enrichmentRepository,
-        private readonly EnrichmentVersionRepository $enrichmentVersionRepository
+        private readonly EnrichmentVersionRepository $enrichmentVersionRepository,
     ) {
         parent::__construct();
     }

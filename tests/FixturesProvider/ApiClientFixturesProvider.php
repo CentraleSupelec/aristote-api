@@ -9,7 +9,14 @@ use League\Bundle\OAuth2ServerBundle\OAuth2Grants;
 
 class ApiClientFixturesProvider
 {
-    public static function getApiClients(EntityManagerInterface $entityManager = null): array
+    /**
+     * Get a list of API clients.
+     *
+     * @param EntityManagerInterface|null
+     *
+     * @return ApiClient[] an array of ApiClient objects
+     */
+    public static function getApiClients(?EntityManagerInterface $entityManager = null): array
     {
         $apiClients = [
             (new ApiClient('Client with default scope', 'default', 'very-secret'))
@@ -36,7 +43,7 @@ class ApiClientFixturesProvider
         return $apiClients;
     }
 
-    public static function getApiClientScopeClient(EntityManagerInterface $entityManager = null): ApiClient
+    public static function getApiClientScopeClient(?EntityManagerInterface $entityManager = null): ApiClient
     {
         $apiClient = (new ApiClient('client', 'client', 'very-secret'))
             ->setActive(true)
@@ -53,7 +60,7 @@ class ApiClientFixturesProvider
         return $apiClient;
     }
 
-    public static function getApiClientScopeClients(EntityManagerInterface $entityManager = null): array
+    public static function getApiClientScopeClients(?EntityManagerInterface $entityManager = null): array
     {
         $firstApiClient = (new ApiClient('client1', 'client1', 'very-secret'))
             ->setActive(true)
@@ -77,7 +84,7 @@ class ApiClientFixturesProvider
         return [$firstApiClient, $secondApiClient];
     }
 
-    public static function getApiClientScopeEnrichmentWorker(EntityManagerInterface $entityManager = null): ApiClient
+    public static function getApiClientScopeEnrichmentWorker(?EntityManagerInterface $entityManager = null): ApiClient
     {
         $apiClient = (new ApiClient('enrichment', 'enrichment', 'very-secret'))
             ->setActive(true)
@@ -93,7 +100,7 @@ class ApiClientFixturesProvider
         return $apiClient;
     }
 
-    public static function getApiClientScopeTranscriptionWorker(EntityManagerInterface $entityManager = null): ApiClient
+    public static function getApiClientScopeTranscriptionWorker(?EntityManagerInterface $entityManager = null): ApiClient
     {
         $apiClient = (new ApiClient('trasription', 'trasription', 'very-secret'))
             ->setActive(true)
@@ -109,7 +116,7 @@ class ApiClientFixturesProvider
         return $apiClient;
     }
 
-    public static function getApiClientScopeEvaluationWorker(EntityManagerInterface $entityManager = null): ApiClient
+    public static function getApiClientScopeEvaluationWorker(?EntityManagerInterface $entityManager = null): ApiClient
     {
         $apiClient = (new ApiClient('evaluation', 'evaluation', 'very-secret'))
             ->setActive(true)
@@ -125,7 +132,7 @@ class ApiClientFixturesProvider
         return $apiClient;
     }
 
-    public static function getApiClientScopeTranslationWorker(EntityManagerInterface $entityManager = null): ApiClient
+    public static function getApiClientScopeTranslationWorker(?EntityManagerInterface $entityManager = null): ApiClient
     {
         $apiClient = (new ApiClient('translation', 'translation', 'very-secret'))
             ->setActive(true)

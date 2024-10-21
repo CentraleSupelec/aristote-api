@@ -50,11 +50,11 @@ class EnrichmentParameters
 
     #[OA\Property(property: 'generateMetadata', description: 'Request metadata generation', type: 'boolean')]
     #[Groups(['treatments'])]
-    private bool $generateMetadata = false;
+    private bool $generateMetadata = true;
 
     #[OA\Property(property: 'generateQuiz', description: 'Request quiz generation', type: 'boolean')]
     #[Groups(['treatments'])]
-    private bool $generateQuiz = false;
+    private bool $generateQuiz = true;
 
     #[OA\Property(property: 'generateNotes', description: 'Request notes generation', type: 'boolean')]
     #[Groups(['treatments'])]

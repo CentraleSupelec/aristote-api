@@ -10,7 +10,7 @@ class FileUploadFromUrlMessage
     public function __construct(
         private readonly string $enrichmentId,
         private readonly ApiClient $apiClient,
-        private readonly EnrichmentCreationUrlRequestPayload $enrichmentCreationUrlRequestPayload
+        private readonly EnrichmentCreationUrlRequestPayload $enrichmentCreationUrlRequestPayload,
     ) {
     }
 

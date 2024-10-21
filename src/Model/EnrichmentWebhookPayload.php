@@ -3,7 +3,6 @@
 namespace App\Model;
 
 use App\Entity\Enrichment;
-use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,7 +19,7 @@ class EnrichmentWebhookPayload
     #[OA\Property(property: 'initialVersionId', description: "Enrichment's intiail version ID", type: 'string')]
     private ?Uuid $initialVersionId = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[OA\Property(property: 'failureCause', description: 'Failure cause', type: 'string')]
     private ?string $failureCause = null;
 
     public function getId(): ?Uuid

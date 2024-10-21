@@ -45,8 +45,8 @@ class HealthControllerTest extends WebTestCase
 
         // Call Api Check endpoint without default scope
         $this->client->request('GET', '/api/v1/home', [], [], [
-                'HTTP_Authorization' => 'Bearer '.$token,
-            ]
+            'HTTP_Authorization' => 'Bearer '.$token,
+        ]
         );
         $this->assertResponseStatusCodeSame(403);
 
@@ -64,8 +64,8 @@ class HealthControllerTest extends WebTestCase
         $token = $responseData['access_token'];
 
         $this->client->request('GET', '/api/v1/home', [], [], [
-                'HTTP_Authorization' => 'Bearer '.$token,
-            ]
+            'HTTP_Authorization' => 'Bearer '.$token,
+        ]
         );
         $this->assertResponseIsSuccessful();
 
@@ -75,8 +75,8 @@ class HealthControllerTest extends WebTestCase
         // Call Api Check with expired token
         sleep(2);
         $this->client->request('GET', '/api/v1/home', [], [], [
-                'HTTP_Authorization' => 'Bearer '.$token,
-            ]
+            'HTTP_Authorization' => 'Bearer '.$token,
+        ]
         );
         $this->assertResponseStatusCodeSame(401);
     }
@@ -98,8 +98,8 @@ class HealthControllerTest extends WebTestCase
         $token = $responseData['access_token'];
 
         $this->client->request('GET', '/api/v1/health', [], [], [
-                'HTTP_Authorization' => 'Bearer '.$token,
-            ]
+            'HTTP_Authorization' => 'Bearer '.$token,
+        ]
         );
         $this->assertResponseIsSuccessful();
 

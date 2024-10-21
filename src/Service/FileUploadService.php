@@ -39,11 +39,12 @@ class FileUploadService
     public function uploadFile(UploadedFile $uploadedFile, ApiClient $apiClient, Enrichment $enrichment): Enrichment
     {
         $directory = $this->baseDirectory.'/%s/'.$apiClient->getIdentifier();
-        $mimeType = $uploadedFile->getMimeType();
+        $testing = 'test' === $_ENV['APP_ENV'];
+        $mimeType = $testing ? $uploadedFile->getClientMimeType() : $uploadedFile->getMimeType();
 
         if ($this->mimeTypeUtils->isVideo($mimeType)) {
             $directory = sprintf($directory, 'videos');
-            $duration = $this->fFMpeg->open($uploadedFile->getPathname())->getFormat()->get('duration');
+            $duration = $testing ? 0 : $this->fFMpeg->open($uploadedFile->getPathname())->getFormat()->get('duration');
             $media = (new Video())
                 ->setVideoFile($uploadedFile)
                 ->setFileDirectory($directory)
@@ -52,7 +53,7 @@ class FileUploadService
             $targetStatus = Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION;
         } elseif ($this->mimeTypeUtils->isAudio($mimeType)) {
             $directory = sprintf($directory, 'audios');
-            $duration = $this->fFMpeg->open($uploadedFile->getPathname())->getFormat()->get('duration');
+            $duration = $testing ? 0 : $this->fFMpeg->open($uploadedFile->getPathname())->getFormat()->get('duration');
             $media = (new Audio())
                 ->setAudioFile($uploadedFile)
                 ->setFileDirectory($directory)

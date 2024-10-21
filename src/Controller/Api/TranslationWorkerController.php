@@ -52,7 +52,7 @@ class TranslationWorkerController extends AbstractController
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
-        private readonly PaginationUtils $paginationUtils
+        private readonly PaginationUtils $paginationUtils,
     ) {
     }
 
@@ -132,7 +132,7 @@ class TranslationWorkerController extends AbstractController
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
         HttpClientInterface $httpClient,
-        FilesystemOperator $mediaStorage
+        FilesystemOperator $mediaStorage,
     ): Response {
         $requestBody = [];
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSLATION_WORKER)) {
@@ -378,7 +378,7 @@ class TranslationWorkerController extends AbstractController
         LockFactory $lockFactory,
         EntityManagerInterface $entityManager,
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
-        EnrichmentVersionRepository $enrichmentVersionRepository
+        EnrichmentVersionRepository $enrichmentVersionRepository,
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSLATION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => [

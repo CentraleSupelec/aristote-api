@@ -26,42 +26,42 @@
         "sonata-project/doctrine-orm-admin-bundle": "^4.13",
         "sonata-project/intl-bundle": "^3.1",
         "stof/doctrine-extensions-bundle": "^1.8",
-        "symfony/asset": "6.3.*",
-        "symfony/console": "6.3.*",
-        "symfony/debug-bundle": "6.3.*",
-        "symfony/doctrine-messenger": "6.3.*",
-        "symfony/dotenv": "6.3.*",
+        "symfony/asset": "7.1.*",
+        "symfony/console": "7.1.*",
+        "symfony/debug-bundle": "7.1.*",
+        "symfony/doctrine-messenger": "7.1.*",
+        "symfony/dotenv": "7.1.*",
         "symfony/flex": "^2",
-        "symfony/framework-bundle": "6.3.*",
-        "symfony/http-client": "6.3.*",
-        "symfony/lock": "6.3.*",
-        "symfony/messenger": "6.3.*",
-        "symfony/process": "6.3.*",
-        "symfony/property-access": "6.3.*",
-        "symfony/property-info": "6.3.*",
-        "symfony/runtime": "6.3.*",
-        "symfony/security-bundle": "6.3.*",
-        "symfony/serializer": "6.3.*",
-        "symfony/twig-bundle": "6.3.*",
-        "symfony/uid": "6.3.*",
-        "symfony/yaml": "6.3.*",
+        "symfony/framework-bundle": "7.1.*",
+        "symfony/http-client": "7.1.*",
+        "symfony/lock": "7.1.*",
+        "symfony/messenger": "7.1.*",
+        "symfony/process": "7.1.*",
+        "symfony/property-access": "7.1.*",
+        "symfony/property-info": "7.1.*",
+        "symfony/runtime": "7.1.*",
+        "symfony/security-bundle": "7.1.*",
+        "symfony/serializer": "7.1.*",
+        "symfony/twig-bundle": "7.1.*",
+        "symfony/uid": "7.1.*",
+        "symfony/yaml": "7.1.*",
         "twig/extra-bundle": "^3.7",
         "twig/twig": "^3.7",
         "vich/uploader-bundle": "^2.2"
     },
     "require-dev": {
-        "dama/doctrine-test-bundle": "^7.2",
+        "dama/doctrine-test-bundle": "^8.2",
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "friendsofphp/php-cs-fixer": "^3.14",
         "phpunit/php-code-coverage": "^10.0",
         "phpunit/phpunit": "^10.0",
         "rector/rector": "^0.15.16",
-        "symfony/browser-kit": "6.3.*",
-        "symfony/css-selector": "6.3.*",
+        "symfony/browser-kit": "7.1.*",
+        "symfony/css-selector": "7.1.*",
         "symfony/maker-bundle": "^1.48",
-        "symfony/phpunit-bridge": "^6.3",
-        "symfony/stopwatch": "6.3.*",
-        "symfony/web-profiler-bundle": "6.3.*"
+        "symfony/phpunit-bridge": "^7.1",
+        "symfony/stopwatch": "7.1.*",
+        "symfony/web-profiler-bundle": "7.1.*"
     },
     "config": {
         "allow-plugins": {
@@ -108,7 +108,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.3.*"
+            "require": "7.1.*"
         }
     }
 }

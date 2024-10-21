@@ -11,7 +11,7 @@ class EnrichmentCreationUrlRequestPayload extends EnrichmentCreationRequestPaylo
 {
     #[OA\Property(property: 'url', description: 'A file URL', type: 'string')]
     #[Groups(['Default'])]
-    #[Assert\Url(message: 'The given url is not a valid')]
+    #[Assert\Url(requireTld: true, message: 'The given url is not a valid')]
     #[Assert\NotBlank]
     private ?string $url = null;
 

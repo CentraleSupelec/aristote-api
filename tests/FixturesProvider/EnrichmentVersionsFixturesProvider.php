@@ -8,6 +8,7 @@ use App\Entity\EnrichmentVersion;
 use App\Entity\EnrichmentVersionMetadata;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EnrichmentVersionsFixturesProvider
@@ -16,16 +17,17 @@ class EnrichmentVersionsFixturesProvider
     ) {
     }
 
-    public static function getEnrichmentVersion(?EntityManagerInterface $entityManager, Enrichment $enrichment = null): EnrichmentVersion
+    public static function getEnrichmentVersion(?EntityManagerInterface $entityManager, ?Enrichment $enrichment = null): EnrichmentVersion
     {
         if (null === $enrichment) {
             $enrichment = EnrichmentFixturesProvider::getEnrichment($entityManager);
         }
 
         $enrichmentVersion = (new EnrichmentVersion())
-            ->setInitialVersion(true)
+            ->setCreatedAt(new DateTime())
+            ->setInitialVersion(0 === $enrichment->getVersions()->count() ? true : false)
             ->setAiGenerated(true)
-            ->setEnrichmentVersionMetadata(EnrichmentVersionsFixturesProvider::getEnrichmentVersionMetadata($enrichment))
+            ->setEnrichmentVersionMetadata(enrichmentVersionMetadata: EnrichmentVersionsFixturesProvider::getEnrichmentVersionMetadata($enrichment))
             ->setTranscript(EnrichmentVersionsFixturesProvider::getTranscript())
             ->addMultipleChoiceQuestion(EnrichmentVersionsFixturesProvider::getMultipleChoiceQuestion())
         ;

@@ -14,7 +14,7 @@ class TranscriptNormalizer implements NormalizerInterface
     ) {
     }
 
-    public function normalize($transcript, string $format = null, array $context = []): array
+    public function normalize($transcript, ?string $format = null, array $context = []): array
     {
         $data = $this->normalizer->normalize($transcript, $format, $context);
         if (isset($data['sentences'])) {
@@ -28,12 +28,12 @@ class TranscriptNormalizer implements NormalizerInterface
         return $data;
     }
 
-    public function supportsNormalization($data, string $format = null, array $context = []): bool
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Transcript;
     }
 
-    public function getSupportedTypes(string|null $format): array
+    public function getSupportedTypes(?string $format): array
     {
         return [
             Transcript::class => true,

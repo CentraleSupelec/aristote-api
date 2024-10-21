@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -22,7 +23,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class TranscribingWorkerCommand extends Command
 {
     public function __construct(
-        private readonly EnrichmentWorkerService $enrichmentWorkerService
+        private readonly EnrichmentWorkerService $enrichmentWorkerService,
     ) {
         parent::__construct();
     }
@@ -93,13 +94,30 @@ class TranscribingWorkerCommand extends Command
             throw new AristoteApiException('No Enrichment ID in AristoteApi response');
         }
 
-        // Simulate generation initial version
-        $symfonyStyle->info('Generating transcript ...');
-        sleep(1);
+        $transcript = [
+            'language' => 'en',
+            'text' => 'Hello World !',
+            'sentences' => [
+                [
+                    'text' => 'Hello World !',
+                    'start' => 0,
+                    'end' => 1,
+                ],
+            ],
+        ];
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'transcript_');
+        file_put_contents($tempFilePath, json_encode($transcript, JSON_PRETTY_PRINT));
+
+        $uploadedFile = new UploadedFile(
+            $tempFilePath,
+            'transcript.json',
+            'application/json',
+        );
 
         $requestOptions = [
             'body' => [
-                'transcript' => fopen('public/transcript.json', 'r'),
+                'transcript' => fopen($uploadedFile->getPathname(), 'r'),
                 'taskId' => $taskId,
                 'status' => 'OK',
             ],
