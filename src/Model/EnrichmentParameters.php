@@ -13,37 +13,37 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[AppAssert\AiModelInfrastructureConstraint()]
 class EnrichmentParameters
 {
-    #[OA\Property(property: 'mediaTypes', description: 'List of media types', type: 'array', items: new OA\Items(type: 'string'))]
+    #[OA\Property(property: 'mediaTypes', description: 'List of media types (required only if generateMetada is true)', type: 'array', items: new OA\Items(type: 'string'), nullable: true)]
     #[Assert\Type(type: 'array', message: 'Invalid parameter value for \'mediaTypes[]\', array of strings expected.')]
     #[Assert\Count(min: 1, minMessage: 'At least one media type is expected', groups: ['metadata'])]
     #[Groups(['Default'])]
     private array $mediaTypes = [];
 
-    #[OA\Property(property: 'disciplines', description: 'List of disciplines', type: 'array', items: new OA\Items(type: 'string'))]
+    #[OA\Property(property: 'disciplines', description: 'List of disciplines (required only if generateMetada is true)', type: 'array', items: new OA\Items(type: 'string'))]
     #[Assert\Type(type: 'array', message: 'Invalid parameter value for \'disciplines[]\', array of strings expected.')]
     #[Assert\Count(min: 1, minMessage: 'At least one discipline is expected', groups: ['metadata'])]
     #[Groups(['Default'])]
     private array $disciplines = [];
 
-    #[OA\Property(property: 'aiEvaluation', description: 'The name of the AI to evaluate the MCQs', type: 'string')]
+    #[OA\Property(property: 'aiEvaluation', description: 'The name of the AI to evaluate the MCQs', type: 'string', nullable: true)]
     #[Assert\Choice(callback: [Constants::class, 'getEvaluators'], multiple: false, message: 'Invalid aiEvaluation value')]
     #[Groups(['Default'])]
     private ?string $aiEvaluation = null;
 
-    #[OA\Property(property: 'aiModel', description: 'AI Model to be used for enrichment', type: 'string')]
+    #[OA\Property(property: 'aiModel', description: 'AI Model to be used for enrichment (list available with ai_model_infrastructure_combinations endpoint)', type: 'string', nullable: true)]
     #[Groups(['Default'])]
     private ?string $aiModel = null;
 
-    #[OA\Property(property: 'infrastructure', description: 'Infrastructure to be used for enrichment', type: 'string')]
+    #[OA\Property(property: 'infrastructure', description: 'Infrastructure to be used for enrichment (list available with ai_model_infrastructure_combinations endpoint)', type: 'string', nullable: true)]
     #[Groups(['Default'])]
     private ?string $infrastructure = null;
 
-    #[OA\Property(property: 'language', description: 'Language of the quizzes', type: 'string')]
+    #[OA\Property(property: 'language', description: 'Language of the quizzes', type: 'string', nullable: true)]
     #[Assert\Choice(callback: [Enrichment::class, 'getSupportedLanguages'], multiple: false, message: "The chosen language is not supported. Supported languages are : ['fr', 'en']")]
     #[Groups(['Default'])]
     private ?string $language = null;
 
-    #[OA\Property(property: 'translateTo', description: 'Translate to this language', type: 'string')]
+    #[OA\Property(property: 'translateTo', description: 'Translate to this language', type: 'string', nullable: true)]
     #[Assert\Choice(callback: [Enrichment::class, 'getSupportedLanguages'], multiple: false, message: "The chosen language to translate to is not supported. Supported languages are : ['fr', 'en']")]
     #[Groups(['Default'])]
     private ?string $translateTo = null;

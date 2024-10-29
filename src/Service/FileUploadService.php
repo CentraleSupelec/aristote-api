@@ -77,10 +77,16 @@ class FileUploadService
             }
 
             $parsingVttFailed = false;
-
+            $subtitles = null;
             try {
-                $subtitles = new WebvttFile($uploadedFile->getPathname());
-            } catch (Exception) {
+                $content = $uploadedFile->getContent();
+                $subtitles = new WebvttFile();
+                $bom = pack('CCC', 0xEF, 0xBB, 0xBF);
+                if (substr($content, 0, 3) === $bom) {
+                    $content = substr($content, 3);
+                }
+                $subtitles->loadFromString(trim($content));
+            } catch (Exception $exception) {
                 $parsingVttFailed = true;
             }
 

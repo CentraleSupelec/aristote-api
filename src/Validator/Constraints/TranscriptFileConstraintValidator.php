@@ -22,7 +22,6 @@ class TranscriptFileConstraintValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, File::class);
         }
 
-        /** @var File $value */
         if ('application/json' !== $value->getMimeType()) {
             $this->context->buildViolation($constraint->invalidFormat)->addViolation();
         }

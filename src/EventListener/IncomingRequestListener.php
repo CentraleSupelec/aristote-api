@@ -16,13 +16,17 @@ class IncomingRequestListener
 
         if ('create_enrichment_version' === $request->attributes->get('_route')) {
             $enrichmentVersionMetadata = $request->request->get('enrichmentVersionMetadata');
-            $request->request->set('enrichmentVersionMetadata', json_decode($enrichmentVersionMetadata, true, 512, JSON_THROW_ON_ERROR));
+
+            if ($enrichmentVersionMetadata) {
+                $request->request->set('enrichmentVersionMetadata', json_decode($enrichmentVersionMetadata, true, 512, JSON_THROW_ON_ERROR));
+            }
+
             $multipleChoiceQuestions = $this->stringJsonObjectsToArray($request->request->get('multipleChoiceQuestions'));
             $request->request->set('multipleChoiceQuestions', $multipleChoiceQuestions);
         }
     }
 
-    private function stringJsonObjectsToArray(?string $jsonString)
+    private function stringJsonObjectsToArray(?string $jsonString): array
     {
         if (null === $jsonString) {
             return [];
