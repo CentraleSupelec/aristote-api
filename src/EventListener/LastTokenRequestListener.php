@@ -23,7 +23,11 @@ class LastTokenRequestListener
         $clientId = (string) $this->requestStack->getCurrentRequest()->request->get('client_id');
 
         if ('' === $clientId) {
-            return;
+            $clientId = (string) $this->requestStack->getCurrentRequest()->headers->get('php-auth-user');
+
+            if ('' === $clientId) {
+                return;
+            }
         }
 
         $apiClient = $this->apiClientRepository->findOneBy(['identifier' => $clientId]);
