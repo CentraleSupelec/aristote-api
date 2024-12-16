@@ -117,12 +117,41 @@ class ApiClientAdmin extends AbstractAdmin
                     'choices' => Constants::getAvailableGrants(),
                 ])
             ->end()
-            ->with("Pour les workers d'enrichissment", [
+            ->with('Pour les clients', [
+                'class' => 'col-12 col-md-6',
+                'box_class' => 'box box-solid box-danger',
+            ])
+                ->add('transcriptionModel', EntityType::class, [
+                    'label' => 'Modèle de transcription',
+                    'class' => AiModel::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('transcriptionInfrastructure', EntityType::class, [
+                    'label' => 'Infrastructure de transcription',
+                    'class' => Infrastructure::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('translationModel', EntityType::class, [
+                    'label' => 'Modèle de traduction',
+                    'class' => AiModel::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('translationInfrastructure', EntityType::class, [
+                    'label' => 'Infrastructure de traduction',
+                    'class' => Infrastructure::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+            ->end()
+            ->with('Pour les workers', [
                 'class' => 'col-12 col-md-6',
                 'box_class' => 'box box-solid box-danger',
             ])
                 ->add('aiModel', EntityType::class, [
-                    'label' => 'Modèle IA',
+                    'label' => 'Modèle',
                     'class' => AiModel::class,
                     'required' => false,
                     'multiple' => false,
@@ -179,24 +208,54 @@ class ApiClientAdmin extends AbstractAdmin
                     'inline' => false,
                 ])
             ->end()
-            ->with("Pour les workers d'enrichissment", [
+
+            ->with('Pour les clients', [
+                'class' => 'col-12 col-md-6',
+                'box_class' => 'box box-solid box-danger',
+            ])
+                ->add('transcriptionModel', EntityType::class, [
+                    'label' => 'Modèle de transcription',
+                    'class' => AiModel::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('transcriptionInfrastructure', EntityType::class, [
+                    'label' => 'Infrastructure de transcription',
+                    'class' => Infrastructure::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('translationModel', EntityType::class, [
+                    'label' => 'Modèle de traduction',
+                    'class' => AiModel::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('translationInfrastructure', EntityType::class, [
+                    'label' => 'Infrastructure de traduction',
+                    'class' => Infrastructure::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+            ->end()
+            ->with('Pour les workers', [
                 'class' => 'col-12 col-md-6',
                 'box_class' => 'box box-solid box-danger',
             ])
                 ->add('aiModel', EntityType::class, [
-                    'label' => "Modèle IA (si Worker d'enrichissment)",
+                    'label' => 'Modèle',
                     'class' => AiModel::class,
                     'required' => false,
                     'multiple' => false,
                 ])
                 ->add('infrastructure', EntityType::class, [
-                    'label' => "Infrastructure (si Worker d'enrichissment)",
+                    'label' => 'Infrastructure',
                     'class' => Infrastructure::class,
                     'required' => false,
                     'multiple' => false,
                 ])
                 ->add('treatUnspecifiedModelOrInfrastructure', null, [
-                    'label' => "Prendre les enrichissements qui n'ont pas spécifié de modèle ou d'infrastructure (si Worker d'enrichissment)",
+                    'label' => "Prendre les enrichissements qui n'ont pas spécifié de modèle ou d'infrastructure",
                 ])
             ->end()
         ;

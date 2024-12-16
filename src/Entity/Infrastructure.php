@@ -28,11 +28,19 @@ class Infrastructure implements Stringable
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'infrastructure', targetEntity: ApiClient::class)]
-    private Collection $apiClients;
+    private Collection $workers;
+
+    #[ORM\OneToMany(mappedBy: 'transcriptionInfrastructure', targetEntity: ApiClient::class)]
+    private Collection $forcedTranscriptionApiClients;
+
+    #[ORM\OneToMany(mappedBy: 'translationInfrastructure', targetEntity: ApiClient::class)]
+    private Collection $forcedTranslationApiClients;
 
     public function __construct()
     {
-        $this->apiClients = new ArrayCollection();
+        $this->workers = new ArrayCollection();
+        $this->forcedTranscriptionApiClients = new ArrayCollection();
+        $this->forcedTranslationApiClients = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -60,26 +68,82 @@ class Infrastructure implements Stringable
     /**
      * @return Collection<int, ApiClient>
      */
-    public function getApiClients(): Collection
+    public function getWorkers(): Collection
     {
-        return $this->apiClients;
+        return $this->workers;
     }
 
-    public function addApiClient(ApiClient $apiClient): static
+    public function addWorker(ApiClient $worker): static
     {
-        if (!$this->apiClients->contains($apiClient)) {
-            $this->apiClients->add($apiClient);
-            $apiClient->setInfrastructure($this);
+        if (!$this->workers->contains($worker)) {
+            $this->workers->add($worker);
+            $worker->setInfrastructure($this);
         }
 
         return $this;
     }
 
-    public function removeApiClient(ApiClient $apiClient): static
+    public function removeWorker(ApiClient $worker): static
     {
         // set the owning side to null (unless already changed)
-        if ($this->apiClients->removeElement($apiClient) && $apiClient->getInfrastructure() === $this) {
-            $apiClient->setInfrastructure(null);
+        if ($this->workers->removeElement($worker) && $worker->getInfrastructure() === $this) {
+            $worker->setInfrastructure(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApiClient>
+     */
+    public function getForcedTranscriptionApiClients(): Collection
+    {
+        return $this->forcedTranscriptionApiClients;
+    }
+
+    public function addForcedTranscriptionApiClient(ApiClient $forcedTranscriptionApiClient): static
+    {
+        if (!$this->forcedTranscriptionApiClients->contains($forcedTranscriptionApiClient)) {
+            $this->forcedTranscriptionApiClients->add($forcedTranscriptionApiClient);
+            $forcedTranscriptionApiClient->setInfrastructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForcedTranscriptionApiClient(ApiClient $forcedTranscriptionApiClient): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->forcedTranscriptionApiClients->removeElement($forcedTranscriptionApiClient) && $forcedTranscriptionApiClient->getInfrastructure() === $this) {
+            $forcedTranscriptionApiClient->setInfrastructure(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApiClient>
+     */
+    public function getForcedTranslationApiClients(): Collection
+    {
+        return $this->forcedTranslationApiClients;
+    }
+
+    public function addForcedTranslationApiClient(ApiClient $forcedTranslationApiClient): static
+    {
+        if (!$this->forcedTranslationApiClients->contains($forcedTranslationApiClient)) {
+            $this->forcedTranslationApiClients->add($forcedTranslationApiClient);
+            $forcedTranslationApiClient->setInfrastructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForcedTranslationApiClient(ApiClient $forcedTranslationApiClient): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->forcedTranslationApiClients->removeElement($forcedTranslationApiClient) && $forcedTranslationApiClient->getInfrastructure() === $this) {
+            $forcedTranslationApiClient->setInfrastructure(null);
         }
 
         return $this;

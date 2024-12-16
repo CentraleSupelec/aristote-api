@@ -403,7 +403,11 @@ class TranslationWorkerController extends AbstractController
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
-            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingTranslationStatusOrTranslatingStatusForMoreThanXMinutes();
+            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingTranslationStatusOrTranslatingStatusForMoreThanXMinutes(
+                $clientEntity->getAiModel(),
+                $clientEntity->getInfrastructure(),
+                $clientEntity->getTreatUnspecifiedModelOrInfrastructure()
+            );
 
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => [

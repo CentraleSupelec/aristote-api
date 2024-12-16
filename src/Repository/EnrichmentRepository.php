@@ -125,8 +125,11 @@ class EnrichmentRepository extends ServiceEntityRepository
         return null;
     }
 
-    public function findOldestEnrichmentInWaitingMediaTranscriptionStatusOrTranscribingMediaStatusForMoreThanXMinutes(): ?Enrichment
-    {
+    public function findOldestEnrichmentInWaitingMediaTranscriptionStatusOrTranscribingMediaStatusForMoreThanXMinutes(
+        ?string $model = null,
+        ?string $infrastructure = null,
+        bool $treatUnspecifiedModelOrInfrastructure = false,
+    ): ?Enrichment {
         $qb = $this->createQueryBuilder('e');
         $qb->where($qb->expr()->orX(
             $qb->expr()->eq('e.status', ':statusWaitingMediaTranscription'),
@@ -139,14 +142,51 @@ class EnrichmentRepository extends ServiceEntityRepository
             )
         ))
             ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
-            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
-            ->setParameters([
-                'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
-                'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
-                'timeThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
-                'maxRetries' => $this->maxRetries,
-                'deleted' => false,
-            ])
+            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'));
+
+        $parameters = [
+            'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
+            'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
+            'timeThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
+            'maxRetries' => $this->maxRetries,
+            'deleted' => false,
+        ];
+
+        $qb->leftJoin('e.createdBy', 'c');
+
+        if ($model) {
+            $qb->leftJoin('c.transcriptionModel', 'm');
+            if ($treatUnspecifiedModelOrInfrastructure) {
+                $qb
+                    ->andWhere($qb->expr()->orX(
+                        $qb->expr()->eq('m.name', ':model'),
+                        $qb->expr()->isNull('c.transcriptionModel'))
+                    );
+            } else {
+                $qb->andWhere($qb->expr()->eq('m.name', ':model'));
+            }
+            $parameters['model'] = $model;
+        } else {
+            $qb->andWhere($qb->expr()->isNull('c.transcriptionModel'));
+        }
+
+        if ($infrastructure) {
+            $qb->leftJoin('c.transcriptionInfrastructure', 'i');
+            if ($treatUnspecifiedModelOrInfrastructure) {
+                $qb->andWhere($qb->expr()->orX(
+                    $qb->expr()->eq('i.name', ':infrastructure'),
+                    $qb->expr()->isNull('c.transcriptionInfrastructure'))
+                );
+            } else {
+                $qb->andWhere($qb->expr()->eq('i.name', ':infrastructure'));
+            }
+            $parameters['infrastructure'] = $infrastructure;
+        } else {
+            $qb->andWhere($qb->expr()->isNull('c.transcriptionInfrastructure'));
+        }
+
+        $qb
+            ->setParameters($parameters)
             ->orderBy('e.priority', 'DESC')
             ->addOrderBy('e.latestEnrichmentRequestedAt', 'ASC')
         ;
@@ -199,8 +239,11 @@ class EnrichmentRepository extends ServiceEntityRepository
         return null;
     }
 
-    public function findOldestEnrichmentInWaitingTranslationStatusOrTranslatingStatusForMoreThanXMinutes(): ?Enrichment
-    {
+    public function findOldestEnrichmentInWaitingTranslationStatusOrTranslatingStatusForMoreThanXMinutes(
+        ?string $model = null,
+        ?string $infrastructure = null,
+        bool $treatUnspecifiedModelOrInfrastructure = false,
+    ): ?Enrichment {
         $qb = $this->createQueryBuilder('e');
         $qb->where($qb->expr()->orX(
             $qb->expr()->eq('e.status', ':statusWaitingTranslation'),
@@ -213,14 +256,51 @@ class EnrichmentRepository extends ServiceEntityRepository
             )
         ))
             ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
-            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
-            ->setParameters([
-                'statusWaitingTranslation' => Enrichment::STATUS_WAITING_TRANSLATION,
-                'statusTranslating' => Enrichment::STATUS_TRANSLATING,
-                'timeThreshold' => (new DateTime())->modify('-'.$this->translationWorkerTimeoutInMinutes.' minutes'),
-                'maxRetries' => $this->maxRetries,
-                'deleted' => false,
-            ])
+            ->andWhere($qb->expr()->eq('e.deleted', ':deleted'));
+
+        $parameters = [
+            'statusWaitingTranslation' => Enrichment::STATUS_WAITING_TRANSLATION,
+            'statusTranslating' => Enrichment::STATUS_TRANSLATING,
+            'timeThreshold' => (new DateTime())->modify('-'.$this->translationWorkerTimeoutInMinutes.' minutes'),
+            'maxRetries' => $this->maxRetries,
+            'deleted' => false,
+        ];
+
+        $qb->leftJoin('e.createdBy', 'c');
+
+        if ($model) {
+            $qb->leftJoin('c.translationModel', 'm');
+            if ($treatUnspecifiedModelOrInfrastructure) {
+                $qb
+                    ->andWhere($qb->expr()->orX(
+                        $qb->expr()->eq('m.name', ':model'),
+                        $qb->expr()->isNull('c.translationModel'))
+                    );
+            } else {
+                $qb->andWhere($qb->expr()->eq('m.name', ':model'));
+            }
+            $parameters['model'] = $model;
+        } else {
+            $qb->andWhere($qb->expr()->isNull('c.translationModel'));
+        }
+
+        if ($infrastructure) {
+            $qb->leftJoin('c.translationInfrastructure', 'i');
+            if ($treatUnspecifiedModelOrInfrastructure) {
+                $qb->andWhere($qb->expr()->orX(
+                    $qb->expr()->eq('i.name', ':infrastructure'),
+                    $qb->expr()->isNull('c.translationInfrastructure'))
+                );
+            } else {
+                $qb->andWhere($qb->expr()->eq('i.name', ':infrastructure'));
+            }
+            $parameters['infrastructure'] = $infrastructure;
+        } else {
+            $qb->andWhere($qb->expr()->isNull('c.translationInfrastructure'));
+        }
+
+        $qb
+            ->setParameters($parameters)
             ->orderBy('e.priority', 'DESC')
             ->addOrderBy('e.latestEnrichmentRequestedAt', 'ASC')
         ;

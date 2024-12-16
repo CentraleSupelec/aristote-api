@@ -28,11 +28,19 @@ class AiModel implements Stringable
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'aiModel', targetEntity: ApiClient::class)]
-    private Collection $apiClients;
+    private Collection $workers;
+
+    #[ORM\OneToMany(mappedBy: 'transcriptionModel', targetEntity: ApiClient::class)]
+    private Collection $forcedTranscriptionApiClients;
+
+    #[ORM\OneToMany(mappedBy: 'translationModel', targetEntity: ApiClient::class)]
+    private Collection $forcedTranslationApiClients;
 
     public function __construct()
     {
-        $this->apiClients = new ArrayCollection();
+        $this->workers = new ArrayCollection();
+        $this->forcedTranscriptionApiClients = new ArrayCollection();
+        $this->forcedTranslationApiClients = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -60,26 +68,82 @@ class AiModel implements Stringable
     /**
      * @return Collection<int, ApiClient>
      */
-    public function getApiClients(): Collection
+    public function getWorkers(): Collection
     {
-        return $this->apiClients;
+        return $this->workers;
     }
 
-    public function addApiClient(ApiClient $apiClient): static
+    public function addWorker(ApiClient $worker): static
     {
-        if (!$this->apiClients->contains($apiClient)) {
-            $this->apiClients->add($apiClient);
-            $apiClient->setAiModel($this);
+        if (!$this->workers->contains($worker)) {
+            $this->workers->add($worker);
+            $worker->setAiModel($this);
         }
 
         return $this;
     }
 
-    public function removeApiClient(ApiClient $apiClient): static
+    public function removeWorker(ApiClient $worker): static
     {
         // set the owning side to null (unless already changed)
-        if ($this->apiClients->removeElement($apiClient) && $apiClient->getAiModel() === $this) {
-            $apiClient->setAiModel(null);
+        if ($this->workers->removeElement($worker) && $worker->getAiModel() === $this) {
+            $worker->setAiModel(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApiClient>
+     */
+    public function getForcedTranscriptionApiClients(): Collection
+    {
+        return $this->forcedTranscriptionApiClients;
+    }
+
+    public function addForcedTranscriptionApiClient(ApiClient $forcedTranscriptionApiClient): static
+    {
+        if (!$this->forcedTranscriptionApiClients->contains($forcedTranscriptionApiClient)) {
+            $this->forcedTranscriptionApiClients->add($forcedTranscriptionApiClient);
+            $forcedTranscriptionApiClient->setTranscriptionModel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForcedTranscriptionApiClient(ApiClient $forcedTranscriptionApiClient): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->forcedTranscriptionApiClients->removeElement($forcedTranscriptionApiClient) && $forcedTranscriptionApiClient->getTranscriptionModel() === $this) {
+            $forcedTranscriptionApiClient->setTranscriptionModel(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApiClient>
+     */
+    public function getForcedTranslationApiClients(): Collection
+    {
+        return $this->forcedTranslationApiClients;
+    }
+
+    public function addForcedTranslationApiClient(ApiClient $forcedTranslationApiClient): static
+    {
+        if (!$this->forcedTranslationApiClients->contains($forcedTranslationApiClient)) {
+            $this->forcedTranslationApiClients->add($forcedTranslationApiClient);
+            $forcedTranslationApiClient->setTranslationModel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForcedTranslationApiClient(ApiClient $forcedTranslationApiClient): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->forcedTranslationApiClients->removeElement($forcedTranslationApiClient) && $forcedTranslationApiClient->getTranslationModel() === $this) {
+            $forcedTranslationApiClient->setTranslationModel(null);
         }
 
         return $this;
