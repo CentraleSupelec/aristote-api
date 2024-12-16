@@ -63,11 +63,29 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'translatedBy', targetEntity: Enrichment::class)]
     private Collection $translatedEnrichments;
 
-    #[ORM\ManyToOne(inversedBy: 'apiClients', targetEntity: AiModel::class)]
+    // For Workers
+    #[ORM\ManyToOne(inversedBy: 'workers', targetEntity: AiModel::class, cascade: ['persist'])]
     private ?AiModel $aiModel = null;
 
-    #[ORM\ManyToOne(inversedBy: 'apiClients', targetEntity: Infrastructure::class)]
+    // For Workers
+    #[ORM\ManyToOne(inversedBy: 'workers', targetEntity: Infrastructure::class, cascade: ['persist'])]
     private ?Infrastructure $infrastructure = null;
+
+    // For Clients
+    #[ORM\ManyToOne(inversedBy: 'forcedTranscriptionApiClients', targetEntity: AiModel::class, cascade: ['persist'])]
+    private ?AiModel $transcriptionModel = null;
+
+    // For Clients
+    #[ORM\ManyToOne(inversedBy: 'forcedTranscriptionApiClients', targetEntity: Infrastructure::class, cascade: ['persist'])]
+    private ?Infrastructure $transcriptionInfrastructure = null;
+
+    // For Clients
+    #[ORM\ManyToOne(inversedBy: 'forcedTranslationApiClients', targetEntity: AiModel::class, cascade: ['persist'])]
+    private ?AiModel $translationModel = null;
+
+    // For Clients
+    #[ORM\ManyToOne(inversedBy: 'forcedTranslationApiClients', targetEntity: Infrastructure::class, cascade: ['persist'])]
+    private ?Infrastructure $translationInfrastructure = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false], nullable: true)]
     private bool $treatUnspecifiedModelOrInfrastructure = false;
@@ -364,6 +382,70 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     public function setInfrastructure(?Infrastructure $infrastructure): static
     {
         $this->infrastructure = $infrastructure;
+
+        return $this;
+    }
+
+    public function getTranscriptionModel(): ?AiModel
+    {
+        return $this->transcriptionModel;
+    }
+
+    public function setTranscriptionModel(?AiModel $transcriptionModel): static
+    {
+        $this->transcriptionModel = $transcriptionModel;
+
+        if ($transcriptionModel instanceof AiModel) {
+            $transcriptionModel->addForcedTranscriptionApiClient($this);
+        }
+
+        return $this;
+    }
+
+    public function getTranscriptionInfrastructure(): ?Infrastructure
+    {
+        return $this->transcriptionInfrastructure;
+    }
+
+    public function setTranscriptionInfrastructure(?Infrastructure $transcriptionInfrastructure): static
+    {
+        $this->transcriptionInfrastructure = $transcriptionInfrastructure;
+
+        if ($transcriptionInfrastructure instanceof Infrastructure) {
+            $transcriptionInfrastructure->addForcedTranscriptionApiClient($this);
+        }
+
+        return $this;
+    }
+
+    public function getTranslationModel(): ?AiModel
+    {
+        return $this->translationModel;
+    }
+
+    public function setTranslationModel(?AiModel $translationModel): static
+    {
+        $this->translationModel = $translationModel;
+
+        if ($translationModel instanceof AiModel) {
+            $translationModel->addForcedTranslationApiClient($this);
+        }
+
+        return $this;
+    }
+
+    public function getTranslationInfrastructure(): ?Infrastructure
+    {
+        return $this->translationInfrastructure;
+    }
+
+    public function setTranslationInfrastructure(?Infrastructure $translationInfrastructure): static
+    {
+        $this->translationInfrastructure = $translationInfrastructure;
+
+        if ($translationInfrastructure instanceof Infrastructure) {
+            $translationInfrastructure->addForcedTranslationApiClient($this);
+        }
 
         return $this;
     }

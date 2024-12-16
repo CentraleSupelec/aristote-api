@@ -3,7 +3,9 @@
 namespace App\Tests\FixturesProvider;
 
 use App\Constants;
+use App\Entity\AiModel;
 use App\Entity\ApiClient;
+use App\Entity\Infrastructure;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Bundle\OAuth2ServerBundle\OAuth2Grants;
 
@@ -43,12 +45,21 @@ class ApiClientFixturesProvider
         return $apiClients;
     }
 
-    public static function getApiClientScopeClient(?EntityManagerInterface $entityManager = null): ApiClient
-    {
+    public static function getApiClientScopeClient(
+        ?EntityManagerInterface $entityManager = null,
+        ?AiModel $transcriptionModel = null,
+        ?Infrastructure $transcriptionInfrastructure = null,
+        ?AiModel $translationModel = null,
+        ?Infrastructure $translationInfrastructure = null,
+    ): ApiClient {
         $apiClient = (new ApiClient('client', 'client', 'very-secret'))
             ->setActive(true)
             ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
             ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_CLIENT])
+            ->setTranscriptionModel($transcriptionModel)
+            ->setTranscriptionInfrastructure($transcriptionInfrastructure)
+            ->setTranslationModel($translationModel)
+            ->setTranslationInfrastructure($translationInfrastructure)
         ;
 
         if (null !== $entityManager) {
@@ -100,12 +111,19 @@ class ApiClientFixturesProvider
         return $apiClient;
     }
 
-    public static function getApiClientScopeTranscriptionWorker(?EntityManagerInterface $entityManager = null): ApiClient
-    {
-        $apiClient = (new ApiClient('trasription', 'trasription', 'very-secret'))
+    public static function getApiClientScopeTranscriptionWorker(
+        ?EntityManagerInterface $entityManager = null,
+        bool $treatUnspecifiedModelOrInfrastructure = false,
+        ?AiModel $model = null,
+        ?Infrastructure $infrastructure = null,
+    ): ApiClient {
+        $apiClient = (new ApiClient('transcription', 'transcription', 'very-secret'))
             ->setActive(true)
             ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
             ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_TRANSCRIPTION_WORKER])
+            ->setAiModel($model)
+            ->setInfrastructure($infrastructure)
+            ->setTreatUnspecifiedModelOrInfrastructure($treatUnspecifiedModelOrInfrastructure)
         ;
 
         if (null !== $entityManager) {
@@ -132,12 +150,19 @@ class ApiClientFixturesProvider
         return $apiClient;
     }
 
-    public static function getApiClientScopeTranslationWorker(?EntityManagerInterface $entityManager = null): ApiClient
-    {
+    public static function getApiClientScopeTranslationWorker(
+        ?EntityManagerInterface $entityManager = null,
+        bool $treatUnspecifiedModelOrInfrastructure = false,
+        ?AiModel $model = null,
+        ?Infrastructure $infrastructure = null,
+    ): ApiClient {
         $apiClient = (new ApiClient('translation', 'translation', 'very-secret'))
             ->setActive(true)
             ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
             ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_TRANSLATION_WORKER])
+            ->setAiModel($model)
+            ->setInfrastructure($infrastructure)
+            ->setTreatUnspecifiedModelOrInfrastructure($treatUnspecifiedModelOrInfrastructure)
         ;
 
         if (null !== $entityManager) {

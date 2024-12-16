@@ -341,7 +341,11 @@ class TranscribingWorkerController extends AbstractController
 
         $retryTimes = 2;
         for ($i = 0; $i < $retryTimes; ++$i) {
-            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingMediaTranscriptionStatusOrTranscribingMediaStatusForMoreThanXMinutes();
+            $enrichment = $enrichmentRepository->findOldestEnrichmentInWaitingMediaTranscriptionStatusOrTranscribingMediaStatusForMoreThanXMinutes(
+                $clientEntity->getAiModel(),
+                $clientEntity->getInfrastructure(),
+                $clientEntity->getTreatUnspecifiedModelOrInfrastructure()
+            );
 
             if (!$enrichment instanceof Enrichment) {
                 return $this->json(['status' => 'KO', 'errors' => [
