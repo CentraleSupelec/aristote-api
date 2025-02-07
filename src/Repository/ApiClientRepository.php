@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Constants;
 use App\Entity\ApiClient;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -28,11 +29,13 @@ class ApiClientRepository extends ServiceEntityRepository
             ->leftJoin('a.aiModel', 'ai')
             ->leftJoin('a.infrastructure', 'i')
             ->where($qb->expr()->orX($qb->expr()->isNotNull('ai.name'), $qb->expr()->isNotNull('i.name')))
+            ->andWhere($qb->expr()->like('a.scopes', ':enrichmentWorkerScope'))
             ->groupBy('ai.name', 'i.name')
             ->select(
                 'ai.name AS aiModel',
                 'i.name AS infrastructure'
             )
+            ->setParameter('enrichmentWorkerScope', '%'.Constants::SCOPE_PROCESSING_WORKER.'%')
         ;
 
         return $qb->getQuery()->getArrayResult();

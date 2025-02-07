@@ -321,26 +321,45 @@ class EnrichmentRepository extends ServiceEntityRepository
             ->where($qb->expr()->gte('e.retries', ':maxRetries'))
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->andX(
-                    $qb->expr()->eq('e.status', ':statusTranscribingMedia'),
+                    $qb->expr()->orX(
+                        $qb->expr()->eq('e.status', ':statusTranscribingMedia'),
+                        $qb->expr()->eq('e.status', ':statusWaitingMediaTranscription'),
+                    ),
                     $qb->expr()->lte(
                         'e.transribingStartedAt',
                         ':transcriptionThreshold'
                     )
                 ),
                 $qb->expr()->andX(
-                    $qb->expr()->eq('e.status', ':statusAiEnrichment'),
+                    $qb->expr()->orX(
+                        $qb->expr()->eq('e.status', ':statusAiEnrichment'),
+                        $qb->expr()->eq('e.status', ':statusWaitingAiEnrichment'),
+                    ),
                     $qb->expr()->lte(
                         'e.aiEnrichmentStartedAt',
                         ':aiEnrichmentThreshold'
                     )
                 ),
                 $qb->expr()->andX(
-                    $qb->expr()->eq('e.status', ':statusAiEvaluating'),
+                    $qb->expr()->orX(
+                        $qb->expr()->eq('e.status', ':statusAiEvaluating'),
+                        $qb->expr()->eq('e.status', ':statusWaitingAiEvaluation'),
+                    ),
                     $qb->expr()->lte(
                         'e.aiEvaluationStartedAt',
                         ':aiEvaluationThreshold'
                     )
-                )
+                ),
+                $qb->expr()->andX(
+                    $qb->expr()->orX(
+                        $qb->expr()->eq('e.status', ':statusTranslating'),
+                        $qb->expr()->eq('e.status', ':statusWaitingTranslation'),
+                    ),
+                    $qb->expr()->lte(
+                        'e.translationStartedAt',
+                        ':translationThreshold'
+                    )
+                ),
             ))
             ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
             ->setParameters([
@@ -348,9 +367,15 @@ class EnrichmentRepository extends ServiceEntityRepository
                 'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
                 'statusAiEnrichment' => Enrichment::STATUS_AI_ENRICHING,
                 'statusAiEvaluating' => Enrichment::STATUS_AI_EVALUATING,
+                'statusTranslating' => Enrichment::STATUS_TRANSLATING,
+                'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
+                'statusWaitingAiEnrichment' => Enrichment::STATUS_WAITING_AI_ENRICHMENT,
+                'statusWaitingAiEvaluation' => Enrichment::STATUS_WAITING_AI_EVALUATION,
+                'statusWaitingTranslation' => Enrichment::STATUS_WAITING_TRANSLATION,
                 'transcriptionThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
                 'aiEnrichmentThreshold' => (new DateTime())->modify('-'.$this->aiEnrichmentWorkerTimeoutInMinutes.' minutes'),
                 'aiEvaluationThreshold' => (new DateTime())->modify('-'.$this->aiEvaluationWorkerTimeoutInMinutes.' minutes'),
+                'translationThreshold' => (new DateTime())->modify('-'.$this->translationWorkerTimeoutInMinutes.' minutes'),
                 'deleted' => false,
             ]);
 
