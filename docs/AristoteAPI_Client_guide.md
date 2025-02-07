@@ -195,6 +195,6 @@ sequenceDiagram
 
 ## Forcing models and/or infrastructres for transcription/translation by client
 
-When creating/editing a `client` in **Sonata Admin Panel**, you can specify which `model` and/or `insrastructure` you want for both `transcription` and `translation` of the enrichments created by that `client`.
+When creating/editing a `client` in **Sonata Admin Panel**, you can specify which `model` and/or `infrastructure` you want for both `transcription` and `translation` of the enrichments created by that `client`.
 
 To associate a `model`/`infrastructure` to a transcription or a `translation worker`, you can do it the creation/edit page of the worker in **Sonata Admin**.
