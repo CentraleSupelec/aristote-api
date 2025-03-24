@@ -179,6 +179,33 @@ class AiEvaluationWorkerController extends AbstractController
                 $enrichment->getAiEvaluatedBy()->setJobLastFailuredAt(new DateTime());
                 $entityManager->flush();
 
+                $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
+                    ->setId($enrichment->getId())
+                    ->setStatus($enrichment->getStatus())
+                    ->setFailureCause($aiEvaluationRequestPayload->getFailureCause())
+                    ->setInitialVersionId($enrichmentVersion->getId())
+                ;
+
+                try {
+                    $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
+
+                    $response = $httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [
+                        'body' => $serialized,
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                        ],
+                    ]);
+
+                    $enrichment->setNotificationStatus($response->getStatusCode());
+                    if (200 === $response->getStatusCode()) {
+                        $enrichment->setNotifiedAt(new DateTime());
+                    }
+                } catch (Exception $e) {
+                    $this->logger->error($e->getMessage());
+                    $enrichment->setNotificationStatus($e->getCode());
+                }
+                $entityManager->flush();
+
                 return $this->json(['status' => 'OK']);
             }
 
