@@ -11,7 +11,7 @@ use App\Tests\FixturesProvider\EnrichmentVersionsFixturesProvider;
 use App\Tests\Utils\BaseWebTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class TranslationControllerTest extends BaseWebTestCase
+class TranslationWorkerControllerTest extends BaseWebTestCase
 {
     public function testGetTranslationJobWithTranslationApiClientWithNoModelAndNoInfrastructure1(): void
     {

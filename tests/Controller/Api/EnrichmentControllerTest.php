@@ -2,10 +2,12 @@
 
 namespace App\Tests\Controller\Api;
 
+use App\Entity\AiModel;
 use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\EnrichmentVersionMetadata;
+use App\Entity\Infrastructure;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
 use App\Repository\ChoiceRepository;
@@ -847,12 +849,12 @@ class EnrichmentControllerTest extends BaseWebTestCase
 
     public function testCreateEnrichmentByUrl(): void
     {
-        $apiCient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
 
         $content = [
             'grant_type' => 'client_credentials',
-            'client_id' => $apiCient->getId(),
-            'client_secret' => $apiCient->getSecret(),
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
         ];
 
         $this->client->request('POST', '/api/token', $content);
@@ -894,14 +896,180 @@ class EnrichmentControllerTest extends BaseWebTestCase
         $this->assertInstanceOf(Enrichment::class, $enrichment);
     }
 
-    public function testCreateEnrichmentByVideoFile(): void
+    public function testCreateEnrichmentByUrlWithClientWithAiModel1(): void
     {
-        $apiCient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
+        $enrichmentModel = (new AiModel())->setName('Llama-3.1');
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient(entityManager: $this->entityManager, enrichmentModel: $enrichmentModel);
+        $this->entityManager->flush();
 
         $content = [
             'grant_type' => 'client_credentials',
-            'client_id' => $apiCient->getId(),
-            'client_secret' => $apiCient->getSecret(),
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $content = [
+            'endUserIdentifier' => 'test@gmail.com',
+            'notificationWebhookUrl' => 'http://localhost.fr/api/webhook',
+            'url' => 'http://localhost.fr/video.mp4',
+            'enrichmentParameters' => [
+                'generateMetadata' => false,
+            ],
+        ];
+
+        $this->client->request('POST', '/api/v1/enrichments/url', [], [], [
+            'HTTP_Authorization' => 'Bearer '.$token,
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode($content));
+
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('OK', $responseData['status']);
+
+        /** @var Enrichment $enrichment */
+        $enrichment = $this->entityManager->find(Enrichment::class, $responseData['id']);
+        $this->assertInstanceOf(Enrichment::class, $enrichment);
+        $this->assertEquals($enrichmentModel->getName(), $enrichment->getAiModel());
+    }
+
+    public function testCreateEnrichmentByUrlWithClientWithAiModel2(): void
+    {
+        $enrichmentModel = (new AiModel())->setName('Llama-3.1');
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient(entityManager: $this->entityManager, enrichmentModel: $enrichmentModel);
+        $this->entityManager->flush();
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $content = [
+            'endUserIdentifier' => 'test@gmail.com',
+            'notificationWebhookUrl' => 'http://localhost.fr/api/webhook',
+            'url' => 'http://localhost.fr/video.mp4',
+            'enrichmentParameters' => [
+                'aiModel' => 'Llama-3.2',
+                'generateMetadata' => false,
+            ],
+        ];
+
+        $this->client->request('POST', '/api/v1/enrichments/url', [], [], [
+            'HTTP_Authorization' => 'Bearer '.$token,
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode($content));
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testCreateEnrichmentByUrlWithClientWithInfrastructure1(): void
+    {
+        $enrichmentInfrastructure = (new Infrastructure())->setName('CS');
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient(entityManager: $this->entityManager, enrichmentInfrastructure: $enrichmentInfrastructure);
+        $this->entityManager->flush();
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $content = [
+            'endUserIdentifier' => 'test@gmail.com',
+            'notificationWebhookUrl' => 'http://localhost.fr/api/webhook',
+            'url' => 'http://localhost.fr/video.mp4',
+            'enrichmentParameters' => [
+                'generateMetadata' => false,
+            ],
+        ];
+
+        $this->client->request('POST', '/api/v1/enrichments/url', [], [], [
+            'HTTP_Authorization' => 'Bearer '.$token,
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode($content));
+
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('OK', $responseData['status']);
+
+        /** @var Enrichment $enrichment */
+        $enrichment = $this->entityManager->find(Enrichment::class, $responseData['id']);
+        $this->assertInstanceOf(Enrichment::class, $enrichment);
+        $this->assertEquals($enrichmentInfrastructure->getName(), $enrichment->getInfrastructure());
+    }
+
+    public function testCreateEnrichmentByUrlWithClientWithInfrastructure2(): void
+    {
+        $enrichmentInfrastructure = (new Infrastructure())->setName('CS');
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient(entityManager: $this->entityManager, enrichmentInfrastructure: $enrichmentInfrastructure);
+        $this->entityManager->flush();
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $content = [
+            'endUserIdentifier' => 'test@gmail.com',
+            'notificationWebhookUrl' => 'http://localhost.fr/api/webhook',
+            'url' => 'http://localhost.fr/video.mp4',
+            'enrichmentParameters' => [
+                'aiModel' => 'Llama-3.2',
+                'generateMetadata' => false,
+            ],
+        ];
+
+        $this->client->request('POST', '/api/v1/enrichments/url', [], [], [
+            'HTTP_Authorization' => 'Bearer '.$token,
+            'CONTENT_TYPE' => 'application/json',
+        ], json_encode($content));
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testCreateEnrichmentByVideoFile(): void
+    {
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
         ];
 
         $this->client->request('POST', '/api/token', $content);
@@ -972,12 +1140,12 @@ class EnrichmentControllerTest extends BaseWebTestCase
 
     public function testCreateEnrichmentByAudioFile(): void
     {
-        $apiCient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
 
         $content = [
             'grant_type' => 'client_credentials',
-            'client_id' => $apiCient->getId(),
-            'client_secret' => $apiCient->getSecret(),
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
         ];
 
         $this->client->request('POST', '/api/token', $content);
@@ -1040,12 +1208,12 @@ class EnrichmentControllerTest extends BaseWebTestCase
 
     public function testCreateEnrichmentBySrtFile(): void
     {
-        $apiCient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
 
         $content = [
             'grant_type' => 'client_credentials',
-            'client_id' => $apiCient->getId(),
-            'client_secret' => $apiCient->getSecret(),
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
         ];
 
         $this->client->request('POST', '/api/token', $content);
@@ -1108,14 +1276,292 @@ class EnrichmentControllerTest extends BaseWebTestCase
         $this->assertInstanceOf(Enrichment::class, $enrichment);
     }
 
-    public function testCreateEnrichmentByVttFile(): void
+    public function testCreateEnrichmentByVttFileWithClientWithAiModel1(): void
     {
-        $apiCient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
+        $enrichmentModel = (new AiModel())->setName('Llama-3.1');
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient(entityManager: $this->entityManager, enrichmentModel: $enrichmentModel);
+        $this->entityManager->flush();
 
         $content = [
             'grant_type' => 'client_credentials',
-            'client_id' => $apiCient->getId(),
-            'client_secret' => $apiCient->getSecret(),
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $content = [
+            'endUserIdentifier' => 'test@gmail.com',
+            'notificationWebhookUrl' => 'http://localhost.fr/api/webhook',
+            'enrichmentParameters' => json_encode([
+                'disciplines' => [
+                    'Maths',
+                    'Physics',
+                ],
+                'mediaTypes' => [
+                    'Conference',
+                    'Course',
+                ],
+                'aiEvaluation' => 'ChatGPT',
+            ]),
+        ];
+
+        $subtitle = "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nHello World !";
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'subtitle_');
+        file_put_contents($tempFilePath, $subtitle);
+
+        $files = [
+            'file' => new UploadedFile(
+                $tempFilePath,
+                'subtitle.vtt',
+                'text/plain',
+                null,
+                true
+            ),
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/enrichments/upload',
+            $content,
+            $files,
+            server: [
+                'HTTP_Authorization' => sprintf('Bearer %s', $token),
+                'CONTENT_TYPE' => 'multipart/form-data',
+            ],
+        );
+        $this->assertResponseIsSuccessful();
+        unlink($tempFilePath);
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('OK', $responseData['status']);
+
+        /** @var Enrichment $enrichment */
+        $enrichment = $this->entityManager->find(Enrichment::class, $responseData['id']);
+        $this->assertInstanceOf(Enrichment::class, $enrichment);
+        $this->assertEquals($enrichmentModel->getName(), $enrichment->getAiModel());
+    }
+
+    public function testCreateEnrichmentByVttFileWithClientWithAiModel2(): void
+    {
+        $enrichmentModel = (new AiModel())->setName('Llama-3.1');
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient(entityManager: $this->entityManager, enrichmentModel: $enrichmentModel);
+        $this->entityManager->flush();
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $content = [
+            'endUserIdentifier' => 'test@gmail.com',
+            'notificationWebhookUrl' => 'http://localhost.fr/api/webhook',
+            'enrichmentParameters' => json_encode([
+                'disciplines' => [
+                    'Maths',
+                    'Physics',
+                ],
+                'mediaTypes' => [
+                    'Conference',
+                    'Course',
+                ],
+                'aiEvaluation' => 'ChatGPT',
+                'aiModel' => 'Llama-3.2',
+            ]),
+        ];
+
+        $subtitle = "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nHello World !";
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'subtitle_');
+        file_put_contents($tempFilePath, $subtitle);
+
+        $files = [
+            'file' => new UploadedFile(
+                $tempFilePath,
+                'subtitle.vtt',
+                'text/plain',
+                null,
+                true
+            ),
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/enrichments/upload',
+            $content,
+            $files,
+            server: [
+                'HTTP_Authorization' => sprintf('Bearer %s', $token),
+                'CONTENT_TYPE' => 'multipart/form-data',
+            ],
+        );
+        $this->assertResponseStatusCodeSame(400);
+        unlink($tempFilePath);
+    }
+
+    public function testCreateEnrichmentByVttFileWithClientWithInfrastructure1(): void
+    {
+        $enrichmentInfrastructure = (new Infrastructure())->setName('CS');
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient(entityManager: $this->entityManager, enrichmentInfrastructure: $enrichmentInfrastructure);
+        $this->entityManager->flush();
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $content = [
+            'endUserIdentifier' => 'test@gmail.com',
+            'notificationWebhookUrl' => 'http://localhost.fr/api/webhook',
+            'enrichmentParameters' => json_encode([
+                'disciplines' => [
+                    'Maths',
+                    'Physics',
+                ],
+                'mediaTypes' => [
+                    'Conference',
+                    'Course',
+                ],
+                'aiEvaluation' => 'ChatGPT',
+            ]),
+        ];
+
+        $subtitle = "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nHello World !";
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'subtitle_');
+        file_put_contents($tempFilePath, $subtitle);
+
+        $files = [
+            'file' => new UploadedFile(
+                $tempFilePath,
+                'subtitle.vtt',
+                'text/plain',
+                null,
+                true
+            ),
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/enrichments/upload',
+            $content,
+            $files,
+            server: [
+                'HTTP_Authorization' => sprintf('Bearer %s', $token),
+                'CONTENT_TYPE' => 'multipart/form-data',
+            ],
+        );
+        $this->assertResponseIsSuccessful();
+        unlink($tempFilePath);
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('OK', $responseData['status']);
+
+        /** @var Enrichment $enrichment */
+        $enrichment = $this->entityManager->find(Enrichment::class, $responseData['id']);
+        $this->assertInstanceOf(Enrichment::class, $enrichment);
+        $this->assertEquals($enrichmentInfrastructure->getName(), $enrichment->getInfrastructure());
+    }
+
+    public function testCreateEnrichmentByVttFileWithClientWithInfrastructure2(): void
+    {
+        $enrichmentInfrastructure = (new Infrastructure())->setName('CS');
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient(entityManager: $this->entityManager, enrichmentInfrastructure: $enrichmentInfrastructure);
+        $this->entityManager->flush();
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
+        ];
+
+        $this->client->request('POST', '/api/token', $content);
+        $this->assertResponseIsSuccessful();
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $token = $responseData['access_token'];
+
+        $this->assertResponseIsSuccessful();
+
+        $content = [
+            'endUserIdentifier' => 'test@gmail.com',
+            'notificationWebhookUrl' => 'http://localhost.fr/api/webhook',
+            'enrichmentParameters' => json_encode([
+                'disciplines' => [
+                    'Maths',
+                    'Physics',
+                ],
+                'mediaTypes' => [
+                    'Conference',
+                    'Course',
+                ],
+                'aiEvaluation' => 'ChatGPT',
+                'aiModel' => 'Llama-3.2',
+            ]),
+        ];
+
+        $subtitle = "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nHello World !";
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'subtitle_');
+        file_put_contents($tempFilePath, $subtitle);
+
+        $files = [
+            'file' => new UploadedFile(
+                $tempFilePath,
+                'subtitle.vtt',
+                'text/plain',
+                null,
+                true
+            ),
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/enrichments/upload',
+            $content,
+            $files,
+            server: [
+                'HTTP_Authorization' => sprintf('Bearer %s', $token),
+                'CONTENT_TYPE' => 'multipart/form-data',
+            ],
+        );
+        $this->assertResponseStatusCodeSame(400);
+        unlink($tempFilePath);
+    }
+
+    public function testCreateEnrichmentByVttFile(): void
+    {
+        $apiClient = ApiClientFixturesProvider::getApiClientScopeClient($this->entityManager);
+
+        $content = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $apiClient->getId(),
+            'client_secret' => $apiClient->getSecret(),
         ];
 
         $this->client->request('POST', '/api/token', $content);

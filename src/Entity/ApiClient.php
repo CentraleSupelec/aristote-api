@@ -87,6 +87,14 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     #[ORM\ManyToOne(inversedBy: 'forcedTranslationApiClients', targetEntity: Infrastructure::class, cascade: ['persist'])]
     private ?Infrastructure $translationInfrastructure = null;
 
+    // For Clients
+    #[ORM\ManyToOne(inversedBy: 'forcedEnrichmentApiClients', targetEntity: AiModel::class, cascade: ['persist'])]
+    private ?AiModel $enrichmentModel = null;
+
+    // For Clients
+    #[ORM\ManyToOne(inversedBy: 'forcedEnrichmentApiClients', targetEntity: Infrastructure::class, cascade: ['persist'])]
+    private ?Infrastructure $enrichmentInfrastructure = null;
+
     #[ORM\Column(type: 'boolean', options: ['default' => false], nullable: true)]
     private bool $treatUnspecifiedModelOrInfrastructure = false;
 
@@ -445,6 +453,38 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
 
         if ($translationInfrastructure instanceof Infrastructure) {
             $translationInfrastructure->addForcedTranslationApiClient($this);
+        }
+
+        return $this;
+    }
+
+    public function getEnrichmentModel(): ?AiModel
+    {
+        return $this->enrichmentModel;
+    }
+
+    public function setEnrichmentModel(?AiModel $enrichmentModel): static
+    {
+        $this->enrichmentModel = $enrichmentModel;
+
+        if ($enrichmentModel instanceof AiModel) {
+            $enrichmentModel->addForcedEnrichmentApiClient($this);
+        }
+
+        return $this;
+    }
+
+    public function getEnrichmentInfrastructure(): ?Infrastructure
+    {
+        return $this->enrichmentInfrastructure;
+    }
+
+    public function setEnrichmentInfrastructure(?Infrastructure $enrichmentInfrastructure): static
+    {
+        $this->enrichmentInfrastructure = $enrichmentInfrastructure;
+
+        if ($enrichmentInfrastructure instanceof Infrastructure) {
+            $enrichmentInfrastructure->addForcedEnrichmentApiClient($this);
         }
 
         return $this;

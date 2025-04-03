@@ -22,20 +22,39 @@ class ApiClientRepository extends ServiceEntityRepository
         parent::__construct($managerRegistry, ApiClient::class);
     }
 
-    public function getDistinctCombinations()
+    public function getDistinctCombinations(?string $aiModel = null, ?string $infrastructure = null)
     {
         $qb = $this->createQueryBuilder('a');
         $qb
             ->leftJoin('a.aiModel', 'ai')
             ->leftJoin('a.infrastructure', 'i')
+        ;
+
+        $parameters = [
+            'enrichmentWorkerScope' => '%'.Constants::SCOPE_PROCESSING_WORKER.'%',
+        ];
+
+        $qb
             ->where($qb->expr()->orX($qb->expr()->isNotNull('ai.name'), $qb->expr()->isNotNull('i.name')))
-            ->andWhere($qb->expr()->like('a.scopes', ':enrichmentWorkerScope'))
+            ->andWhere($qb->expr()->like('a.scopes', ':enrichmentWorkerScope'));
+
+        if (null !== $aiModel) {
+            $qb->andWhere('ai.name = :aiModel');
+            $parameters['aiModel'] = $aiModel;
+        }
+
+        if (null !== $infrastructure) {
+            $qb->andWhere('i.name = :infrastructure');
+            $parameters['infrastructure'] = $infrastructure;
+        }
+
+        $qb
             ->groupBy('ai.name', 'i.name')
             ->select(
                 'ai.name AS aiModel',
                 'i.name AS infrastructure'
             )
-            ->setParameter('enrichmentWorkerScope', '%'.Constants::SCOPE_PROCESSING_WORKER.'%')
+            ->setParameters($parameters)
         ;
 
         return $qb->getQuery()->getArrayResult();

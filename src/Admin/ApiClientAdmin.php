@@ -133,6 +133,18 @@ class ApiClientAdmin extends AbstractAdmin
                     'required' => false,
                     'multiple' => false,
                 ])
+                ->add('enrichmentModel', EntityType::class, [
+                    'label' => "Modèle d'enrichissement",
+                    'class' => AiModel::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('enrichmentInfrastructure', EntityType::class, [
+                    'label' => "Infrastructure d'enrichissement",
+                    'class' => Infrastructure::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
                 ->add('translationModel', EntityType::class, [
                     'label' => 'Modèle de traduction',
                     'class' => AiModel::class,
@@ -221,6 +233,18 @@ class ApiClientAdmin extends AbstractAdmin
                 ])
                 ->add('transcriptionInfrastructure', EntityType::class, [
                     'label' => 'Infrastructure de transcription',
+                    'class' => Infrastructure::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('enrichmentModel', EntityType::class, [
+                    'label' => "Modèle d'enrichissement",
+                    'class' => AiModel::class,
+                    'required' => false,
+                    'multiple' => false,
+                ])
+                ->add('enrichmentInfrastructure', EntityType::class, [
+                    'label' => "Infrastructure d'enrichissement",
                     'class' => Infrastructure::class,
                     'required' => false,
                     'multiple' => false,

@@ -51,6 +51,8 @@ class ApiClientFixturesProvider
         ?Infrastructure $transcriptionInfrastructure = null,
         ?AiModel $translationModel = null,
         ?Infrastructure $translationInfrastructure = null,
+        ?AiModel $enrichmentModel = null,
+        ?Infrastructure $enrichmentInfrastructure = null,
     ): ApiClient {
         $apiClient = (new ApiClient('client', 'client', 'very-secret'))
             ->setActive(true)
@@ -60,6 +62,8 @@ class ApiClientFixturesProvider
             ->setTranscriptionInfrastructure($transcriptionInfrastructure)
             ->setTranslationModel($translationModel)
             ->setTranslationInfrastructure($translationInfrastructure)
+            ->setEnrichmentModel($enrichmentModel)
+            ->setEnrichmentInfrastructure($enrichmentInfrastructure)
         ;
 
         if (null !== $entityManager) {
@@ -95,12 +99,19 @@ class ApiClientFixturesProvider
         return [$firstApiClient, $secondApiClient];
     }
 
-    public static function getApiClientScopeEnrichmentWorker(?EntityManagerInterface $entityManager = null): ApiClient
-    {
+    public static function getApiClientScopeEnrichmentWorker(
+        ?EntityManagerInterface $entityManager = null,
+        bool $treatUnspecifiedModelOrInfrastructure = false,
+        ?AiModel $model = null,
+        ?Infrastructure $infrastructure = null,
+    ): ApiClient {
         $apiClient = (new ApiClient('enrichment', 'enrichment', 'very-secret'))
             ->setActive(true)
             ->setFormExposedGrants([OAuth2Grants::CLIENT_CREDENTIALS])
             ->setFormExposedScopes([Constants::SCOPE_DEFAULT, Constants::SCOPE_PROCESSING_WORKER])
+            ->setAiModel($model)
+            ->setInfrastructure($infrastructure)
+            ->setTreatUnspecifiedModelOrInfrastructure($treatUnspecifiedModelOrInfrastructure)
         ;
 
         if (null !== $entityManager) {

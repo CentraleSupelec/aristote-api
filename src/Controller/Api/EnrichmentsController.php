@@ -3,10 +3,12 @@
 namespace App\Controller\Api;
 
 use App\Constants;
+use App\Entity\AiModel;
 use App\Entity\Choice;
 use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\EnrichmentVersionMetadata;
+use App\Entity\Infrastructure;
 use App\Entity\Media;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
@@ -242,7 +244,7 @@ class EnrichmentsController extends AbstractController
         )
     )]
     #[Route('/enrichments/ai_model_infrastructure_combinations', name: 'ai_model_infrastructure_combinations', methods: ['GET'])]
-    public function getAiModelInfrastructureCombinations(ApiClientRepository $apiClientRepository): Response
+    public function getAiModelInfrastructureCombinations(ApiClientRepository $apiClientRepository, ApiClientManager $apiClientManager): Response
     {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -253,7 +255,10 @@ class EnrichmentsController extends AbstractController
             ]], 403);
         }
 
-        $cominations = $apiClientRepository->getDistinctCombinations();
+        $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
+        $clientEntity = $apiClientManager->getClientEntity($clientId);
+
+        $cominations = $apiClientRepository->getDistinctCombinations($clientEntity->getEnrichmentModel(), $clientEntity->getEnrichmentInfrastructure());
 
         return $this->json($cominations);
     }
@@ -1132,6 +1137,14 @@ class EnrichmentsController extends AbstractController
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
 
+        if (null === $enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getAiModel() && $clientEntity->getEnrichmentModel() instanceof AiModel) {
+            $enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->setAiModel($clientEntity->getEnrichmentModel()->getName());
+        }
+
+        if (null === $enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->getInfrastructure() && $clientEntity->getEnrichmentInfrastructure() instanceof Infrastructure) {
+            $enrichmentCreationUrlRequestPayload->getEnrichmentParameters()->setInfrastructure($clientEntity->getEnrichmentInfrastructure()->getName());
+        }
+
         $enrichment = (new Enrichment())
             ->setStatus(Enrichment::STATUS_WAITING_MEIDA_UPLOAD)
             ->setCreatedBy($clientEntity)
@@ -1288,6 +1301,14 @@ class EnrichmentsController extends AbstractController
         $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
         $clientEntity = $apiClientManager->getClientEntity($clientId);
 
+        if (null === $enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getAiModel() && $clientEntity->getEnrichmentModel() instanceof AiModel) {
+            $enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->setAiModel($clientEntity->getEnrichmentModel()->getName());
+        }
+
+        if (null === $enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->getInfrastructure() && $clientEntity->getEnrichmentInfrastructure() instanceof Infrastructure) {
+            $enrichmentCreationFileUploadRequestPayload->getEnrichmentParameters()->setInfrastructure($clientEntity->getEnrichmentInfrastructure()->getName());
+        }
+
         $enrichment = (new Enrichment())
                 ->setCreatedBy($clientEntity)
                 ->setLatestEnrichmentRequestedAt(new DateTime())
@@ -1386,6 +1407,7 @@ class EnrichmentsController extends AbstractController
         EntityManagerInterface $entityManager,
         EnrichmentRepository $enrichmentRepository,
         EnrichmentVersionRepository $enrichmentVersionRepository,
+        ApiClientManager $apiClientManager,
     ): Response {
         if (!$this->scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_CLIENT)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -1417,6 +1439,17 @@ class EnrichmentsController extends AbstractController
             ], iterator_to_array($errors));
 
             return $this->json(['status' => 'KO', 'errors' => $errorsArray], 400);
+        }
+
+        $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
+        $clientEntity = $apiClientManager->getClientEntity($clientId);
+
+        if (null === $enrichmentCreationRequestPayload->getEnrichmentParameters()->getAiModel() && $clientEntity->getEnrichmentModel() instanceof AiModel) {
+            $enrichmentCreationRequestPayload->getEnrichmentParameters()->setAiModel($clientEntity->getEnrichmentModel()->getName());
+        }
+
+        if (null === $enrichmentCreationRequestPayload->getEnrichmentParameters()->getInfrastructure() && $clientEntity->getEnrichmentInfrastructure() instanceof Infrastructure) {
+            $enrichmentCreationRequestPayload->getEnrichmentParameters()->setInfrastructure($clientEntity->getEnrichmentInfrastructure()->getName());
         }
 
         $targetStatus = Enrichment::STATUS_SUCCESS;
