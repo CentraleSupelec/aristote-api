@@ -9,7 +9,7 @@ use App\Tests\FixturesProvider\EnrichmentFixturesProvider;
 use App\Tests\Utils\BaseWebTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class TranscriptionControllerTest extends BaseWebTestCase
+class TranscribingWorkerControllerTest extends BaseWebTestCase
 {
     public function testGetTranscriptionJobWithTranscriptionApiClientWithNoModelAndNoInfrastructure1(): void
     {

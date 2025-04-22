@@ -36,11 +36,15 @@ class AiModel implements Stringable
     #[ORM\OneToMany(mappedBy: 'translationModel', targetEntity: ApiClient::class)]
     private Collection $forcedTranslationApiClients;
 
+    #[ORM\OneToMany(mappedBy: 'enrichmentModel', targetEntity: ApiClient::class)]
+    private Collection $forcedEnrichmentApiClients;
+
     public function __construct()
     {
         $this->workers = new ArrayCollection();
         $this->forcedTranscriptionApiClients = new ArrayCollection();
         $this->forcedTranslationApiClients = new ArrayCollection();
+        $this->forcedEnrichmentApiClients = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -144,6 +148,34 @@ class AiModel implements Stringable
         // set the owning side to null (unless already changed)
         if ($this->forcedTranslationApiClients->removeElement($forcedTranslationApiClient) && $forcedTranslationApiClient->getTranslationModel() === $this) {
             $forcedTranslationApiClient->setTranslationModel(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApiClient>
+     */
+    public function getForcedEnrichmentApiClients(): Collection
+    {
+        return $this->forcedEnrichmentApiClients;
+    }
+
+    public function addForcedEnrichmentApiClient(ApiClient $forcedEnrichmentApiClient): static
+    {
+        if (!$this->forcedEnrichmentApiClients->contains($forcedEnrichmentApiClient)) {
+            $this->forcedEnrichmentApiClients->add($forcedEnrichmentApiClient);
+            $forcedEnrichmentApiClient->setEnrichmentModel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForcedEnrichmentApiClient(ApiClient $forcedEnrichmentApiClient): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->forcedEnrichmentApiClients->removeElement($forcedEnrichmentApiClient) && $forcedEnrichmentApiClient->getEnrichmentModel() === $this) {
+            $forcedEnrichmentApiClient->setEnrichmentModel(null);
         }
 
         return $this;

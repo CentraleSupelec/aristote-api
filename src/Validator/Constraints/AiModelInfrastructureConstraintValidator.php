@@ -9,6 +9,7 @@ use App\Model\EnrichmentParameters;
 use App\Repository\AiModelRepository;
 use App\Repository\ApiClientRepository;
 use App\Repository\InfrastructureRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -20,6 +21,7 @@ class AiModelInfrastructureConstraintValidator extends ConstraintValidator
         private ApiClientRepository $apiClientRepository,
         private AiModelRepository $aiModelRepository,
         private InfrastructureRepository $infrastructureRepository,
+        private readonly Security $security,
     ) {
         $this->apiClientRepository = $apiClientRepository;
         $this->aiModelRepository = $aiModelRepository;
@@ -42,21 +44,36 @@ class AiModelInfrastructureConstraintValidator extends ConstraintValidator
         $aiModel = null;
         $infrastructure = null;
 
+        $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
+        $client = $this->apiClientRepository->findOneBy(['identifier' => $clientId]);
+
         if (null !== $value->getAiModel()) {
-            $aiModel = $this->aiModelRepository->findOneBy(['name' => $value->getAiModel()]);
-            if (!$aiModel instanceof AiModel) {
-                $this->context->buildViolation($constraint->aiModelNotFound)
+            if ($client->getEnrichmentModel() instanceof AiModel && $client->getEnrichmentModel() !== $value->getAiModel()) {
+                $this->context->buildViolation($constraint->aiModelNotAuthorized)
                     ->atPath('aiModel')
                     ->addViolation();
+            } else {
+                $aiModel = $this->aiModelRepository->findOneBy(['name' => $value->getAiModel()]);
+                if (!$aiModel instanceof AiModel) {
+                    $this->context->buildViolation($constraint->aiModelNotFound)
+                        ->atPath('aiModel')
+                        ->addViolation();
+                }
             }
         }
 
         if (null !== $value->getInfrastructure()) {
-            $infrastructure = $this->infrastructureRepository->findOneBy(['name' => $value->getInfrastructure()]);
-            if (!$infrastructure instanceof Infrastructure) {
-                $this->context->buildViolation($constraint->infrastructureNotFound)
+            if ($client->getEnrichmentInfrastructure() instanceof Infrastructure && $client->getEnrichmentInfrastructure() !== $value->getInfrastructure()) {
+                $this->context->buildViolation($constraint->infrastructureNotAuthorized)
                     ->atPath('infrastructure')
                     ->addViolation();
+            } else {
+                $infrastructure = $this->infrastructureRepository->findOneBy(['name' => $value->getInfrastructure()]);
+                if (!$infrastructure instanceof Infrastructure) {
+                    $this->context->buildViolation($constraint->infrastructureNotFound)
+                        ->atPath('infrastructure')
+                        ->addViolation();
+                }
             }
         }
 
