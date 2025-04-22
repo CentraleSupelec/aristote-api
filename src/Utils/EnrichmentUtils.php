@@ -6,12 +6,23 @@ use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
+use App\Model\EnrichmentWebhookPayload;
 use App\Repository\EnrichmentVersionRepository;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EnrichmentUtils
 {
     public function __construct(
         private readonly EnrichmentVersionRepository $enrichmentVersionRepository,
+        private readonly LoggerInterface $logger,
+        private readonly SerializerInterface $serializer,
+        private readonly HttpClientInterface $httpClient,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -123,5 +134,35 @@ class EnrichmentUtils
         }
 
         return $result;
+    }
+
+    public function sendNotification(Enrichment $enrichment): void
+    {
+        $latestAiVersion = $this->enrichmentVersionRepository->findLatestAiVersionByEnrichmentId($enrichment->getId());
+
+        $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
+            ->setId($enrichment->getId())
+            ->setStatus($enrichment->getStatus())
+            ->setFailureCause($enrichment->getFailureCause())
+            ->setInitialVersionId($latestAiVersion?->getId())
+        ;
+        try {
+            $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
+            $response = $this->httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [
+                'body' => $serialized,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+            $enrichment->setNotificationStatus($response->getStatusCode());
+            if (200 === $response->getStatusCode()) {
+                $enrichment->setNotifiedAt(new DateTime());
+            }
+            $this->entityManager->flush();
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+            $enrichment->setNotificationStatus($e->getCode());
+            $this->entityManager->flush();
+        }
     }
 }

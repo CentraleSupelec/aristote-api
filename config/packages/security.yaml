@@ -50,6 +50,7 @@ security:
     - { path: ^/api/doc.json, role: PUBLIC_ACCESS }
     - { path: "^/admin", roles: ROLE_SUPER_ADMIN }
     - { path: ^/api/v1/webhook, role: PUBLIC_ACCESS }
+    - { path: ^/api/v1/health, role: PUBLIC_ACCESS }
     - { path: ^/api, role: ROLE_OAUTH2_SCOPE_DEFAULT }
 
 when@test:

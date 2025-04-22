@@ -18,6 +18,10 @@ The result of an `Enrichment` is called a `Version`, and the `Version`produced b
 
 # Client API Charts
 
+## Databasase diagram
+
+![Image not found](/docs/bdd.png)
+
 ## Posting a `Media` and creating an `Enrichment`
 The first step is to post a media to be processed by **Aristote**.
 
@@ -35,23 +39,29 @@ Here is a basic state diagram of the statuses for the `Enrichment`:
 ```mermaid
 stateDiagram-v2
    WAITING_EVALUATION: WAITING_EVALUATION
-   note left of WAITING_EVALUATION
-      Optionnal step
-   end note
-    [*] --> UPLOADING_MEDIA
-    UPLOADING_MEDIA --> WAITING_MEDIA_TRANSCRIPTION
-    WAITING_MEDIA_TRANSCRIPTION --> TRANSCRBING_MEDIA    
-    TRANSCRBING_MEDIA --> WAITING_AI_ENRICHMENT
-    WAITING_AI_ENRICHMENT --> AI_ENRICHING
-    AI_ENRICHING --> SUCCESS
-    AI_ENRICHING --> WAITING_EVALUATION
-    WAITING_EVALUATION --> EVALUATING
-    EVALUATING --> SUCCESS
-    AI_ENRICHING --> FAILURE
-    TRANSCRBING_MEDIA --> FAILURE
-    UPLOADING_MEDIA --> FAILURE
-    FAILURE --> [*]
-    SUCCESS --> [*]
+   [*] --> UPLOADING_MEDIA
+   UPLOADING_MEDIA --> WAITING_MEDIA_TRANSCRIPTION: Media type = video/audio
+   UPLOADING_MEDIA --> WAITING_AI_ENRICHMENT: Media type = SRT/VTT
+   WAITING_MEDIA_TRANSCRIPTION --> TRANSCRBING_MEDIA    
+   TRANSCRBING_MEDIA --> WAITING_AI_ENRICHMENT: generateMetadata OR generateQuiz OR generateNotes
+   WAITING_AI_ENRICHMENT --> AI_ENRICHING
+   AI_ENRICHING --> WAITING_TRANSLATION: translateTo is set
+   AI_ENRICHING --> WAITING_EVALUATION: translateTo is not set AND aiEvaluation is set
+   WAITING_EVALUATION --> EVALUATING
+   WAITING_TRANSLATION --> TRANSLATING
+   TRANSCRBING_MEDIA --> SUCCESS: !generateMetadata AND !generateQuiz AND !generateNotes
+   AI_ENRICHING --> SUCCESS: translateTo is not set AND aiEvaluation is not set
+   TRANSLATING --> SUCCESS
+   EVALUATING --> SUCCESS
+   AI_ENRICHING --> FAILURE
+   TRANSCRBING_MEDIA --> FAILURE
+   UPLOADING_MEDIA --> FAILURE
+   EVALUATING --> FAILURE
+   TRANSLATING --> FAILURE
+   SUCCESS --> AI_ENRICHING: Request new enrichment
+   FAILURE --> AI_ENRICHING: Request new enrichment
+   FAILURE --> [*]: Delete enrichment
+   SUCCESS --> [*]: Delete enrichment
 ```
 
 Creating an `Enrichment` can be done by posting a URL from which **Aristote** will download the `Media`:
@@ -193,8 +203,8 @@ sequenceDiagram
    AristoteAPI-->>Client: Status
 ```
 
-## Forcing models and/or infrastructres for transcription/translation by client
+## Forcing models and/or infrastructres for transcription/enrichment/translation by client
 
-When creating/editing a `client` in **Sonata Admin Panel**, you can specify which `model` and/or `infrastructure` you want for both `transcription` and `translation` of the enrichments created by that `client`.
+When creating/editing a `client` in **Sonata Admin Panel**, you can specify which `model` and/or `infrastructure` you want for `transcription`, `enrichment` or `translation` or  of the enrichments created by that `client`.
 
-To associate a `model`/`infrastructure` to a transcription or a `translation worker`, you can do it the creation/edit page of the worker in **Sonata Admin**.
+To associate a `model`/`infrastructure` to a **transcription**, **enrichment** or **translation** worker, you can do it the creation/edit page of the worker in **Sonata Admin**.
