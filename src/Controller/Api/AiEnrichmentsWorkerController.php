@@ -8,17 +8,16 @@ use App\Entity\EnrichmentVersion;
 use App\Form\AiEnrichmentRequestPayloadType;
 use App\Model\AiEnrichmentJobResponse;
 use App\Model\AiEnrichmentRequestPayload;
-use App\Model\EnrichmentWebhookPayload;
 use App\Model\ErrorsResponse;
 use App\Repository\EnrichmentRepository;
 use App\Repository\EnrichmentVersionRepository;
 use App\Service\ApiClientManager;
 use App\Service\ScopeAuthorizationCheckerService;
+use App\Utils\EnrichmentUtils;
 use App\Utils\PaginationUtils;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
@@ -47,6 +46,7 @@ class AiEnrichmentsWorkerController extends AbstractController
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
         private readonly PaginationUtils $paginationUtils,
+        private readonly EnrichmentUtils $enrichmentUtils,
     ) {
     }
 
@@ -176,33 +176,7 @@ class AiEnrichmentsWorkerController extends AbstractController
                 $enrichment->setStatus(Enrichment::STATUS_FAILURE);
                 $enrichment->getAiProcessedBy()->setJobLastFailuredAt(new DateTime());
                 $entityManager->flush();
-
-                $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
-                    ->setId($enrichment->getId())
-                    ->setStatus($enrichment->getStatus())
-                    ->setFailureCause($aiEnrichmentRequestPayload->getFailureCause())
-                    ->setInitialVersionId($enrichmentVersion->getId())
-                ;
-
-                try {
-                    $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
-
-                    $response = $httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [
-                        'body' => $serialized,
-                        'headers' => [
-                            'Content-Type' => 'application/json',
-                        ],
-                    ]);
-
-                    $enrichment->setNotificationStatus($response->getStatusCode());
-                    if (200 === $response->getStatusCode()) {
-                        $enrichment->setNotifiedAt(new DateTime());
-                    }
-                } catch (Exception $e) {
-                    $this->logger->error($e->getMessage());
-                    $enrichment->setNotificationStatus($e->getCode());
-                }
-                $entityManager->flush();
+                $this->enrichmentUtils->sendNotification($enrichment);
 
                 return $this->json(['status' => 'OK']);
             } elseif ('UNAVAILABLE' === $aiEnrichmentRequestPayload->getStatus()) {
@@ -243,30 +217,7 @@ class AiEnrichmentsWorkerController extends AbstractController
             $entityManager->flush();
 
             if (Enrichment::STATUS_SUCCESS === $targetStatus) {
-                $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
-                    ->setId($enrichment->getId())
-                    ->setStatus($enrichment->getStatus())
-                    ->setFailureCause($enrichment->getFailureCause())
-                    ->setInitialVersionId($enrichmentVersion->getId())
-                ;
-                try {
-                    $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
-
-                    $response = $httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [
-                        'body' => $serialized,
-                        'headers' => [
-                            'Content-Type' => 'application/json',
-                        ],
-                    ]);
-
-                    $enrichment->setNotificationStatus($response->getStatusCode());
-                    if (200 === $response->getStatusCode()) {
-                        $enrichment->setNotifiedAt(new DateTime());
-                    }
-                } catch (Exception $e) {
-                    $this->logger->error($e->getMessage());
-                    $enrichment->setNotificationStatus($e->getCode());
-                }
+                $this->enrichmentUtils->sendNotification($enrichment);
             }
             $enrichment->getAiProcessedBy()->setJobLastSuccessAt(new DateTime());
             $entityManager->flush();

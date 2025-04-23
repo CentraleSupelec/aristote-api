@@ -7,18 +7,17 @@ use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\Transcript;
 use App\Model\EnrichmentTranscriptRequestPayload;
-use App\Model\EnrichmentWebhookPayload;
 use App\Model\ErrorsResponse;
 use App\Model\TranscriptionJobResponse;
 use App\Repository\EnrichmentRepository;
 use App\Service\ApiClientManager;
 use App\Service\FileUploadService;
 use App\Service\ScopeAuthorizationCheckerService;
+use App\Utils\EnrichmentUtils;
 use App\Utils\PaginationUtils;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use League\Flysystem\FilesystemOperator;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
@@ -47,6 +46,7 @@ class TranscribingWorkerController extends AbstractController
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
         private readonly PaginationUtils $paginationUtils,
+        private readonly EnrichmentUtils $enrichmentUtils,
     ) {
     }
 
@@ -170,32 +170,7 @@ class TranscribingWorkerController extends AbstractController
             $enrichment->setStatus(Enrichment::STATUS_FAILURE);
             $enrichment->getTranscribedBy()->setJobLastFailuredAt(new DateTime());
             $entityManager->flush();
-
-            $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
-                ->setId($enrichment->getId())
-                ->setStatus($enrichment->getStatus())
-                ->setFailureCause($failureCause)
-            ;
-
-            try {
-                $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
-
-                $response = $httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [
-                    'body' => $serialized,
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                    ],
-                ]);
-
-                $enrichment->setNotificationStatus($response->getStatusCode());
-                if (200 === $response->getStatusCode()) {
-                    $enrichment->setNotifiedAt(new DateTime());
-                }
-            } catch (Exception $e) {
-                $this->logger->error($e->getMessage());
-                $enrichment->setNotificationStatus($e->getCode());
-            }
-            $entityManager->flush();
+            $this->enrichmentUtils->sendNotification($enrichment);
 
             return $this->json(['status' => 'OK']);
         }
@@ -266,30 +241,7 @@ class TranscribingWorkerController extends AbstractController
         }
 
         if (Enrichment::STATUS_SUCCESS === $targetStatus) {
-            $enrichmentWebhookPayload = (new EnrichmentWebhookPayload())
-                ->setId($enrichment->getId())
-                ->setStatus($enrichment->getStatus())
-                ->setFailureCause($enrichment->getFailureCause())
-                ->setInitialVersionId($enrichmentVersion->getId())
-            ;
-            try {
-                $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
-
-                $response = $httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [
-                    'body' => $serialized,
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                    ],
-                ]);
-
-                $enrichment->setNotificationStatus($response->getStatusCode());
-                if (200 === $response->getStatusCode()) {
-                    $enrichment->setNotifiedAt(new DateTime());
-                }
-            } catch (Exception $e) {
-                $this->logger->error($e->getMessage());
-                $enrichment->setNotificationStatus($e->getCode());
-            }
+            $this->enrichmentUtils->sendNotification($enrichment);
         }
 
         return $this->json(['status' => 'OK', 'id' => $enrichmentVersion->getId()]);
