@@ -5,3 +5,6 @@ validation:
     infrastructure_not_found: L'infrastructure spécifiée n'a pas été trouvée
     infrastructure_not_authorized: Vous n'avez pas accès à cette infrastructure
     no_enrichment_client_found: Aucun worker d'enrichissement avec les valeurs modèle/infrastructure spécifiés n'a été trouvé
+  parameter_constraint:
+    parameter_not_found: Les paramètres [%parameters%] n'ont pas été retrouvés
+    parameter_not_numeric: Les paramètres [%parameters%] doivent avoir une valeur numérique

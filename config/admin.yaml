@@ -5,7 +5,7 @@ services:
       - name: sonata.admin
         model_class: App\Entity\Administrator
         manager_type: orm
-        group: Utilisateurs
+        group: Entités
         label: Administrateurs
     calls:
       - [setUserManager, ['@App\Service\UserManager']]
@@ -17,7 +17,7 @@ services:
       - name: sonata.admin
         model_class: App\Entity\ApiClient
         manager_type: orm
-        group: Utilisateurs
+        group: Entités
         label: Clients API
     calls:
       - [setApiClientManager, ['@App\Service\ApiClientManager']]
@@ -29,7 +29,7 @@ services:
       - name: sonata.admin
         model_class: App\Entity\AiModel
         manager_type: orm
-        group: Utilisateurs
+        group: Entités
         label: Modèles IA
     public: true
 
@@ -39,7 +39,7 @@ services:
       - name: sonata.admin
         model_class: App\Entity\Infrastructure
         manager_type: orm
-        group: Utilisateurs
+        group: Entités
         label: Infrastructures
     public: true
 
@@ -49,6 +49,16 @@ services:
       - name: sonata.admin
         model_class: App\Entity\Enrichment
         manager_type: orm
-        group: Enrichissements
+        group: Entités
         label: Enrichissements
+    public: true
+  
+  admin.parameter:
+    class: App\Admin\ParameterAdmin
+    tags:
+      - name: sonata.admin
+        model_class: App\Entity\Parameter
+        manager_type: orm
+        group: Entités
+        label: Paramètres
     public: true

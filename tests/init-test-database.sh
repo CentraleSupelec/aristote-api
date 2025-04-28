@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
 
-php bin/console --env=test doctrine:schema:update --force --complete
+php bin/console doctrine:migrations:migrate --env=test --no-interaction

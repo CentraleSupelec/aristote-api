@@ -155,13 +155,16 @@ class EnrichmentUtils
                 ],
             ]);
             $enrichment->setNotificationStatus($response->getStatusCode());
+            $latestAiVersion?->setNotificationStatus($response->getStatusCode());
             if (200 === $response->getStatusCode()) {
                 $enrichment->setNotifiedAt(new DateTime());
+                $latestAiVersion?->setNotifiedAt(new DateTime());
             }
             $this->entityManager->flush();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
             $enrichment->setNotificationStatus($e->getCode());
+            $latestAiVersion?->setNotificationStatus($e->getCode());
             $this->entityManager->flush();
         }
     }

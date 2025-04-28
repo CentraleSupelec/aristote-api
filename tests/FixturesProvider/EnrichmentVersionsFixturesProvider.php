@@ -78,4 +78,25 @@ class EnrichmentVersionsFixturesProvider
             )
         ;
     }
+
+    public static function addEnrichmentVersion(EntityManagerInterface $entityManager, Enrichment $enrichment): EnrichmentVersion
+    {
+        $enrichmentVersion = (new EnrichmentVersion())
+            ->setCreatedAt(new DateTime())
+            ->setInitialVersion(0 === $enrichment->getVersions()->count() ? true : false)
+            ->setAiGenerated(true)
+            ->setEnrichmentVersionMetadata(enrichmentVersionMetadata: EnrichmentVersionsFixturesProvider::getEnrichmentVersionMetadata($enrichment))
+            ->setTranscript(EnrichmentVersionsFixturesProvider::getTranscript())
+            ->addMultipleChoiceQuestion(EnrichmentVersionsFixturesProvider::getMultipleChoiceQuestion())
+        ;
+
+        $enrichment->addVersion($enrichmentVersion)->setStatus(Enrichment::STATUS_SUCCESS);
+
+        if (null !== $entityManager) {
+            $entityManager->persist($enrichment);
+            $entityManager->flush();
+        }
+
+        return $enrichmentVersion;
+    }
 }

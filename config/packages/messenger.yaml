@@ -1,5 +1,9 @@
 framework:
   messenger:
+    buses:
+      messenger.bus.default:
+          middleware:
+                - 'App\Messenger\RetryCountArgumentAdderMiddleware'
     transports:
       # https://symfony.com/doc/current/messenger.html#transport-configuration
       async:
@@ -7,9 +11,9 @@ framework:
         options:
           table_name: "messenger_messages"
         retry_strategy:
-          max_retries: 3
+          max_retries: "%env(int:MAX_UPLOAD_RETRIES)%"
           # milliseconds delay
-          delay: 300000
+          delay: 1000
           # causes the delay to be higher before each retry
           # e.g. 1 second delay, 2 seconds, 4 seconds
           multiplier: 2

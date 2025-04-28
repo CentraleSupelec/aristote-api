@@ -1,0 +1,3 @@
+{% if admin.isGranted('DELETE', object) and object.isDeletable %}
+    {% include '@SonataAdmin/CRUD/list__action_delete.html.twig' %}
+{% endif %}

@@ -2,8 +2,10 @@
 
 namespace App\Command;
 
+use App\Constants;
 use App\Entity\Enrichment;
 use App\Repository\EnrichmentRepository;
+use App\Repository\ParameterRepository;
 use App\Utils\EnrichmentUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -25,6 +27,7 @@ class EnrichmentCleanUp extends Command
         private readonly LoggerInterface $logger,
         private readonly SerializerInterface $serializer,
         private readonly EnrichmentUtils $enrichmentUtils,
+        private readonly ParameterRepository $parameterRepository,
     ) {
         parent::__construct();
     }
@@ -41,11 +44,33 @@ class EnrichmentCleanUp extends Command
         $enrichments = $this->enrichmentRepository->findEnrichmentsWithMaxTriesAtWaitingStatus();
         $symfonyStyle->info(sprintf('%s enrichments to pass to failure status because max retries reached', count($enrichments)));
 
+        $maxTranscriptionRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_TRANSCRIPTION_RETRIES);
+        $maxEnrichmentRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_ENRICHMENT_RETRIES);
+        $maxTranslationRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_TRANSLATION_RETRIES);
+        $maxEvaluationRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_EVALUATION_RETRIES);
+
         foreach ($enrichments as $enrichment) {
-            /* @var Enrichment $enrichment */
+            $failureCause = '';
+
+            if ($enrichment->getTranscriptionRetries() > $maxTranscriptionRetries) {
+                $failureCause .= sprintf('Max transcription retries reached (%s)', $enrichment->getTranscriptionRetries());
+            }
+
+            if ($enrichment->getEnrichmentRetries() > $maxEnrichmentRetries) {
+                $failureCause .= sprintf('Max enrichment retries reached (%s)', $enrichment->getEnrichmentRetries());
+            }
+
+            if ($enrichment->getTranslationRetries() > $maxTranslationRetries) {
+                $failureCause .= sprintf('Max translation retries reached (%s)', $enrichment->getTranslationRetries());
+            }
+
+            if ($enrichment->getEvaluationRetries() > $maxEvaluationRetries) {
+                $failureCause .= sprintf('Max evaluation retries reached (%s)', $enrichment->getEvaluationRetries());
+            }
+
             $enrichment
                 ->setStatus(Enrichment::STATUS_FAILURE)
-                ->setFailureCause(sprintf('Max retries reached (%s)', $enrichment->getRetries()))
+                ->setFailureCause($failureCause)
             ;
             $this->entityManager->flush();
             $this->enrichmentUtils->sendNotification($enrichment);
@@ -57,7 +82,6 @@ class EnrichmentCleanUp extends Command
         $symfonyStyle->info(sprintf('%s enrichments to pass to failure status because uploading took so long', count($enrichments)));
 
         foreach ($enrichments as $enrichment) {
-            /* @var Enrichment $enrichment */
             $enrichment
                 ->setStatus(Enrichment::STATUS_FAILURE)
                 ->setFailureCause('Uploading took too long')

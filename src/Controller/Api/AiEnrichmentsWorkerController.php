@@ -175,6 +175,7 @@ class AiEnrichmentsWorkerController extends AbstractController
                 $enrichment->setFailureCause($aiEnrichmentRequestPayload->getFailureCause());
                 $enrichment->setStatus(Enrichment::STATUS_FAILURE);
                 $enrichment->getAiProcessedBy()->setJobLastFailuredAt(new DateTime());
+                $latestEnrichmentVersion->setFailureCause($aiEnrichmentRequestPayload->getFailureCause());
                 $entityManager->flush();
                 $this->enrichmentUtils->sendNotification($enrichment);
 
@@ -204,6 +205,7 @@ class AiEnrichmentsWorkerController extends AbstractController
             }
 
             $enrichment->setStatus($targetStatus)->setAiEnrichmentEndedAt(new DateTime());
+            $enrichmentVersion->setAiEnrichmentEndedAt(new DateTime());
 
             $errors = $this->validator->validate($enrichmentVersion);
             if (count($errors) > 0) {
@@ -333,7 +335,8 @@ class AiEnrichmentsWorkerController extends AbstractController
             $enrichmentLock = $lockFactory->createLock(sprintf('enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
                 if ($enrichment->getAiEnrichmentStartedAt() instanceof DateTimeInterface) {
-                    $enrichment->setRetries($enrichment->getRetries() + 1);
+                    $enrichment->setEnrichmentRetries($enrichment->getEnrichmentRetries() + 1);
+                    $latestEnrichmentVersion->setEnrichmentRetries($enrichment->getEnrichmentRetries() + 1);
                 }
 
                 $enrichment
@@ -342,6 +345,12 @@ class AiEnrichmentsWorkerController extends AbstractController
                     ->setAiProcessedBy($clientEntity)
                     ->setAiProcessingTaskId(Uuid::fromString($taskId))
                 ;
+
+                $latestEnrichmentVersion
+                    ->setAiEnrichmentStartedAt(new DateTime())
+                    ->setAiProcessedBy($clientEntity)
+                ;
+
                 $clientEntity->setJobLastTakendAt(new DateTime());
 
                 $entityManager->flush();

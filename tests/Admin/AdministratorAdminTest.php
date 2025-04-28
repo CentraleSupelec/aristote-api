@@ -108,7 +108,7 @@ class AdministratorAdminTest extends WebTestCase
 
         // Redirection to dashboard
         $this->assertStringContainsString(
-            'Utilisateurs',
+            'Entités',
             $crawler->filterXPath('html/body/div[1]/div/section[2]/div/div/div[1]/div/div/div[1]')->getNode(0)->textContent
         );
 

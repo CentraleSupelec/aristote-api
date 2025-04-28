@@ -88,19 +88,5 @@ services:
     volumes:
       - ./minio:/data:rw
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: aristote-pgadmin
-    restart: always
-    ports:
-      - "8888:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: aristote@api.com
-      PGADMIN_DEFAULT_PASSWORD: arisote
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-      - ./servers.json:/pgadmin4/servers.json
-
 volumes:
   db-data:
-  pgadmin-data:

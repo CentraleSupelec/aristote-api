@@ -37,6 +37,10 @@ services:
       - name: "kernel.event_listener"
         event: "league.oauth2_server.event.token_request_resolve"
 
+  App\Messenger\RetryCountArgumentAdderMiddleware:
+    tags:
+      - { name: messenger.middleware }
+
   League\OAuth2\Server\Repositories\ClientRepositoryInterface:
     class: App\Service\ApiClientManager
 
@@ -108,13 +112,6 @@ services:
     arguments:
       $enrichmentWorkerService: '@app.translation_worker'
   
-  App\Repository\EnrichmentRepository:
-    arguments:
-      $maxRetries: "%env(MAX_RETRIES)%"
-      $transcriptionWorkerTimeoutInMinutes: "%env(TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES)%"
-      $aiEnrichmentWorkerTimeoutInMinutes: "%env(AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES)%"
-      $aiEvaluationWorkerTimeoutInMinutes: "%env(AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES)%"
-      $translationWorkerTimeoutInMinutes: "%env(TRANSLATION_WORKER_TIMEOUT_IN_MINUTES)%"
 
   App\Controller\Api\TranscribingWorkerController:
     arguments:
@@ -123,3 +120,7 @@ services:
   App\Controller\Api\EnrichmentsController:
     arguments:
       $autoDeleteMediaAfterTranscription: "%env(bool:AUTO_DELETE_MEDIA_AFTER_TRANSCRIPTION)%"
+
+  App\MessageHandler\FileUploadFromUrlMessageHandler:
+    arguments:
+      $maxUploadRetries: "%env(int:MAX_UPLOAD_RETRIES)%"

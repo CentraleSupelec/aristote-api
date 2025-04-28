@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Constants;
 use App\Entity\Enrichment;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -19,13 +20,9 @@ use Knp\Component\Pager\PaginatorInterface;
 class EnrichmentRepository extends ServiceEntityRepository
 {
     public function __construct(
-        private readonly int $maxRetries,
-        private readonly int $transcriptionWorkerTimeoutInMinutes,
-        private readonly int $aiEnrichmentWorkerTimeoutInMinutes,
-        private readonly int $aiEvaluationWorkerTimeoutInMinutes,
-        private readonly int $translationWorkerTimeoutInMinutes,
         ManagerRegistry $managerRegistry,
         private readonly PaginatorInterface $paginator,
+        private readonly ParameterRepository $parameterRepository,
     ) {
         parent::__construct($managerRegistry, Enrichment::class);
     }
@@ -60,6 +57,8 @@ class EnrichmentRepository extends ServiceEntityRepository
     public function findOldestEnrichmentInWaitingAiEnrichmentStatusOrAiEnrichmentStatusForMoreThanXMinutes(?string $aiModel = null, ?string $infrastructure = null, bool $treatUnspecifiedModelOrInfrastructure = false): ?Enrichment
     {
         $qb = $this->createQueryBuilder('e');
+        $maxEnrichmentRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_ENRICHMENT_RETRIES);
+        $aiEnrichmentWorkerTimeoutInMinutes = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES);
         $qb->where($qb->expr()->orX(
             $qb->expr()->eq('e.status', ':statusWaitingAiEnrichment'),
             $qb->expr()->andX(
@@ -71,14 +70,14 @@ class EnrichmentRepository extends ServiceEntityRepository
             )
         ));
 
-        $qb->andWhere($qb->expr()->lt('e.retries', ':maxRetries'));
+        $qb->andWhere($qb->expr()->lt('e.enrichmentRetries', ':maxEnrichmentRetries'));
         $qb->andWhere($qb->expr()->eq('e.deleted', ':deleted'));
 
         $parameters = [
             'statusWaitingAiEnrichment' => Enrichment::STATUS_WAITING_AI_ENRICHMENT,
             'statusAiEnrichment' => Enrichment::STATUS_AI_ENRICHING,
-            'timeThreshold' => (new DateTime())->modify('-'.$this->aiEnrichmentWorkerTimeoutInMinutes.' minutes'),
-            'maxRetries' => $this->maxRetries,
+            'timeThreshold' => (new DateTime())->modify('-'.$aiEnrichmentWorkerTimeoutInMinutes.' minutes'),
+            'maxEnrichmentRetries' => $maxEnrichmentRetries,
             'deleted' => false,
         ];
 
@@ -131,24 +130,27 @@ class EnrichmentRepository extends ServiceEntityRepository
         bool $treatUnspecifiedModelOrInfrastructure = false,
     ): ?Enrichment {
         $qb = $this->createQueryBuilder('e');
+        $maxTranscriptionRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_TRANSCRIPTION_RETRIES);
+        $transcriptionWorkerTimeoutInMinutes = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES);
+
         $qb->where($qb->expr()->orX(
             $qb->expr()->eq('e.status', ':statusWaitingMediaTranscription'),
             $qb->expr()->andX(
                 $qb->expr()->eq('e.status', ':statusTranscribingMedia'),
                 $qb->expr()->lte(
-                    'e.transribingStartedAt',
+                    'e.transcribingStartedAt',
                     ':timeThreshold'
                 )
             )
         ))
-            ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
+            ->andWhere($qb->expr()->lt('e.transcriptionRetries', ':maxTranscriptionRetries'))
             ->andWhere($qb->expr()->eq('e.deleted', ':deleted'));
 
         $parameters = [
             'statusWaitingMediaTranscription' => Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION,
             'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
-            'timeThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
-            'maxRetries' => $this->maxRetries,
+            'timeThreshold' => (new DateTime())->modify('-'.$transcriptionWorkerTimeoutInMinutes.' minutes'),
+            'maxTranscriptionRetries' => $maxTranscriptionRetries,
             'deleted' => false,
         ];
 
@@ -203,7 +205,8 @@ class EnrichmentRepository extends ServiceEntityRepository
     public function findOldestEnrichmentInWaitingAiEvaluationStatusOrAiEvaluatingStatusForMoreThanXMinutesByEvaluator(string $evaluator): ?Enrichment
     {
         $qb = $this->createQueryBuilder('e');
-
+        $maxEvaluationRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_EVALUATION_RETRIES);
+        $aiEvaluationWorkerTimeoutInMinutes = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES);
         $qb
             ->where($qb->expr()->eq('e.aiEvaluation', ':evaluator'))
             ->andWhere($qb->expr()->orX(
@@ -216,14 +219,14 @@ class EnrichmentRepository extends ServiceEntityRepository
                     )
                 ))
             )
-            ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
+            ->andWhere($qb->expr()->lt('e.evaluationRetries', ':maxEvaluationRetries'))
             ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
             ->setParameters([
                 'statusWaitingAiEvaluation' => Enrichment::STATUS_WAITING_AI_EVALUATION,
                 'statusAiEvaluating' => Enrichment::STATUS_AI_EVALUATING,
-                'timeThreshold' => (new DateTime())->modify('-'.$this->aiEvaluationWorkerTimeoutInMinutes.' minutes'),
+                'timeThreshold' => (new DateTime())->modify('-'.$aiEvaluationWorkerTimeoutInMinutes.' minutes'),
                 'evaluator' => $evaluator,
-                'maxRetries' => $this->maxRetries,
+                'maxEvaluationRetries' => $maxEvaluationRetries,
                 'deleted' => false,
             ])
             ->orderBy('e.priority', 'DESC')
@@ -245,6 +248,8 @@ class EnrichmentRepository extends ServiceEntityRepository
         bool $treatUnspecifiedModelOrInfrastructure = false,
     ): ?Enrichment {
         $qb = $this->createQueryBuilder('e');
+        $maxTranslationRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_TRANSLATION_RETRIES);
+        $translationWorkerTimeoutInMinutes = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_TRANSLATION_WORKER_TIMEOUT_IN_MINUTES);
         $qb->where($qb->expr()->orX(
             $qb->expr()->eq('e.status', ':statusWaitingTranslation'),
             $qb->expr()->andX(
@@ -255,14 +260,14 @@ class EnrichmentRepository extends ServiceEntityRepository
                 )
             )
         ))
-            ->andWhere($qb->expr()->lt('e.retries', ':maxRetries'))
+            ->andWhere($qb->expr()->lt('e.translationRetries', ':maxTranslationRetries'))
             ->andWhere($qb->expr()->eq('e.deleted', ':deleted'));
 
         $parameters = [
             'statusWaitingTranslation' => Enrichment::STATUS_WAITING_TRANSLATION,
             'statusTranslating' => Enrichment::STATUS_TRANSLATING,
-            'timeThreshold' => (new DateTime())->modify('-'.$this->translationWorkerTimeoutInMinutes.' minutes'),
-            'maxRetries' => $this->maxRetries,
+            'timeThreshold' => (new DateTime())->modify('-'.$translationWorkerTimeoutInMinutes.' minutes'),
+            'maxTranslationRetries' => $maxTranslationRetries,
             'deleted' => false,
         ];
 
@@ -314,23 +319,38 @@ class EnrichmentRepository extends ServiceEntityRepository
         return null;
     }
 
+    /**
+     * @return array<int, Enrichment>
+     */
     public function findEnrichmentsWithMaxTriesAtWaitingStatus(): array
     {
         $qb = $this->createQueryBuilder('e');
+
+        $maxTranscriptionRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_TRANSCRIPTION_RETRIES);
+        $maxEnrichmentRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_ENRICHMENT_RETRIES);
+        $maxTranslationRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_TRANSLATION_RETRIES);
+        $maxEvaluationRetries = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_EVALUATION_RETRIES);
+
+        $transcriptionWorkerTimeoutInMinutes = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_TRANSCRIPTION_WORKER_TIMEOUT_IN_MINUTES);
+        $aiEnrichmentWorkerTimeoutInMinutes = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_AI_ENRICHMENT_WORKER_TIMEOUT_IN_MINUTES);
+        $translationWorkerTimeoutInMinutes = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_TRANSLATION_WORKER_TIMEOUT_IN_MINUTES);
+        $aiEvaluationWorkerTimeoutInMinutes = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_AI_EVALUATION_WORKER_TIMEOUT_IN_MINUTES);
+
         $qb
-            ->where($qb->expr()->gte('e.retries', ':maxRetries'))
-            ->andWhere($qb->expr()->orX(
+            ->where($qb->expr()->orX(
                 $qb->expr()->andX(
+                    $qb->expr()->gte('e.transcriptionRetries', ':maxTranscriptionRetries'),
                     $qb->expr()->orX(
                         $qb->expr()->eq('e.status', ':statusTranscribingMedia'),
                         $qb->expr()->eq('e.status', ':statusWaitingMediaTranscription'),
                     ),
                     $qb->expr()->lte(
-                        'e.transribingStartedAt',
+                        'e.transcribingStartedAt',
                         ':transcriptionThreshold'
                     )
                 ),
                 $qb->expr()->andX(
+                    $qb->expr()->gte('e.enrichmentRetries', ':maxEnrichmentRetries'),
                     $qb->expr()->orX(
                         $qb->expr()->eq('e.status', ':statusAiEnrichment'),
                         $qb->expr()->eq('e.status', ':statusWaitingAiEnrichment'),
@@ -341,6 +361,7 @@ class EnrichmentRepository extends ServiceEntityRepository
                     )
                 ),
                 $qb->expr()->andX(
+                    $qb->expr()->gte('e.evaluationRetries', ':maxEvaluationRetries'),
                     $qb->expr()->orX(
                         $qb->expr()->eq('e.status', ':statusAiEvaluating'),
                         $qb->expr()->eq('e.status', ':statusWaitingAiEvaluation'),
@@ -351,6 +372,8 @@ class EnrichmentRepository extends ServiceEntityRepository
                     )
                 ),
                 $qb->expr()->andX(
+                    $qb->expr()->gte('e.translationRetries', ':maxTranslationRetries'),
+
                     $qb->expr()->orX(
                         $qb->expr()->eq('e.status', ':statusTranslating'),
                         $qb->expr()->eq('e.status', ':statusWaitingTranslation'),
@@ -363,7 +386,10 @@ class EnrichmentRepository extends ServiceEntityRepository
             ))
             ->andWhere($qb->expr()->eq('e.deleted', ':deleted'))
             ->setParameters([
-                'maxRetries' => $this->maxRetries,
+                'maxTranscriptionRetries' => $maxTranscriptionRetries,
+                'maxEnrichmentRetries' => $maxEnrichmentRetries,
+                'maxEvaluationRetries' => $maxEvaluationRetries,
+                'maxTranslationRetries' => $maxTranslationRetries,
                 'statusTranscribingMedia' => Enrichment::STATUS_TRANSCRIBING_MEDIA,
                 'statusAiEnrichment' => Enrichment::STATUS_AI_ENRICHING,
                 'statusAiEvaluating' => Enrichment::STATUS_AI_EVALUATING,
@@ -372,16 +398,19 @@ class EnrichmentRepository extends ServiceEntityRepository
                 'statusWaitingAiEnrichment' => Enrichment::STATUS_WAITING_AI_ENRICHMENT,
                 'statusWaitingAiEvaluation' => Enrichment::STATUS_WAITING_AI_EVALUATION,
                 'statusWaitingTranslation' => Enrichment::STATUS_WAITING_TRANSLATION,
-                'transcriptionThreshold' => (new DateTime())->modify('-'.$this->transcriptionWorkerTimeoutInMinutes.' minutes'),
-                'aiEnrichmentThreshold' => (new DateTime())->modify('-'.$this->aiEnrichmentWorkerTimeoutInMinutes.' minutes'),
-                'aiEvaluationThreshold' => (new DateTime())->modify('-'.$this->aiEvaluationWorkerTimeoutInMinutes.' minutes'),
-                'translationThreshold' => (new DateTime())->modify('-'.$this->translationWorkerTimeoutInMinutes.' minutes'),
+                'transcriptionThreshold' => (new DateTime())->modify('-'.$transcriptionWorkerTimeoutInMinutes.' minutes'),
+                'aiEnrichmentThreshold' => (new DateTime())->modify('-'.$aiEnrichmentWorkerTimeoutInMinutes.' minutes'),
+                'aiEvaluationThreshold' => (new DateTime())->modify('-'.$aiEvaluationWorkerTimeoutInMinutes.' minutes'),
+                'translationThreshold' => (new DateTime())->modify('-'.$translationWorkerTimeoutInMinutes.' minutes'),
                 'deleted' => false,
             ]);
 
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return array<int, Enrichment>
+     */
     public function findEnrichmentsInUploadingStatusForMoreThanXMinutes(): array
     {
         $qb = $this->createQueryBuilder('e');
