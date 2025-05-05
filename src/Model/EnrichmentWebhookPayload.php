@@ -22,6 +22,10 @@ class EnrichmentWebhookPayload
     #[OA\Property(property: 'failureCause', description: 'Failure cause', type: 'string')]
     private ?string $failureCause = null;
 
+    #[Assert\NotBlank(allowNull: true)]
+    #[Assert\Choice(callback: [Enrichment::class, 'getPossibleCompletedSteps'], multiple: false)]
+    private ?string $completedStep = null;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -66,6 +70,18 @@ class EnrichmentWebhookPayload
     public function setFailureCause(?string $failureCause): self
     {
         $this->failureCause = $failureCause;
+
+        return $this;
+    }
+
+    public function getCompletedStep(): ?string
+    {
+        return $this->completedStep;
+    }
+
+    public function setCompletedStep(?string $completedStep): self
+    {
+        $this->completedStep = $completedStep;
 
         return $this;
     }

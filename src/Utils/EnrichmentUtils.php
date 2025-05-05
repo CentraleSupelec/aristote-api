@@ -6,6 +6,7 @@ use App\Entity\Enrichment;
 use App\Entity\EnrichmentVersion;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
+use App\Exception\EnrichmentWebhookPayloadValidationException;
 use App\Model\EnrichmentWebhookPayload;
 use App\Repository\EnrichmentVersionRepository;
 use DateTime;
@@ -13,6 +14,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EnrichmentUtils
@@ -23,6 +26,7 @@ class EnrichmentUtils
         private readonly SerializerInterface $serializer,
         private readonly HttpClientInterface $httpClient,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ValidatorInterface $validator,
     ) {
     }
 
@@ -136,7 +140,7 @@ class EnrichmentUtils
         return $result;
     }
 
-    public function sendNotification(Enrichment $enrichment): void
+    public function sendNotification(Enrichment $enrichment, ?string $completedStep = null): void
     {
         $latestAiVersion = $this->enrichmentVersionRepository->findLatestAiVersionByEnrichmentId($enrichment->getId());
 
@@ -145,7 +149,21 @@ class EnrichmentUtils
             ->setStatus($enrichment->getStatus())
             ->setFailureCause($enrichment->getFailureCause())
             ->setInitialVersionId($latestAiVersion?->getId())
+            ->setCompletedStep($completedStep)
         ;
+
+        $errors = $this->validator->validate($enrichmentWebhookPayload);
+
+        if (count($errors) > 0) {
+            $errorsArray = array_map(fn (ConstraintViolation $error) => [
+                'message' => $error->getMessage(),
+                'path' => $error->getPropertyPath(),
+            ], iterator_to_array($errors));
+
+            $this->logger->error($errorsArray);
+            throw new EnrichmentWebhookPayloadValidationException();
+        }
+
         try {
             $serialized = $this->serializer->serialize($enrichmentWebhookPayload, 'json');
             $response = $this->httpClient->request('POST', $enrichment->getNotificationWebhookUrl(), [

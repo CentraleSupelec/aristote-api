@@ -220,6 +220,8 @@ class AiEnrichmentsWorkerController extends AbstractController
 
             if (Enrichment::STATUS_SUCCESS === $targetStatus) {
                 $this->enrichmentUtils->sendNotification($enrichment);
+            } elseif (Constants::NOTIFICATION_LEVEL_TASK === $enrichment->getNotificationLevel()) {
+                $this->enrichmentUtils->sendNotification($enrichment, Enrichment::STATUS_AI_ENRICHING);
             }
             $enrichment->getAiProcessedBy()->setJobLastSuccessAt(new DateTime());
             $entityManager->flush();
