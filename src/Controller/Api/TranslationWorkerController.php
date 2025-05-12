@@ -214,6 +214,7 @@ class TranslationWorkerController extends AbstractController
                 $enrichment->setFailureCause($translationRequestPayload->getFailureCause());
                 $enrichment->setStatus(Enrichment::STATUS_FAILURE);
                 $enrichment->getTranslatedBy()->setJobLastFailuredAt(new DateTime());
+                $enrichmentVersion->setFailureCause($translationRequestPayload->getFailureCause());
                 $entityManager->flush();
                 $this->enrichmentUtils->sendNotification($enrichment);
 
@@ -279,6 +280,7 @@ class TranslationWorkerController extends AbstractController
             }
 
             $enrichment->setStatus($targetStatus)->setTranslationEndedAt(new DateTime());
+            $enrichmentVersion->setTranslationEndedAt(new DateTime());
 
             $errors = $this->validator->validate($enrichmentVersion);
             if (count($errors) > 0) {
@@ -409,7 +411,8 @@ class TranslationWorkerController extends AbstractController
             $enrichmentLock = $lockFactory->createLock(sprintf('translating-enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
                 if ($enrichment->getTranslationStartedAt() instanceof DateTimeInterface) {
-                    $enrichment->setRetries($enrichment->getRetries() + 1);
+                    $enrichment->setTranslationRetries($enrichment->getTranslationRetries() + 1);
+                    $latestEnrichmentVersion->setTranslationRetries($enrichment->getTranslationRetries() + 1);
                 }
 
                 $enrichment
@@ -418,6 +421,12 @@ class TranslationWorkerController extends AbstractController
                     ->setTranslatedBy($clientEntity)
                     ->setTranslationTaskId(Uuid::fromString($taskId))
                 ;
+
+                $latestEnrichmentVersion
+                    ->setTranslationStartedAt(new DateTime())
+                    ->setTranslatedBy($clientEntity)
+                ;
+
                 $clientEntity->setJobLastTakendAt(new DateTime());
                 $entityManager->flush();
                 $enrichmentLock->release();

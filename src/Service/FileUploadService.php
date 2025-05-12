@@ -10,7 +10,10 @@ use App\Entity\EnrichmentVersion;
 use App\Entity\Subtitle;
 use App\Entity\Transcript;
 use App\Entity\Video;
+use App\Exception\MediaDurationExceedsLimitException;
+use App\Exception\TextLengthExceedsLimitException;
 use App\Exception\UploadFileUnsupportedTypeException;
+use App\Repository\ParameterRepository;
 use App\Utils\MimeTypeUtils;
 use Aws\S3\S3Client;
 use Captioning\Cue;
@@ -32,6 +35,7 @@ class FileUploadService
         private readonly S3Client $s3Client,
         private readonly MimeTypeUtils $mimeTypeUtils,
         private readonly LoggerInterface $logger,
+        private readonly ParameterRepository $parameterRepository,
     ) {
         $this->fFMpeg = FFMpeg::create();
     }
@@ -45,20 +49,47 @@ class FileUploadService
         if ($this->mimeTypeUtils->isVideo($mimeType)) {
             $directory = sprintf($directory, 'videos');
             $duration = $testing ? 0 : $this->fFMpeg->open($uploadedFile->getPathname())->getFormat()->get('duration');
+
+            $maxMediaDurationInSeconds = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_MEDIA_DURATION_IN_SECONDS);
+
+            if ($maxMediaDurationInSeconds > 0 && $duration > $maxMediaDurationInSeconds) {
+                $failureCause = sprintf('Video duration (%s s) exceeds maximum accepted media duration (%s s)', ceil($duration), $maxMediaDurationInSeconds);
+                $enrichment
+                    ->setStatus(Enrichment::STATUS_FAILURE)
+                    ->setFailureCause($failureCause)
+                ;
+
+                throw new MediaDurationExceedsLimitException($failureCause);
+            }
+
             $media = (new Video())
                 ->setVideoFile($uploadedFile)
                 ->setFileDirectory($directory)
                 ->setDuration((int) $duration)
             ;
+            $enrichment->setMediaDurationInSeconds($duration);
             $targetStatus = Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION;
         } elseif ($this->mimeTypeUtils->isAudio($mimeType)) {
             $directory = sprintf($directory, 'audios');
             $duration = $testing ? 0 : $this->fFMpeg->open($uploadedFile->getPathname())->getFormat()->get('duration');
+
+            $maxMediaDurationInSeconds = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_MEDIA_DURATION_IN_SECONDS);
+
+            if ($maxMediaDurationInSeconds > 0 && $duration > $maxMediaDurationInSeconds) {
+                $failureCause = sprintf('Audio duration (%s s) exceeds maximum accepted media duration (%s s)', ceil($duration), $maxMediaDurationInSeconds);
+                $enrichment
+                    ->setStatus(Enrichment::STATUS_FAILURE)
+                    ->setFailureCause($failureCause)
+                ;
+                throw new MediaDurationExceedsLimitException($failureCause);
+            }
+
             $media = (new Audio())
                 ->setAudioFile($uploadedFile)
                 ->setFileDirectory($directory)
                 ->setDuration((int) $duration)
             ;
+            $enrichment->setMediaDurationInSeconds($duration);
             $targetStatus = Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION;
         } elseif ($this->mimeTypeUtils->isPlainText($mimeType)) {
             $directory = sprintf($directory, 'subtitles');
@@ -112,6 +143,18 @@ class FileUploadService
                 ];
                 $sentences[$key] = $sentence;
             }
+
+            $maxTextLength = $this->parameterRepository->findIntegerParameterByName(Constants::PARAMETER_MAX_TEXT_LENGTH);
+
+            if ($maxTextLength > 0 && strlen($text) > $maxTextLength) {
+                $failureCause = sprintf('Text length (%s) exceeds maximum accepted lenght (%s)', strlen($text), $maxTextLength);
+                $enrichment
+                    ->setStatus(Enrichment::STATUS_FAILURE)
+                    ->setFailureCause($failureCause)
+                ;
+                throw new TextLengthExceedsLimitException($failureCause);
+            }
+
             $transcript = (new Transcript())
                 ->setOriginalFilename($uploadedFile->getClientOriginalName())
                 ->setSentences(json_encode($sentences, JSON_THROW_ON_ERROR))
@@ -132,9 +175,14 @@ class FileUploadService
                 ->setInfrastructure($enrichment->getInfrastructure())
                 ->setLanguage($enrichment->getLanguage())
                 ->setTranslateTo($enrichment->getTranslateTo())
+                ->setGenerateMetadata($enrichment->getGenerateMetadata())
+                ->setGenerateQuiz($enrichment->getGenerateQuiz())
+                ->setGenerateNotes($enrichment->getGenerateNotes())
             ;
-
+            $enrichment->setMediaTextLength(strlen($text));
             $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount(1);
+            $enrichment->setInitialEnrichmentVersion($enrichmentVersion);
+            $enrichment->setLastEnrichmentVersion($enrichmentVersion);
         } else {
             throw new UploadFileUnsupportedTypeException('File type not supported. Supported types are videos, audio files and subtitles');
         }

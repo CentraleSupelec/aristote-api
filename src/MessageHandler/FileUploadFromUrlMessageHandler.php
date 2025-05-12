@@ -4,9 +4,12 @@ namespace App\MessageHandler;
 
 use App\Constants;
 use App\Entity\Enrichment;
+use App\Exception\MediaDurationExceedsLimitException;
+use App\Exception\TextLengthExceedsLimitException;
 use App\Message\FileUploadFromUrlMessage;
 use App\Repository\EnrichmentRepository;
 use App\Service\FileUploadService;
+use App\Utils\EnrichmentUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -22,10 +25,12 @@ class FileUploadFromUrlMessageHandler
         private readonly EnrichmentRepository $enrichmentRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
+        private readonly EnrichmentUtils $enrichmentUtils,
+        private readonly int $maxUploadRetries,
     ) {
     }
 
-    public function __invoke(FileUploadFromUrlMessage $fileUploadFromUrlMessage): void
+    public function __invoke(FileUploadFromUrlMessage $fileUploadFromUrlMessage, int $retryCount): void
     {
         $enrichment = $this->enrichmentRepository->findOneBy(['id' => $fileUploadFromUrlMessage->getEnrichmentId()]);
         $enrichment->setStatus(Enrichment::STATUS_UPLOADING_MEDIA)->setUploadStartedAt(new DateTime());
@@ -38,7 +43,7 @@ class FileUploadFromUrlMessageHandler
             $temporaryFilePath = $fileDetails['filePath'];
             $fileName = $fileDetails['fileName'];
         } catch (Exception $exception) {
-            $this->handleUploadFailure($enrichment, $exception, "Couldn't get file from URL");
+            $this->handleUploadFailure($enrichment, $exception, "Couldn't get file from URL", $retryCount);
             throw $exception;
         }
 
@@ -50,7 +55,7 @@ class FileUploadFromUrlMessageHandler
                 if (file_exists($temporaryFilePath)) {
                     unlink($temporaryFilePath);
                 }
-                $this->handleUploadFailure($enrichment, new Exception($errorMessage), $errorMessage);
+                $this->handleUploadFailure($enrichment, new Exception($errorMessage), $errorMessage, $retryCount);
             } else {
                 $enrichment = $this->fileUploadService->uploadFile($uploadedFile, $fileUploadFromUrlMessage->getApiClient(), $enrichment);
                 $enrichment->setMediaUrl(null)->setUploadEndedAt(new DateTime());
@@ -61,7 +66,12 @@ class FileUploadFromUrlMessageHandler
             if (file_exists($temporaryFilePath)) {
                 unlink($temporaryFilePath);
             }
-            $this->handleUploadFailure($enrichment, $exception, "Couldn't upload file to bucket");
+
+            if (!$exception instanceof MediaDurationExceedsLimitException && !$exception instanceof TextLengthExceedsLimitException) {
+                $this->handleUploadFailure($enrichment, $exception, "Couldn't upload file to bucket", $retryCount);
+            } else {
+                $this->handleUploadFailure($enrichment, $exception, $exception->getMessage(), $retryCount);
+            }
             throw $exception;
         }
     }
@@ -118,12 +128,16 @@ class FileUploadFromUrlMessageHandler
         ];
     }
 
-    private function handleUploadFailure(Enrichment $enrichment, Exception $exception, string $errorMessage)
+    private function handleUploadFailure(Enrichment $enrichment, Exception $exception, string $errorMessage, int $retryCount)
     {
         $this->logger->error($exception);
         $enrichment->setStatus(Enrichment::STATUS_FAILURE);
         $enrichment->setFailureCause($errorMessage);
         $this->entityManager->persist($enrichment);
         $this->entityManager->flush();
+
+        if ($retryCount >= $this->maxUploadRetries) {
+            $this->enrichmentUtils->sendNotification($enrichment);
+        }
     }
 }

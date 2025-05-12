@@ -177,6 +177,7 @@ class AiEvaluationWorkerController extends AbstractController
                 $enrichment->setFailureCause($aiEvaluationRequestPayload->getFailureCause());
                 $enrichment->setStatus(Enrichment::STATUS_FAILURE);
                 $enrichment->getAiEvaluatedBy()->setJobLastFailuredAt(new DateTime());
+                $enrichmentVersion->setFailureCause($aiEvaluationRequestPayload->getFailureCause());
                 $entityManager->flush();
                 $this->enrichmentUtils->sendNotification($enrichment);
 
@@ -191,6 +192,7 @@ class AiEvaluationWorkerController extends AbstractController
                 }
             }
             $enrichment->setStatus(Enrichment::STATUS_SUCCESS)->setAiEvaluationEndedAt(new DateTime());
+            $enrichmentVersion->setAiEvaluationEndedAt(new DateTime());
 
             $errors = $this->validator->validate($enrichmentVersion);
             if (count($errors) > 0) {
@@ -322,7 +324,8 @@ class AiEvaluationWorkerController extends AbstractController
             $enrichmentLock = $lockFactory->createLock(sprintf('evaluating-enrichment-%s', $enrichment->getId()));
             if ($enrichmentLock->acquire()) {
                 if ($enrichment->getAiEvaluationEndedAt() instanceof DateTimeInterface) {
-                    $enrichment->setRetries($enrichment->getRetries() + 1);
+                    $enrichment->setEvaluationRetries($enrichment->getEvaluationRetries() + 1);
+                    $latestEnrichmentVersion->setEvaluationRetries($enrichment->getEvaluationRetries() + 1);
                 }
 
                 $enrichment
@@ -331,6 +334,12 @@ class AiEvaluationWorkerController extends AbstractController
                     ->setAiEvaluatedBy($clientEntity)
                     ->setAiEvaluationTaskId(Uuid::fromString($taskId))
                 ;
+
+                $latestEnrichmentVersion
+                    ->setAiEvaluationStartedAt(new DateTime())
+                    ->setAiEvaluatedBy($clientEntity)
+                ;
+
                 $clientEntity->setJobLastTakendAt(new DateTime());
 
                 $entityManager->flush();

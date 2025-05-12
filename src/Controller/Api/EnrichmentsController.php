@@ -12,6 +12,8 @@ use App\Entity\Infrastructure;
 use App\Entity\Media;
 use App\Entity\MultipleChoiceQuestion;
 use App\Entity\Transcript;
+use App\Exception\MediaDurationExceedsLimitException;
+use App\Exception\TextLengthExceedsLimitException;
 use App\Exception\UploadFileUnsupportedTypeException;
 use App\Message\FileUploadFromUrlMessage;
 use App\Model\EnrichmentCreationFileUploadRequestPayload;
@@ -434,6 +436,8 @@ class EnrichmentsController extends AbstractController
             ->setMediaUrl(null)
             ->setDeletedAt(new DateTime())
             ->setEvaluationMark($enrichmentUtils->calculateEvaluationMark($enrichment))
+            ->setInitialEnrichmentVersion(null)
+            ->setLastEnrichmentVersion(null)
         ;
 
         $versions = $enrichment->getVersions();
@@ -759,6 +763,12 @@ class EnrichmentsController extends AbstractController
             ->setTranslatedNotes($enrichmentVersionCreationRequestPayload->getTranslatedNotes())
         ;
 
+        $enrichment
+            ->setEnrichmentRetries(0)
+            ->setTranslationRetries(0)
+            ->setEvaluationRetries(0)
+        ;
+
         if ($enrichmentVersionCreationRequestPayload->getTranslate()) {
             $enrichment
                 ->setStatus(Enrichment::STATUS_WAITING_TRANSLATION)
@@ -775,6 +785,7 @@ class EnrichmentsController extends AbstractController
         }
 
         $enrichment->addVersion($enrichmentVersion);
+        $enrichment->setLastEnrichmentVersion($enrichmentVersion);
 
         $errors = $this->validator->validate($enrichment, groups: ['Default']);
 
@@ -1056,6 +1067,17 @@ class EnrichmentsController extends AbstractController
         $entityManager->remove($enrichmentVersion);
         $entityManager->flush();
 
+        $latestEnrichmentVersion = $enrichmentVersionRepository->findLatestVersionByEnrichmentId($enrichmentId);
+        $enrichment = $enrichmentRepository->findOneBy(['id' => $enrichmentId]);
+        $enrichment
+            ->setLastEnrichmentVersion($latestEnrichmentVersion)
+            ->setEnrichmentRetries($latestEnrichmentVersion->getEnrichmentRetries())
+            ->setTranslationRetries($latestEnrichmentVersion->getTranslationRetries())
+            ->setEvaluationRetries($latestEnrichmentVersion->getEvaluationRetries())
+        ;
+
+        $entityManager->flush();
+
         return $this->json(['status' => 'OK']);
     }
 
@@ -1328,7 +1350,7 @@ class EnrichmentsController extends AbstractController
 
         try {
             $enrichment = $fileUploadService->uploadFile($file, $clientEntity, $enrichment);
-        } catch (UploadFileUnsupportedTypeException $exception) {
+        } catch (UploadFileUnsupportedTypeException|MediaDurationExceedsLimitException|TextLengthExceedsLimitException $exception) {
             return $this->json([
                 'status' => 'KO',
                 'errors' => [
@@ -1473,6 +1495,9 @@ class EnrichmentsController extends AbstractController
             ->setTranslationStartedAt(null)
             ->setTranslationStartedAt(null)
             ->setLatestEnrichmentRequestedAt(new DateTime())
+            ->setEnrichmentRetries(0)
+            ->setTranslationRetries(0)
+            ->setEvaluationRetries(0)
             ->setNotificationWebhookUrl($enrichmentCreationRequestPayload->getNotificationWebhookUrl())
             ->setDisciplines($enrichmentCreationRequestPayload->getEnrichmentParameters()->getDisciplines())
             ->setMediaTypes($enrichmentCreationRequestPayload->getEnrichmentParameters()->getMediaTypes())
@@ -1509,9 +1534,13 @@ class EnrichmentsController extends AbstractController
             ->setInfrastructure($enrichmentCreationRequestPayload->getEnrichmentParameters()->getInfrastructure())
             ->setLanguage($enrichmentCreationRequestPayload->getEnrichmentParameters()->getLanguage())
             ->setTranslateTo($enrichmentCreationRequestPayload->getEnrichmentParameters()->getTranslateTo())
+            ->setGenerateMetadata($enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateMetadata())
+            ->setGenerateQuiz($enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateQuiz())
+            ->setGenerateNotes($enrichmentCreationRequestPayload->getEnrichmentParameters()->getGenerateNotes())
         ;
 
         $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount($enrichment->getAiGenerationCount() + 1);
+        $enrichment->setLastEnrichmentVersion($enrichmentVersion);
 
         $entityManager->persist($enrichment);
         $entityManager->flush();

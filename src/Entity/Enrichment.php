@@ -155,19 +155,13 @@ class Enrichment
     #[ORM\OneToMany(mappedBy: 'enrichment', targetEntity: EnrichmentVersion::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $versions;
 
-    #[Groups(groups: ['enrichments'])]
-    #[OA\Property(property: 'initialVersionId', description: "Enrichment's intiail version ID", type: 'string')]
-    public function getInitialVersionId(): ?Uuid
-    {
-        $initialVersion = $this->versions->findFirst(fn (int $index, EnrichmentVersion $enrichmentVersion) => $enrichmentVersion->isInitialVersion());
+    #[ORM\OneToOne(inversedBy: 'initialEnrichmentVersionOf', targetEntity: EnrichmentVersion::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?EnrichmentVersion $initialEnrichmentVersion = null;
 
-        if ($initialVersion) {
-            /* @var EnrichmentVersion $initialVersion */
-            return $initialVersion->getId();
-        }
-
-        return null;
-    }
+    #[ORM\OneToOne(inversedBy: 'lastEnrichmentVersionOf', targetEntity: EnrichmentVersion::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?EnrichmentVersion $lastEnrichmentVersion = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(groups: ['enrichments'])]
@@ -224,11 +218,11 @@ class Enrichment
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(groups: ['enrichments_with_status'])]
-    private ?DateTimeInterface $transribingStartedAt = null;
+    private ?DateTimeInterface $transcribingStartedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(groups: ['enrichments_with_status'])]
-    private ?DateTimeInterface $transribingEndedAt = null;
+    private ?DateTimeInterface $transcribingEndedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(groups: ['enrichments_with_status'])]
@@ -272,8 +266,16 @@ class Enrichment
     private ?string $infrastructure = null;
 
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
-    #[Groups(groups: ['enrichments'])]
-    private int $retries = 0;
+    private ?int $transcriptionRetries = 0;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private ?int $enrichmentRetries = 0;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private ?int $translationRetries = 0;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private ?int $evaluationRetries = 0;
 
     #[ORM\Column(type: 'integer', options: ['default' => 1])]
     private int $priority = 1;
@@ -309,6 +311,38 @@ class Enrichment
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $generateNotes = false;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Groups(groups: ['enrichments'])]
+    private ?int $mediaTextLength = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Groups(groups: ['enrichments'])]
+    private ?int $mediaDurationInSeconds = null;
+
+    #[Groups(groups: ['enrichments'])]
+    #[OA\Property(property: 'initialVersionId', description: "Enrichment's initial version ID", type: 'string')]
+    public function getInitialVersionId(): ?Uuid
+    {
+        if ($this->initialEnrichmentVersion instanceof EnrichmentVersion) {
+            /* @var EnrichmentVersion $initialVersion */
+            return $this->initialEnrichmentVersion->getId();
+        }
+
+        return null;
+    }
+
+    #[Groups(groups: ['enrichments'])]
+    #[OA\Property(property: 'lastVersionId', description: "Enrichment's last version ID", type: 'string')]
+    public function getLastVersionId(): ?Uuid
+    {
+        if ($this->lastEnrichmentVersion instanceof EnrichmentVersion) {
+            /* @var EnrichmentVersion $initialVersion */
+            return $this->lastEnrichmentVersion->getId();
+        }
+
+        return null;
+    }
 
     public function __construct()
     {
@@ -581,26 +615,26 @@ class Enrichment
         return $this;
     }
 
-    public function getTransribingStartedAt(): ?DateTimeInterface
+    public function getTranscribingStartedAt(): ?DateTimeInterface
     {
-        return $this->transribingStartedAt;
+        return $this->transcribingStartedAt;
     }
 
-    public function setTransribingStartedAt(DateTimeInterface $transribingStartedAt): self
+    public function setTranscribingStartedAt(?DateTimeInterface $transcribingStartedAt): self
     {
-        $this->transribingStartedAt = $transribingStartedAt;
+        $this->transcribingStartedAt = $transcribingStartedAt;
 
         return $this;
     }
 
-    public function getTransribingEndedAt(): ?DateTimeInterface
+    public function getTranscribingEndedAt(): ?DateTimeInterface
     {
-        return $this->transribingEndedAt;
+        return $this->transcribingEndedAt;
     }
 
-    public function setTransribingEndedAt(DateTimeInterface $transribingEndedAt): self
+    public function setTranscribingEndedAt(?DateTimeInterface $transcribingEndedAt): self
     {
-        $this->transribingEndedAt = $transribingEndedAt;
+        $this->transcribingEndedAt = $transcribingEndedAt;
 
         return $this;
     }
@@ -634,7 +668,7 @@ class Enrichment
         return $this->notifiedAt;
     }
 
-    public function setNotifiedAt(DateTimeInterface $notifiedAt): self
+    public function setNotifiedAt(?DateTimeInterface $notifiedAt): self
     {
         $this->notifiedAt = $notifiedAt;
 
@@ -761,14 +795,14 @@ class Enrichment
         return $this;
     }
 
-    public function getRetries(): int
+    public function getTranscriptionRetries(): ?int
     {
-        return $this->retries;
+        return $this->transcriptionRetries;
     }
 
-    public function setRetries(int $retries): self
+    public function setTranscriptionRetries(?int $transcriptionRetries): self
     {
-        $this->retries = $retries;
+        $this->transcriptionRetries = $transcriptionRetries;
 
         return $this;
     }
@@ -889,6 +923,90 @@ class Enrichment
     public function setGenerateNotes(bool $generateNotes): self
     {
         $this->generateNotes = $generateNotes;
+
+        return $this;
+    }
+
+    public function getInitialEnrichmentVersion(): ?EnrichmentVersion
+    {
+        return $this->initialEnrichmentVersion;
+    }
+
+    public function setInitialEnrichmentVersion(?EnrichmentVersion $initialEnrichmentVersion): static
+    {
+        $this->initialEnrichmentVersion = $initialEnrichmentVersion;
+
+        return $this;
+    }
+
+    public function getLastEnrichmentVersion(): ?EnrichmentVersion
+    {
+        return $this->lastEnrichmentVersion;
+    }
+
+    public function setLastEnrichmentVersion(?EnrichmentVersion $lastEnrichmentVersion): static
+    {
+        $this->lastEnrichmentVersion = $lastEnrichmentVersion;
+
+        return $this;
+    }
+
+    public function getEnrichmentRetries(): ?int
+    {
+        return $this->enrichmentRetries;
+    }
+
+    public function setEnrichmentRetries(?int $enrichmentRetries): self
+    {
+        $this->enrichmentRetries = $enrichmentRetries;
+
+        return $this;
+    }
+
+    public function getTranslationRetries(): ?int
+    {
+        return $this->translationRetries;
+    }
+
+    public function setTranslationRetries(?int $translationRetries): self
+    {
+        $this->translationRetries = $translationRetries;
+
+        return $this;
+    }
+
+    public function getEvaluationRetries(): ?int
+    {
+        return $this->evaluationRetries;
+    }
+
+    public function setEvaluationRetries(?int $evaluationRetries): self
+    {
+        $this->evaluationRetries = $evaluationRetries;
+
+        return $this;
+    }
+
+    public function getMediaTextLength(): ?int
+    {
+        return $this->mediaTextLength;
+    }
+
+    public function setMediaTextLength(?int $mediaTextLength): self
+    {
+        $this->mediaTextLength = $mediaTextLength;
+
+        return $this;
+    }
+
+    public function getMediaDurationInSeconds(): ?int
+    {
+        return $this->mediaDurationInSeconds;
+    }
+
+    public function setMediaDurationInSeconds(?int $mediaDurationInSeconds): self
+    {
+        $this->mediaDurationInSeconds = $mediaDurationInSeconds;
 
         return $this;
     }

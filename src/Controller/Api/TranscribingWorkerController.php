@@ -125,6 +125,7 @@ class TranscribingWorkerController extends AbstractController
         ScopeAuthorizationCheckerService $scopeAuthorizationCheckerService,
         FilesystemOperator $mediaStorage,
         HttpClientInterface $httpClient,
+        ApiClientManager $apiClientManager,
     ): Response {
         if (!$scopeAuthorizationCheckerService->hasScope(Constants::SCOPE_TRANSCRIPTION_WORKER)) {
             return $this->json(['status' => 'KO', 'errors' => [
@@ -194,6 +195,9 @@ class TranscribingWorkerController extends AbstractController
             ]], 400);
         }
 
+        $clientId = $this->security->getToken()->getAttribute('oauth_client_id');
+        $clientEntity = $apiClientManager->getClientEntity($clientId);
+
         $enrichmentVersion = (new EnrichmentVersion())
             ->setInitialVersion(true)
             ->setAiGenerated(true)
@@ -207,9 +211,16 @@ class TranscribingWorkerController extends AbstractController
             ->setInfrastructure($enrichment->getInfrastructure())
             ->setLanguage($enrichment->getLanguage())
             ->setTranslateTo($enrichment->getTranslateTo())
+            ->setTranscribedBy($clientEntity)
+            ->setTranscribingEndedAt(new DateTime())
+            ->setGenerateMetadata($enrichment->getGenerateMetadata())
+            ->setGenerateQuiz($enrichment->getGenerateMetadata())
+            ->setGenerateNotes($enrichment->getGenerateNotes())
         ;
 
         $enrichment->addVersion($enrichmentVersion)->setAiGenerationCount(1);
+        $enrichment->setInitialEnrichmentVersion($enrichmentVersion);
+        $enrichment->setLastEnrichmentVersion($enrichmentVersion);
 
         $targetStatus = Enrichment::STATUS_SUCCESS;
         if ($enrichment->getGenerateMetadata() || $enrichment->getGenerateQuiz() || $enrichment->getGenerateNotes()) {
@@ -220,7 +231,7 @@ class TranscribingWorkerController extends AbstractController
             $targetStatus = Enrichment::STATUS_WAITING_AI_EVALUATION;
         }
 
-        $enrichment->setStatus($targetStatus)->setTransribingEndedAt(new DateTime());
+        $enrichment->setStatus($targetStatus)->setTranscribingEndedAt(new DateTime());
 
         $errors = $this->validator->validate($enrichment, groups: ['Default']);
 
@@ -339,13 +350,13 @@ class TranscribingWorkerController extends AbstractController
                 $mediaFilePath = sprintf('%s/%s', $enrichment->getMedia()->getFileDirectory(), $enrichment->getMedia()->getFileName());
                 $mediaTemporaryUrl = $fileUploadService->generatePublicLink($mediaFilePath);
 
-                if ($enrichment->getTransribingStartedAt() instanceof DateTimeInterface) {
-                    $enrichment->setRetries($enrichment->getRetries() + 1);
+                if ($enrichment->getTranscribingStartedAt() instanceof DateTimeInterface) {
+                    $enrichment->setTranslationRetries($enrichment->getTranslationRetries() + 1);
                 }
 
                 $enrichment
                     ->setStatus(Enrichment::STATUS_TRANSCRIBING_MEDIA)
-                    ->setTransribingStartedAt(new DateTime())
+                    ->setTranscribingStartedAt(new DateTime())
                     ->setTranscribedBy($clientEntity)
                     ->setTranscriptionTaskId(Uuid::fromString($taskId))
                 ;
