@@ -17,7 +17,7 @@ class EnrichmentCreationRequestPayload
     #[Groups(['Default'])]
     private ?string $notificationWebhookUrl = null;
 
-    #[OA\Property(property: 'notificationLevel', description: 'Choose to receive notifications only at the end of the enrichment or at each step of the process', type: 'string', required: false)]
+    #[OA\Property(property: 'notificationLevel', description: 'Choose to receive notifications only at the end of the enrichment or at each step of the process', type: 'string', nullable: true)]
     #[Assert\Choice(callback: [Constants::class, 'getNotificationLevels'], multiple: false, message: 'Invalid notificationLevel value')]
     #[Groups(['Default'])]
     private ?string $notificationLevel = null;
