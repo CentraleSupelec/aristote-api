@@ -171,6 +171,8 @@ class EnrichmentUtils
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
+                'verify_peer' => false,
+                'verify_host' => false,
             ]);
             $enrichment->setNotificationStatus($response->getStatusCode());
             $latestAiVersion?->setNotificationStatus($response->getStatusCode());
