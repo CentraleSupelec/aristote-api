@@ -295,6 +295,8 @@ class TranslationWorkerController extends AbstractController
 
             if (Enrichment::STATUS_SUCCESS === $targetStatus) {
                 $this->enrichmentUtils->sendNotification($enrichment);
+            } elseif (Constants::NOTIFICATION_LEVEL_TASK === $enrichment->getNotificationLevel()) {
+                $this->enrichmentUtils->sendNotification($enrichment, Enrichment::STATUS_TRANSLATING);
             }
             $enrichment->getTranslatedBy()->setJobLastSuccessAt(new DateTime());
             $entityManager->flush();

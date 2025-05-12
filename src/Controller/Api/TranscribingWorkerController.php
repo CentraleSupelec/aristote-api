@@ -253,6 +253,8 @@ class TranscribingWorkerController extends AbstractController
 
         if (Enrichment::STATUS_SUCCESS === $targetStatus) {
             $this->enrichmentUtils->sendNotification($enrichment);
+        } elseif (Constants::NOTIFICATION_LEVEL_TASK === $enrichment->getNotificationLevel()) {
+            $this->enrichmentUtils->sendNotification($enrichment, Enrichment::STATUS_TRANSCRIBING_MEDIA);
         }
 
         return $this->json(['status' => 'OK', 'id' => $enrichmentVersion->getId()]);

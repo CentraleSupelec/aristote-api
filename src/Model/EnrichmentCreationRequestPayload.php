@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Constants;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -15,6 +16,11 @@ class EnrichmentCreationRequestPayload
     #[Assert\NotBlank(message: 'The parameter notificationWebhookUrl cannot be empty')]
     #[Groups(['Default'])]
     private ?string $notificationWebhookUrl = null;
+
+    #[OA\Property(property: 'notificationLevel', description: 'Choose to receive notifications only at the end of the enrichment or at each step of the process', type: 'string', required: false)]
+    #[Assert\Choice(callback: [Constants::class, 'getNotificationLevels'], multiple: false, message: 'Invalid notificationLevel value')]
+    #[Groups(['Default'])]
+    private ?string $notificationLevel = null;
 
     #[OA\Property(property: 'enrichmentParameters', type: 'object', ref: new Model(type: EnrichmentParameters::class))]
     #[Assert\Valid]
@@ -33,6 +39,18 @@ class EnrichmentCreationRequestPayload
     public function setNotificationWebhookUrl(?string $notificationWebhookUrl): static
     {
         $this->notificationWebhookUrl = $notificationWebhookUrl;
+
+        return $this;
+    }
+
+    public function getNotificationLevel(): ?string
+    {
+        return $this->notificationLevel;
+    }
+
+    public function setNotificationLevel(?string $notificationLevel): static
+    {
+        $this->notificationLevel = $notificationLevel;
 
         return $this;
     }

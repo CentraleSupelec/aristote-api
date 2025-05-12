@@ -2,6 +2,7 @@
 
 namespace App\Admin;
 
+use App\Constants;
 use App\Entity\Enrichment;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridInterface;
@@ -78,6 +79,11 @@ class EnrichmentAdmin extends AbstractAdmin
                 'by_reference' => false,
                 'entry_type' => TextType::class,
                 'prototype' => true,
+            ])
+            ->add('notificationWebhookUrl', null, ['label' => 'URL de notification'])
+            ->add('notificationLevel', ChoiceType::class, [
+                'label' => 'Niveau de notification',
+                'choices' => Constants::getNotificationLevels(),
             ]);
     }
 
@@ -112,6 +118,7 @@ class EnrichmentAdmin extends AbstractAdmin
             ->add('failureCause', null, ['label' => "Cause d'erreur"])
             ->add('mediaUrl', null, ['label' => 'Média URL'])
             ->add('notificationWebhookUrl', null, ['label' => 'URL de notification'])
+            ->add('notificationLevel', null, ['label' => 'Niveau de notification'])
             ->add('media.originalFileName', null, ['label' => 'Nom du fichier'])
             ->add('deleted', null, ['label' => 'Supprimé'])
         ;

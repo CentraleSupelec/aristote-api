@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Constants;
 use App\Repository\EnrichmentRepository;
 use App\Validator\Constraints as AppAssert;
 use DateTimeInterface;
@@ -50,6 +51,15 @@ class Enrichment
             self::STATUS_AI_EVALUATING => self::STATUS_AI_EVALUATING,
             self::STATUS_SUCCESS => self::STATUS_SUCCESS,
             self::STATUS_FAILURE => self::STATUS_FAILURE,
+        ];
+    }
+
+    public static function getPossibleCompletedSteps(): array
+    {
+        return [
+            self::STATUS_TRANSCRIBING_MEDIA => self::STATUS_TRANSCRIBING_MEDIA,
+            self::STATUS_AI_ENRICHING => self::STATUS_AI_ENRICHING,
+            self::STATUS_TRANSLATING => self::STATUS_TRANSLATING,
         ];
     }
 
@@ -319,6 +329,10 @@ class Enrichment
     #[ORM\Column(type: 'integer', nullable: true)]
     #[Groups(groups: ['enrichments'])]
     private ?int $mediaDurationInSeconds = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Choice(callback: [Constants::class, 'getNotificationLevels'], multiple: false, message: 'Invalid notificationLevel value')]
+    private ?string $notificationLevel = null;
 
     #[Groups(groups: ['enrichments'])]
     #[OA\Property(property: 'initialVersionId', description: "Enrichment's initial version ID", type: 'string')]
@@ -1007,6 +1021,18 @@ class Enrichment
     public function setMediaDurationInSeconds(?int $mediaDurationInSeconds): self
     {
         $this->mediaDurationInSeconds = $mediaDurationInSeconds;
+
+        return $this;
+    }
+
+    public function getNotificationLevel(): ?string
+    {
+        return $this->notificationLevel;
+    }
+
+    public function setNotificationLevel(?string $notificationLevel): self
+    {
+        $this->notificationLevel = $notificationLevel;
 
         return $this;
     }
