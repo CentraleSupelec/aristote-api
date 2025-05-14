@@ -15,14 +15,16 @@ use League\Bundle\OAuth2ServerBundle\OAuth2Grants;
 use League\Bundle\OAuth2ServerBundle\ValueObject\Grant;
 use League\Bundle\OAuth2ServerBundle\ValueObject\Scope;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
+use Override;
 use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherAwareInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ApiClientRepository::class)]
 #[UniqueEntity(fields: ['identifier'], message: 'Un client avec cet idendifiant existe déjà.')]
-class ApiClient extends AbstractClient implements ClientEntityInterface, Stringable, PasswordHasherAwareInterface
+class ApiClient extends AbstractClient implements ClientEntityInterface, Stringable, PasswordHasherAwareInterface, UserInterface
 {
     use TimestampableEntity;
 
@@ -125,6 +127,11 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         return $this->identifier ?? 'API Client';
     }
 
+    public function getRoles(): array
+    {
+        return [];
+    }
+
     public function getPasswordHasherName(): ?string
     {
         return self::class;
@@ -136,6 +143,11 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
     public function getRedirectUri(): array
     {
         return $this->getRedirectUris();
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->identifier;
     }
 
     public function setIdentifier(?string $identifier): self
@@ -162,11 +174,12 @@ class ApiClient extends AbstractClient implements ClientEntityInterface, Stringa
         return $this;
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         $this->setPlainSecret(null);
     }
 
+    #[Override]
     public function isConfidential(): bool
     {
         return true;

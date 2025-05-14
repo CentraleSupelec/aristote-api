@@ -98,7 +98,7 @@ class MultipleChoiceQuestion implements Stringable
 
     public function __toString(): string
     {
-        return $this->question;
+        return (string) $this->question;
     }
 
     public function getId(): ?Uuid

@@ -15,7 +15,7 @@ class EnrichmentCreationFileUploadRequestPayload extends EnrichmentCreationReque
     #[Groups(['Default'])]
     private ?UploadedFile $file = null;
 
-    #[OA\Property(property: 'originalFileName', type: 'string')]
+    #[OA\Property(property: 'originalFileName', type: 'string', nullable: true)]
     #[Groups(['Default'])]
     private ?string $originalFileName = null;
 

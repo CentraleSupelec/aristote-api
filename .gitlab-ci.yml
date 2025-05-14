@@ -15,7 +15,7 @@ stages:
   - Build
 
 .test_template: &test_template
-  image: illuin/symfony-ready:8.2
+  image: illuin/symfony-ready:8.4-node-22
   tags:
     - docker
   before_script:
@@ -47,11 +47,16 @@ tests:
     POSTGRES_PASSWORD: aristote
     POSTGRES_USER: api
   script:
-    - apk add ffmpeg
+    - apt update && apt install -y ffmpeg
     - sh tests/init-test-database.sh
     - openssl genrsa -out config/jwt/private.key 2048
     - openssl rsa -in config/jwt/private.key -pubout -out config/jwt/public.key
-    - php vendor/bin/phpunit --coverage-text --coverage-cobertura=coverage.cobertura.xml
+    - php vendor/bin/phpunit --coverage-cobertura=coverage.cobertura.xml
+    - sed '/<!DOCTYPE/d' coverage.cobertura.xml > clean-coverage.xml
+    - lineRate=$(xmlstarlet sel --nonet -t -v "/coverage/@line-rate" clean-coverage.xml)
+    - percentage=$(printf "%.2f" "$(echo "$lineRate * 100" | bc -l)")
+    - "echo -e Code coverage: $percentage% of line covered"
+  coverage: '/Code coverage: \d+(?:\.\d+)?/'
   artifacts:
     reports:
       coverage_report:

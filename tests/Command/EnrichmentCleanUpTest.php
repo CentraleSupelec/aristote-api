@@ -14,14 +14,13 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class EnrichmentCleanUpTest extends KernelTestCase
 {
-    protected EntityManagerInterface $entityManager;
-    protected KernelInterface $client;
+    private EntityManagerInterface $entityManager;
+    private KernelInterface $client;
 
     protected function setUp(): void
     {
         $this->client = self::bootKernel();
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
-        $this->enrichmentRepository = $this->entityManager->getRepository(Enrichment::class);
     }
 
     public function testCleanUpEnrichmentsCommand()

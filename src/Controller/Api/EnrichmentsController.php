@@ -39,7 +39,7 @@ use App\Utils\PaginationUtils;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -1381,7 +1381,7 @@ class EnrichmentsController extends AbstractController
         $entityManager->persist($enrichment);
         $entityManager->flush();
 
-        if ($this->autoDeleteMediaAfterTranscription && $mimeTypeUtils->isPlainText($enrichment->getMedia()->getMimeType())) {
+        if ($this->autoDeleteMediaAfterTranscription && $mimeTypeUtils->isSubtitleFile($enrichment->getMedia()->getMimeType())) {
             $mediaStorage->delete($enrichment->getMedia()->getFileDirectory().'/'.$enrichment->getMedia()->getFileName());
         }
 
@@ -2039,7 +2039,7 @@ class EnrichmentsController extends AbstractController
         $binaryFileResponse = new BinaryFileResponse($tempFile);
         $binaryFileResponse->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            pathinfo($enrichmentVersion->getEnrichment()->getMedia()->getOriginalFileName())['filename'].'.'.$format
+            pathinfo((string) $enrichmentVersion->getEnrichment()->getMedia()->getOriginalFileName())['filename'].'.'.$format
         );
 
         $binaryFileResponse->deleteFileAfterSend(true);
@@ -2135,7 +2135,7 @@ class EnrichmentsController extends AbstractController
     {
         $enrichment = $choice instanceof Choice ?
             (
-                $choice->getMultipleChoiceQuestion() instanceof MultipleChoiceQuestion ? $choice->getMultipleChoiceQuestion()->getEnrichmentVersion() ? $choice->getMultipleChoiceQuestion()->getEnrichmentVersion()->getEnrichment() : null : null
+                $choice->getMultipleChoiceQuestion() instanceof MultipleChoiceQuestion ? $choice->getMultipleChoiceQuestion()->getEnrichmentVersion() instanceof EnrichmentVersion ? $choice->getMultipleChoiceQuestion()->getEnrichmentVersion()->getEnrichment() : null : null
             )
             : null;
 
