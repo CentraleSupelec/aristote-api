@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.17 as php_base
+FROM php:8.4-fpm-alpine as php_base
 
 RUN apk update \
  && apk add bash icu-dev icu-data-full postgresql-dev libzip-dev libpng-dev oniguruma-dev autoconf gcc g++ make fcgi optipng jpegoptim libjpeg libpng imagemagick ghostscript git libxml2-dev gnu-libiconv screen ffmpeg \
@@ -28,7 +28,7 @@ COPY .env \
     symfony.lock \
     ./
 
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.8.8 /usr/bin/composer /usr/bin/composer
 
 ADD docker/php/symfony-entrypoint.sh /
 ADD docker/php/worker-messenger-mq-entrypoint.sh /

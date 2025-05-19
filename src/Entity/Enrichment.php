@@ -23,18 +23,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Enrichment
 {
     use TimestampableEntity;
-    final public const STATUS_WAITING_MEIDA_UPLOAD = 'WAITING_MEIDA_UPLOAD';
-    final public const STATUS_UPLOADING_MEDIA = 'UPLOADING_MEDIA';
-    final public const STATUS_WAITING_MEDIA_TRANSCRIPTION = 'WAITING_MEDIA_TRANSCRIPTION';
-    final public const STATUS_TRANSCRIBING_MEDIA = 'TRANSCRIBING_MEDIA';
-    final public const STATUS_WAITING_AI_ENRICHMENT = 'WAITING_AI_ENRICHMENT';
-    final public const STATUS_AI_ENRICHING = 'AI_ENRICHING';
-    final public const STATUS_WAITING_TRANSLATION = 'WAITING_TRANSLATION';
-    final public const STATUS_TRANSLATING = 'TRANSLATING';
-    final public const STATUS_WAITING_AI_EVALUATION = 'WAITING_AI_EVALUATION';
-    final public const STATUS_AI_EVALUATING = 'AI_EVALUATING';
-    final public const STATUS_SUCCESS = 'SUCCESS';
-    final public const STATUS_FAILURE = 'FAILURE';
+    final public const string STATUS_WAITING_MEIDA_UPLOAD = 'WAITING_MEIDA_UPLOAD';
+    final public const string STATUS_UPLOADING_MEDIA = 'UPLOADING_MEDIA';
+    final public const string STATUS_WAITING_MEDIA_TRANSCRIPTION = 'WAITING_MEDIA_TRANSCRIPTION';
+    final public const string STATUS_TRANSCRIBING_MEDIA = 'TRANSCRIBING_MEDIA';
+    final public const string STATUS_WAITING_AI_ENRICHMENT = 'WAITING_AI_ENRICHMENT';
+    final public const string STATUS_AI_ENRICHING = 'AI_ENRICHING';
+    final public const string STATUS_WAITING_TRANSLATION = 'WAITING_TRANSLATION';
+    final public const string STATUS_TRANSLATING = 'TRANSLATING';
+    final public const string STATUS_WAITING_AI_EVALUATION = 'WAITING_AI_EVALUATION';
+    final public const string STATUS_AI_EVALUATING = 'AI_EVALUATING';
+    final public const string STATUS_SUCCESS = 'SUCCESS';
+    final public const string STATUS_FAILURE = 'FAILURE';
 
     public static function getPossibleStatuses(): array
     {
@@ -63,8 +63,8 @@ class Enrichment
         ];
     }
 
-    final public const LANGUAGE_FR = 'fr';
-    final public const LANGUAGE_EN = 'en';
+    final public const string LANGUAGE_FR = 'fr';
+    final public const string LANGUAGE_EN = 'en';
 
     public static function getSupportedLanguages(): array
     {
@@ -165,11 +165,11 @@ class Enrichment
     #[ORM\OneToMany(mappedBy: 'enrichment', targetEntity: EnrichmentVersion::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $versions;
 
-    #[ORM\OneToOne(inversedBy: 'initialEnrichmentVersionOf', targetEntity: EnrichmentVersion::class)]
+    #[ORM\OneToOne(mappedBy: 'initialEnrichmentVersionOf', targetEntity: EnrichmentVersion::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?EnrichmentVersion $initialEnrichmentVersion = null;
 
-    #[ORM\OneToOne(inversedBy: 'lastEnrichmentVersionOf', targetEntity: EnrichmentVersion::class)]
+    #[ORM\OneToOne(mappedBy: 'lastEnrichmentVersionOf', targetEntity: EnrichmentVersion::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?EnrichmentVersion $lastEnrichmentVersion = null;
 

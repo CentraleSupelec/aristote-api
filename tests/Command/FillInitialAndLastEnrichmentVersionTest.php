@@ -2,7 +2,6 @@
 
 namespace App\Tests\centralesupelec\Application\Command;
 
-use App\Entity\Enrichment;
 use App\Tests\FixturesProvider\ApiClientFixturesProvider;
 use App\Tests\FixturesProvider\EnrichmentFixturesProvider;
 use App\Tests\FixturesProvider\EnrichmentVersionsFixturesProvider;
@@ -22,7 +21,6 @@ class FillInitialAndLastEnrichmentVersionTest extends KernelTestCase
     {
         $this->client = self::bootKernel();
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
-        $this->enrichmentRepository = $this->entityManager->getRepository(Enrichment::class);
     }
 
     public function testFillInitialAndLastEnrichmentVersionCommand()

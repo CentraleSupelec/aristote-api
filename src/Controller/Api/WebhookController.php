@@ -5,7 +5,7 @@ namespace App\Controller\Api;
 use App\Form\EnrichmentWebhookPayloadType;
 use App\Model\EnrichmentWebhookPayload;
 use App\Model\ErrorsResponse;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;

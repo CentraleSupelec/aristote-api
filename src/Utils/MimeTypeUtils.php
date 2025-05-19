@@ -14,8 +14,8 @@ class MimeTypeUtils
         return str_starts_with($mimeType, 'audio/');
     }
 
-    public function isPlainText(string $mimeType): bool
+    public function isSubtitleFile(string $mimeType): bool
     {
-        return 'text/plain' === $mimeType;
+        return in_array($mimeType, ['text/plain', 'application/x-subrip', 'text/vtt']);
     }
 }

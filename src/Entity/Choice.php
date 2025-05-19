@@ -49,7 +49,7 @@ class Choice implements Stringable
 
     public function __toString(): string
     {
-        return $this->optionText;
+        return (string) $this->optionText;
     }
 
     public function getId(): ?Uuid

@@ -4,7 +4,7 @@ namespace App\Controller\Api;
 
 use App\Model\HealthCheck as ModelHealthCheck;
 use App\Service\HealthCheckService;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

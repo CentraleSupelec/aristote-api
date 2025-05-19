@@ -91,7 +91,7 @@ class FileUploadService
             ;
             $enrichment->setMediaDurationInSeconds($duration);
             $targetStatus = Enrichment::STATUS_WAITING_MEDIA_TRANSCRIPTION;
-        } elseif ($this->mimeTypeUtils->isPlainText($mimeType)) {
+        } elseif ($this->mimeTypeUtils->isSubtitleFile($mimeType)) {
             $directory = sprintf($directory, 'subtitles');
             $media = (new Subtitle())
                 ->setSubtitleFile($uploadedFile)

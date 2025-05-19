@@ -29,7 +29,7 @@ class SubtitleFileConstraintValidator extends ConstraintValidator
         }
 
         /** @var File $value */
-        if (!$this->mimeTypeUtils->isPlainText($value->getMimeType())) {
+        if (!$this->mimeTypeUtils->isSubtitleFile($value->getMimeType())) {
             $this->context->buildViolation($constraint->invalidFormat)->addViolation();
         }
     }

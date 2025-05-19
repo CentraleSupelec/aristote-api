@@ -17,15 +17,8 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class AiModelInfrastructureConstraintValidator extends ConstraintValidator
 {
-    public function __construct(
-        private ApiClientRepository $apiClientRepository,
-        private AiModelRepository $aiModelRepository,
-        private InfrastructureRepository $infrastructureRepository,
-        private readonly Security $security,
-    ) {
-        $this->apiClientRepository = $apiClientRepository;
-        $this->aiModelRepository = $aiModelRepository;
-        $this->infrastructureRepository = $infrastructureRepository;
+    public function __construct(private readonly ApiClientRepository $apiClientRepository, private readonly AiModelRepository $aiModelRepository, private readonly InfrastructureRepository $infrastructureRepository, private readonly Security $security)
+    {
     }
 
     public function validate($value, Constraint $constraint): void
