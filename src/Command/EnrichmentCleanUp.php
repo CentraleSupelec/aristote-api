@@ -52,19 +52,19 @@ class EnrichmentCleanUp extends Command
         foreach ($enrichments as $enrichment) {
             $failureCause = '';
 
-            if ($enrichment->getTranscriptionRetries() > $maxTranscriptionRetries) {
+            if ($enrichment->getTranscriptionRetries() >= $maxTranscriptionRetries) {
                 $failureCause .= sprintf('Max transcription retries reached (%s)', $enrichment->getTranscriptionRetries());
             }
 
-            if ($enrichment->getEnrichmentRetries() > $maxEnrichmentRetries) {
+            if ($enrichment->getEnrichmentRetries() >= $maxEnrichmentRetries) {
                 $failureCause .= sprintf('Max enrichment retries reached (%s)', $enrichment->getEnrichmentRetries());
             }
 
-            if ($enrichment->getTranslationRetries() > $maxTranslationRetries) {
+            if ($enrichment->getTranslationRetries() >= $maxTranslationRetries) {
                 $failureCause .= sprintf('Max translation retries reached (%s)', $enrichment->getTranslationRetries());
             }
 
-            if ($enrichment->getEvaluationRetries() > $maxEvaluationRetries) {
+            if ($enrichment->getEvaluationRetries() >= $maxEvaluationRetries) {
                 $failureCause .= sprintf('Max evaluation retries reached (%s)', $enrichment->getEvaluationRetries());
             }
 
