@@ -1,201 +1,284 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
-  title: Swagger Aristote - OpenAPI 3.0
-  version: 0.0.1
-  description: All endpoints are protected using an authentication mechanism.
+  title: Aristote
+  description: Aristote's API documentation
+  version: 1.0.0
 paths:
-  /enrichments:
+  /api/v1/enrichments/{enrichmentId}/versions/{versionId}/ai_enrichment:
+    post:
+      tags:
+        - AI Enrichment - Worker
+      summary: Completes an initial version of an enrichment with AI
+      description: Completes an initial version of an enrichment with AI
+      operationId: post_complete_initial_enrichment_version
+      parameters:
+        - name: versionId
+          in: path
+          description: Enrichment version ID
+          required: true
+          schema:
+            type: string
+        - name: enrichmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiEnrichmentRequestPayload'
+      responses:
+        '200':
+          description: Completed the initial version successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    description: OK
+                    type: string
+                type: object
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/job/ai_enrichment/oldest:
     get:
+      tags:
+        - AI Enrichment - Worker
+      summary: Get an enrichment job
+      description: Get an enrichment job
+      operationId: get_get_enrichment_job
+      parameters:
+        - name: taskId
+          in: query
+          description: Task ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns a job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiEnrichmentJobResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: No job has been found for now
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/{enrichmentId}/versions/{versionId}/ai_evaluation:
+    post:
+      tags:
+        - AI Evaluation - Worker
+      summary: Evaluates the MCQs of an initial version of an enrichment with AI
+      description: Evaluates the MCQs of an initial version of an enrichment with AI
+      operationId: post_evaluate_initial_enrichment_version
+      parameters:
+        - name: versionId
+          in: path
+          description: Enrichment version ID
+          required: true
+          schema:
+            type: string
+        - name: enrichmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiEvaluationRequestPayload'
+      responses:
+        '200':
+          description: Completed the initial version successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    description: OK
+                    type: string
+                type: object
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/job/ai_evaluation/oldest:
+    get:
+      tags:
+        - AI Evaluation - Worker
+      summary: Get an evaluation job
+      description: Get an evaluation job
+      operationId: get_get_evaluation_job
+      parameters:
+        - name: taskId
+          in: query
+          description: Task ID
+          schema:
+            type: string
+        - name: evaluator
+          in: query
+          description: The name of the evaluator
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns a job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiEvaluationJobResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: No job has been found for now
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments:
+    get:
+      tags:
+        - Enrichments
       summary: Enable a user to list, with pagination, all of his own created enrichment
+      description: Enable a user to list, with pagination, all of his own created enrichment
+      operationId: get_enrichments
       parameters:
         - name: sort
+          in: query
           description: Sort property to use
-          in: query
-          required: false
           schema:
             type: string
-            example: createdAt
         - name: order
-          description: Sort direction
           in: query
-          required: false
+          description: Sort oder to use (DESC or ASC)
           schema:
             type: string
-            example: desc
         - name: size
           in: query
-          required: false
           schema:
             type: integer
             format: int64
         - name: page
           in: query
-          required: false
           schema:
             type: integer
             format: int64
-      security:
-        - bearerAuth: []
+        - name: endUserIdentifier
+          in: query
+          description: End User Identifier
+          schema:
+            type: string
+        - name: withStatus
+          in: query
+          description: Get Statuses information
+          schema:
+            type: boolean
       responses:
         '200':
-          description: Succeeded
+          description: Returns a list of enrichments created by the user
           content:
             application/json:
               schema:
-                type: object
                 properties:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/EnrichmentDetailResponse'
-                  totalElements:
-                    type: integer
-                    format: int64
-                    example: 25
-                  currentPage:
-                    type: integer
-                    format: int64
-                    example: 1
+                      $ref: '#/components/schemas/Enrichment'
                   isLastPage:
+                    description: Returns true if this is the last page, false otherwise
                     type: boolean
-                    example: false
-        
+                  currentPage:
+                    description: Returns the current page number
+                    type: integer
+                    format: int64
+                  totalElements:
+                    description: Returns the total number of elements
+                    type: integer
+                    format: int64
+                type: object
         '400':
           description: Bad parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorsResponse'
         '401':
           description: User is not authenticated
-  /enrichments/transcripts/upload:
-    post:
-      summary: Create an enrichment from a video file
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              properties:
-                video:
-                  type: string
-                  format: binary
-                  description: File containing transcripts in subtitle format
-                enrichmentParams: 
-                  $ref: '#/components/schemas/EnrichmentCreationParams'
-                notification:
-                  type: object
-                  properties:
-                    webhookUrl:
-                      type: string
-                  example:
-                    webhookUrl: https://example.com/webhook
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: File uploaded successfully, enrichment will be started as soon as possible
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EnrichmentCreationResponse'
-        '400':
-          description: Bad request, invalid data provided
-        '401':
-          description: User is not authenticated
-  /enrichments/upload:
-    post:
-      summary: Create an enrichment from a video file
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              properties:
-                video:
-                  type: string
-                  format: binary
-                enrichmentParams: 
-                  $ref: '#/components/schemas/EnrichmentCreationParams'
-                notification:
-                  type: object
-                  properties:
-                    webhookUrl:
-                      type: string
-                  example:
-                    webhookUrl: https://example.com/webhook
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: File uploaded successfully, enrichment will be started as soon as possible
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EnrichmentCreationResponse'
-        '400':
-          description: Bad request, invalid data provided
-        '401':
-          description: User is not authenticated
-  /enrichments/url:
-    post:
-      summary: Create an enrichment from a video URL (accessible without authentication)
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              properties:
-                video-url:
-                  type: string
-                enrichmentParams:
-                  $ref: '#/components/schemas/EnrichmentCreationParams'
-                notification:
-                  type: object
-                  properties:
-                    webhookUrl:
-                      type: string
-                  example:
-                    webhookUrl: https://example.com/webhook
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: File uploaded successfully, enrichment will be started as soon as possible
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EnrichmentCreationResponse'
-        '400':
-          description: Bad request, invalid data provided
-        '401':
-          description: User is not authenticated
-  /enrichments/{enrichmentId}:
+  /api/v1/enrichments/ai_model_infrastructure_combinations:
     get:
-      summary: Get enrihment status by id
-      parameters:
-        - name: enrichmentId
-          in: path
-          description: ID of the enrichment to get
-          required: true
-          schema:
-            type: integer
-            format: int64
-      security:
-        - bearerAuth: []
+      tags:
+        - Enrichments
+      summary: Get available AI Model-Infrastructure combinations
+      description: Get available AI Model-Infrastructure combinations
+      operationId: get_ai_model_infrastructure_combinations
       responses:
         '200':
-          description: successful operation
+          description: Returns a list of possible AI Models/Infrastructure pairs
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EnrichmentDetailResponse'
-        '400':
-          description: Bad parameters
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: array
+                items:
+                  properties:
+                    aiModel:
+                      description: Enrichment AI Model
+                      type: string
+                    infrastructure:
+                      description: Infrastructure
+                      type: string
+                  type: object
         '401':
           description: User is not authenticated
         '403':
@@ -203,72 +286,159 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/{id}:
+    get:
+      tags:
+        - Enrichments
+      summary: Get enrichment status by id
+      description: Get enrichment status by id
+      operationId: get_enrichment
+      parameters:
+        - name: id
+          in: path
+          description: Enrichment ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns an enrichment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enrichment2'
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
         '404':
           description: Entity not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /enrichments/{enrichmentId}/versions:
-    get:
-      summary: Get pagination result of version for an enrichment
+                $ref: '#/components/schemas/ErrorsResponse'
+    delete:
+      tags:
+        - Enrichments
+      summary: Delete enrichment by id
+      description: Delete enrichment by id
+      operationId: delete_delete_enrichment
       parameters:
-        - name: enrichmentId
+        - name: id
           in: path
-          description: ID of the enrichment to get
+          description: Enrichment ID
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
+      responses:
+        '200':
+          description: Enrichment deleted successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    description: OK
+                    type: string
+                type: object
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/{id}/versions:
+    get:
+      tags:
+        - Enrichments
+      summary: Get enrichment versions by enrichment id
+      description: Get enrichment versions by enrichment id
+      operationId: get_enrichment_versions
+      parameters:
+        - name: id
+          in: path
+          description: Enrichment ID
+          required: true
+          schema:
+            type: string
         - name: sort
+          in: query
           description: Sort property to use
-          in: query
-          required: false
           schema:
             type: string
-            example: createdAt
         - name: order
-          description: Sort direction
           in: query
-          required: false
+          description: Sort oder to use (DESC or ASC)
           schema:
             type: string
-            example: desc
         - name: size
           in: query
-          required: false
           schema:
             type: integer
             format: int64
         - name: page
           in: query
-          required: false
           schema:
             type: integer
             format: int64
         - name: withTranscript
-          description: Sort property to use
           in: query
-          required: false
           schema:
             type: boolean
-            example: true
-      security:
-        - bearerAuth: []
       responses:
         '200':
-          description: successful operation
+          description: Returns a list of enrichment versions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EnrichmentPaginationResponse'
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EnrichmentVersion'
+                  isLastPage:
+                    description: Returns true if this is the last page, false otherwise
+                    type: boolean
+                  currentPage:
+                    description: Returns the current page number
+                    type: integer
+                    format: int64
+                  totalElements:
+                    description: Returns the total number of elements
+                    type: integer
+                    format: int64
+                type: object
         '400':
           description: Bad parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorsResponse'
         '401':
           description: User is not authenticated
         '403':
@@ -276,110 +446,473 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorsResponse'
         '404':
           description: Entity not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorsResponse'
     post:
+      tags:
+        - Enrichments
       summary: Create a new version of an enrichment
+      description: Create a new version of an enrichment
+      operationId: post_create_enrichment_version
+      parameters:
+        - name: id
+          in: path
+          description: Enrichment ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnrichmentVersionCreationRequestPayload2'
+      responses:
+        '200':
+          description: Created a new version successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: Enrichment version ID
+                    type: string
+                  status:
+                    description: OK
+                    type: string
+                type: object
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/{id}/versions/latest:
+    get:
+      tags:
+        - Enrichments
+      summary: Get enrichment's latest version
+      description: Get enrichment's latest version
+      operationId: get_latest_enrichment_version
+      parameters:
+        - name: id
+          in: path
+          description: Enrichment ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the latest enrichment version of the enrichment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrichmentVersion'
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/{enrichmentId}/versions/{versionId}:
+    get:
+      tags:
+        - Enrichments
+      summary: Get the details of an enrichment version
+      description: Get the details of an enrichment version
+      operationId: get_enrichment_version
+      parameters:
+        - name: versionId
+          in: path
+          description: Enrichment version ID
+          required: true
+          schema:
+            type: string
+        - name: enrichmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the details of the enrichment version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrichmentVersion'
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+    delete:
+      tags:
+        - Enrichments
+      operationId: delete_delete_enrichment_version
       parameters:
         - name: enrichmentId
           in: path
-          description: ID of the enrichment to get
           required: true
           schema:
-            type: integer
-            format: int64
-      security:
-        - bearerAuth: []
+            type: string
+        - name: versionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: ''
+  /api/v1/enrichments/url:
+    post:
+      tags:
+        - Enrichments
+      summary: Create an enrichment from a URL (accessible without authentication)
+      description: Create an enrichment from a URL (accessible without authentication)
+      operationId: post_create_enrichment_from_url
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VersionUpsertRequest'
+              $ref: '#/components/schemas/EnrichmentCreationUrlRequestPayload2'
       responses:
         '200':
-          description: successful operation
+          description: File uploaded successfully, enrichment will be started as soon as possible
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VersionDetailResponse'
+                properties:
+                  id:
+                    description: Enrichment ID
+                    type: string
+                  status:
+                    description: OK
+                    type: string
+                type: object
         '400':
-          description: Request content is invalid
+          description: Bad request, invalid data provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
         '401':
           description: User is not authenticated
-        '403':
-          description: User is not allowed to access this resource
-  /enrichments/{enrichmentId}/versions/latest:
-    get:
-      summary: Get the latest version from an enrichment
+  /api/v1/enrichments/upload:
+    post:
+      tags:
+        - Enrichments
+      summary: 'Supported : video, audio and subtitle (srt, vtt) files'
+      description: Create an enrichment from a file
+      operationId: post_create_enrichment_from_uploaded_file
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnrichmentCreationFileUploadRequestPayload'
+      responses:
+        '200':
+          description: File uploaded successfully, enrichment will be started as soon as possible
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: Enrichment ID
+                    type: string
+                  status:
+                    description: OK
+                    type: string
+                type: object
+        '400':
+          description: Bad request, invalid data provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+  /api/v1/enrichments/{enrichmentId}/new_ai_version:
+    post:
+      tags:
+        - Enrichments
+      summary: Create new enrichment version by AI
+      description: Create new enrichment version by AI
+      operationId: post_create_new_ai_enrichment
       parameters:
         - name: enrichmentId
           in: path
-          description: ID of the enrichment to get
           required: true
           schema:
-            type: integer
-            format: int64
-      security:
-        - bearerAuth: []
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrichmentCreationRequestPayload2'
       responses:
         '200':
-          description: successful operation
+          description: Create new enrichment version by AI request sent
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VersionDetailResponse'
+                properties:
+                  status:
+                    description: OK
+                    type: string
+                type: object
         '400':
-          description: Bad parameters
+          description: Bad request, invalid data provided
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorsResponse'
         '401':
           description: User is not authenticated
-        '403':
-          description: Not allowed to access this resource
+  /api/v1/enrichments/{enrichmentId}/versions/{versionId}/evaluate:
+    post:
+      tags:
+        - Enrichments
+      summary: Evaluate an enrichment version
+      description: Evaluate an enrichment version
+      operationId: post_evaluate_enrichment_version
+      parameters:
+        - name: enrichmentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: versionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrichmentVersion2'
+      responses:
+        '200':
+          description: Enrichment version evaluated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Entity not found
+                properties:
+                  status:
+                    description: OK
+                    type: string
+                  '':
+                    $ref: '#/components/schemas/EnrichmentVersion'
+                type: object
+        '400':
+          description: Bad request, invalid data provided
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /versions/{versionId}:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+  /api/v1/enrichments/{enrichmentId}/versions/{versionId}/mcq/{mcqId}:
+    post:
+      tags:
+        - Enrichments
+      summary: Evaluate a multiple choice question
+      description: Evaluate a multiple choice question
+      operationId: post_evaluate_multiple_choice_question
+      parameters:
+        - name: enrichmentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: versionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mcqId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                thumbUp:
+                  type: boolean
+                userFeedback:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: Multiple choice question evaluated successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    description: OK
+                    type: string
+                  '':
+                    $ref: '#/components/schemas/EnrichmentVersion'
+                type: object
+        '400':
+          description: Bad request, invalid data provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+  /api/v1/enrichments/{enrichmentId}/versions/{versionId}/mcq/{mcqId}/choice/{choiceId}:
+    post:
+      tags:
+        - Enrichments
+      summary: Evaluate a choice in a question
+      description: Evaluate a choice in a question
+      operationId: post_evaluate_choice
+      parameters:
+        - name: enrichmentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: versionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mcqId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: choiceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                thumbUp:
+                  type: boolean
+              type: object
+      responses:
+        '200':
+          description: Choice evaluated successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    description: OK
+                    type: string
+                  '':
+                    $ref: '#/components/schemas/EnrichmentVersion'
+                type: object
+        '400':
+          description: Bad request, invalid data provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+  /api/v1/enrichments/{enrichmentId}/versions/{versionId}/download_transcript:
     get:
-      summary: Get the details of an enrichment version
+      tags:
+        - Enrichments
+      description: Download the transcript of an enrichment version
+      operationId: get_downlaod_transcript
       parameters:
         - name: versionId
           in: path
-          description: ID of the version to get
+          description: Enrichment version ID
           required: true
           schema:
-            type: integer
-            format: int64
-      security:
-        - bearerAuth: []
+            type: string
+        - name: format
+          in: query
+          description: format (SRT/VTT)
+          schema:
+            type: string
+        - name: language
+          in: query
+          description: language
+          schema:
+            type: string
+        - name: enrichmentId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VersionDetailResponse'
+          description: Returns transcript in the specified format
         '400':
           description: Bad parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorsResponse'
         '401':
           description: User is not authenticated
         '403':
@@ -387,206 +920,1802 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ErrorsResponse'
         '404':
           description: Entity not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    delete:
-      summary: Get the details of an enrichment version
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/home:
+    get:
+      summary: Check API default scope
+      description: Can be accessed only by clients with valid tokens for the default scope. Can be used to test authentication.
+      operationId: get_api_home
+      responses:
+        '202':
+          description: Authentication succeeded
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    description: Should be OK
+                    type: string
+                type: object
+        '401':
+          description: Request rejected because of invalid token supplied
+        '403':
+          description: Access denied because of insufficient scope authorization
+  /api/v1/health:
+    get:
+      tags:
+        - Health Check
+      summary: Perform platform health check
+      description: Checks kernel environment and database connection. Can be used to test platform status.
+      operationId: get_api_health
+      responses:
+        '200':
+          description: Returns a health report of kernel and database status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HealthCheck'
+  /api/v1/enrichments/{id}/versions/initial/transcript:
+    post:
+      tags:
+        - Transcribing Media - Worker
+      summary: Create a new version of an enrichment
+      description: Create an initial version of an enrichment
+      operationId: post_create_initial_enrichment_version_with_transcript
       parameters:
-        - name: versionId
+        - name: id
           in: path
-          description: ID of the version to get
+          description: Enrichment ID
           required: true
           schema:
-            type: integer
-            format: int64
-      security:
-        - bearerAuth: []
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EnrichmentTranscriptRequestPayload'
       responses:
-        '204':
-          description: successful operation
+        '200':
+          description: Created an initial version successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: Enrichment version ID
+                    type: string
+                  status:
+                    description: OK
+                    type: string
+                type: object
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
         '401':
           description: User is not authenticated
         '403':
-          description: User is not allowed to access this resource
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/transcription/job/oldest:
+    get:
+      tags:
+        - Transcribing Media - Worker
+      summary: Get a transcription job
+      description: Get a transcription job
+      operationId: get_get_transcription_job
+      parameters:
+        - name: taskId
+          in: query
+          description: Task ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns an enrichment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranscriptionJobResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: No job has been found for now
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/{enrichmentId}/versions/{versionId}/translation:
+    post:
+      tags:
+        - Translation - Worker
+      summary: Translate enrichment version
+      description: Translate enrichment version
+      operationId: post_translate_enrichment_version
+      parameters:
+        - name: versionId
+          in: path
+          description: Enrichment version ID
+          required: true
+          schema:
+            type: string
+        - name: enrichmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TranslationRequestPayload2'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslationRequestPayload'
+      responses:
+        '200':
+          description: Translated the enrichment version successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    description: OK
+                    type: string
+                type: object
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/enrichments/job/translation/oldest:
+    get:
+      tags:
+        - Translation - Worker
+      summary: Get a translation job
+      description: Get a translation job
+      operationId: get_get_translation_job
+      parameters:
+        - name: taskId
+          in: query
+          description: Task ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns a job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationJobResponse'
+        '401':
+          description: User is not authenticated
+        '403':
+          description: Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+        '404':
+          description: No job has been found for now
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
+  /api/v1/webhook:
+    post:
+      tags:
+        - Webhook
+      summary: Endpoint to receive notification when enrichment is treated
+      description: Endpoint to receive notification when enrichment is treated
+      operationId: post_notify_webhook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrichmentWebhookPayload'
+      responses:
+        '200':
+          description: Acknowledge notification reception
+        '400':
+          description: Bad parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorsResponse'
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
   schemas:
-    EnrichmentCreationResponse:
+    EnrichmentPaginationParameters:
       type: object
-      properties:
-        id:
-          type: string
-          format: uuid4
-          description: The enrichment ID
-    EnrichmentDetailResponse:
+    EnrichmentVersionPaginationParameters:
       type: object
+    EnrichmentVersionCreationRequestPayload:
+      type: object
+    EnrichmentCreationUrlRequestPayload:
+      type: object
+    EnrichmentCreationRequestPayload:
+      type: object
+    EnrichmentVersionUserEvaluationRequestPayload:
+      type: object
+    MultipleChoiceQuestion:
+      type: object
+    Choice:
+      type: object
+    AiEnrichmentRequestPayload:
+      required:
+        - enrichmentVersionMetadata
+        - multipleChoiceQuestions
+        - notes
+        - translatedNotes
+        - taskId
+        - failureCause
+        - status
       properties:
-        id:
+        enrichmentVersionMetadata:
+          $ref: '#/components/schemas/EnrichmentVersionMetadata'
+        multipleChoiceQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion2'
+        notes:
           type: string
-          format: uuid4
-          description: The enrichment ID
+        translatedNotes:
+          type: string
+        taskId:
+          type: string
+        failureCause:
+          type: string
         status:
           type: string
-          description: Status
+      type: object
+    ErrorsResponse:
+      required:
+        - status
+      properties:
+        status:
+          description: KO
+          type: string
+        errors:
+          description: Error messages
+          type: array
+          items:
+            properties:
+              path:
+                description: path
+                type: string
+              message:
+                description: message
+                type: string
+            type: object
+          default: []
+      type: object
+    AiEnrichmentJobResponse:
+      required:
+        - enrichmentId
+        - enrichmentVersionId
+        - transcript
+      properties:
+        enrichmentId:
+          type: string
+        enrichmentVersionId:
+          type: string
+        transcript:
+          $ref: '#/components/schemas/Transcript'
+        mediaTypes:
+          description: List of media types
+          type: array
+          items:
+            type: string
+          default: []
+        disciplines:
+          description: List of disciplines
+          type: array
+          items:
+            type: string
+          default: []
+        generateMetadata:
+          description: Request metadata generation
+          type: boolean
+          default: false
+        generateQuiz:
+          description: Request quiz generation
+          type: boolean
+          default: false
+        generateNotes:
+          description: Request notes generation
+          type: boolean
+          default: false
+      type: object
+    AiEvaluationRequestPayload:
+      required:
+        - evaluations
+        - taskId
+        - failureCause
+        - status
+      properties:
+        evaluations:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion3'
+        taskId:
+          type: string
+        failureCause:
+          type: string
+        status:
+          type: string
+      type: object
+    AiEvaluationJobResponse:
+      required:
+        - enrichmentId
+        - enrichmentVersionId
+        - transcript
+        - multipleChoiceQuestions
+        - enrichmentVersionMetadata
+      properties:
+        enrichmentId:
+          type: string
+        enrichmentVersionId:
+          type: string
+        transcript:
+          $ref: '#/components/schemas/Transcript'
+        multipleChoiceQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion4'
+        enrichmentVersionMetadata:
+          $ref: '#/components/schemas/EnrichmentVersionMetadata2'
+      type: object
+    Enrichment:
+      required:
+        - id
+        - createdAt
+        - aiProcessedBy
+        - aiEvaluatedBy
+        - transcribedBy
+        - translatedBy
+        - status
+        - initialVersionId
+        - lastVersionId
+      properties:
+        id:
+          description: Enrichment ID
+          type: string
+        createdAt:
+          title: Returns createdAt.
+          type: string
+          format: date-time
+        aiProcessedBy:
+          properties:
+            name:
+              type: string
+          type: object
+        aiEvaluatedBy:
+          properties:
+            name:
+              type: string
+          type: object
+        transcribedBy:
+          properties:
+            name:
+              type: string
+          type: object
+        translatedBy:
+          properties:
+            name:
+              type: string
+          type: object
+        status:
+          type: string
           enum:
             - WAITING_MEIDA_UPLOAD
-            - UPLOADING
-            - PENDING
-            - PROCESSING_AI
+            - UPLOADING_MEDIA
+            - WAITING_MEDIA_TRANSCRIPTION
+            - TRANSCRIBING_MEDIA
+            - WAITING_AI_ENRICHMENT
+            - AI_ENRICHING
+            - WAITING_TRANSLATION
+            - TRANSLATING
+            - WAITING_AI_EVALUATION
+            - AI_EVALUATING
+            - SUCCESS
+            - FAILURE
+        failureCause:
+          type: string
+          nullable: true
+        media:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/Media'
+        notificationStatus:
+          type: string
+          nullable: true
+        disciplines:
+          description: Disciplines
+          type: array
+          items:
+            type: string
+          default: []
+          minItems: 1
+        mediaTypes:
+          description: Meida Types
+          type: array
+          items:
+            type: string
+          default: []
+          minItems: 1
+        latestEnrichmentRequestedAt:
+          type: string
+          format: date-time
+          nullable: true
+        uploadStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        uploadEndedAt:
+          type: string
+          format: date-time
+          nullable: true
+        aiEnrichmentStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        aiEnrichmentEndedAt:
+          type: string
+          format: date-time
+          nullable: true
+        transcribingStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        transcribingEndedAt:
+          type: string
+          format: date-time
+          nullable: true
+        translationStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        translationEndedAt:
+          type: string
+          format: date-time
+          nullable: true
+        notifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+        aiEvaluation:
+          type: string
+          nullable: true
+        aiEvaluationStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        aiEvaluationEndedAt:
+          type: string
+          format: date-time
+          nullable: true
+        endUserIdentifier:
+          type: string
+          nullable: true
+        contributors:
+          description: Contributors
+          type: array
+          items:
+            type: string
+          default: []
+        aiModel:
+          type: string
+          nullable: true
+        infrastructure:
+          type: string
+          nullable: true
+        language:
+          type: string
+          enum:
+            - fr
+            - en
+          nullable: true
+        translateTo:
+          type: string
+          enum:
+            - fr
+            - en
+          nullable: true
+        aiGenerationCount:
+          type: integer
+          default: 0
+        mediaTextLength:
+          type: integer
+          nullable: true
+        mediaDurationInSeconds:
+          type: integer
+          nullable: true
+        initialVersionId:
+          description: Enrichment's initial version ID
+          type: string
+        lastVersionId:
+          description: Enrichment's last version ID
+          type: string
+      type: object
+    Enrichment2:
+      required:
+        - id
+        - createdAt
+        - status
+        - initialVersionId
+        - lastVersionId
+      properties:
+        id:
+          description: Enrichment ID
+          type: string
+        createdAt:
+          title: Returns createdAt.
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - WAITING_MEIDA_UPLOAD
+            - UPLOADING_MEDIA
+            - WAITING_MEDIA_TRANSCRIPTION
+            - TRANSCRIBING_MEDIA
+            - WAITING_AI_ENRICHMENT
+            - AI_ENRICHING
+            - WAITING_TRANSLATION
+            - TRANSLATING
+            - WAITING_AI_EVALUATION
+            - AI_EVALUATING
+            - SUCCESS
+            - FAILURE
+        failureCause:
+          type: string
+          nullable: true
+        media:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/Media2'
+        notificationStatus:
+          type: string
+          nullable: true
+        disciplines:
+          description: Disciplines
+          type: array
+          items:
+            type: string
+          default: []
+          minItems: 1
+        mediaTypes:
+          description: Meida Types
+          type: array
+          items:
+            type: string
+          default: []
+          minItems: 1
+        notifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+        aiEvaluation:
+          type: string
+          nullable: true
+        endUserIdentifier:
+          type: string
+          nullable: true
+        contributors:
+          description: Contributors
+          type: array
+          items:
+            type: string
+          default: []
+        aiModel:
+          type: string
+          nullable: true
+        infrastructure:
+          type: string
+          nullable: true
+        language:
+          type: string
+          enum:
+            - fr
+            - en
+          nullable: true
+        translateTo:
+          type: string
+          enum:
+            - fr
+            - en
+          nullable: true
+        aiGenerationCount:
+          type: integer
+          default: 0
+        mediaTextLength:
+          type: integer
+          nullable: true
+        mediaDurationInSeconds:
+          type: integer
+          nullable: true
+        initialVersionId:
+          description: Enrichment's initial version ID
+          type: string
+        lastVersionId:
+          description: Enrichment's last version ID
+          type: string
+      type: object
+    EnrichmentVersion:
+      required:
+        - createdAt
+        - updatedAt
+        - id
+        - multipleChoiceQuestions
+        - disciplines
+        - mediaTypes
+      properties:
+        createdAt:
+          title: Returns createdAt.
+          type: string
+          format: date-time
+        updatedAt:
+          title: Returns updatedAt.
+          type: string
+          format: date-time
+        id:
+          description: Enrichment version ID.
+          type: string
+        enrichmentVersionMetadata:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/EnrichmentVersionMetadata3'
+        transcript:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/Transcript2'
+        multipleChoiceQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion5'
+        initialVersion:
+          type: boolean
+          default: false
+        lastEvaluationDate:
+          type: string
+          format: date-time
+          nullable: true
+        aiGenerated:
+          type: boolean
+          default: false
+        disciplines:
+          description: Disciplines
+          type: array
+          items:
+            type: string
+          minItems: 1
+        mediaTypes:
+          description: Meida Types
+          type: array
+          items:
+            type: string
+          minItems: 1
+        endUserIdentifier:
+          type: string
+          nullable: true
+        aiEvaluation:
+          type: string
+          nullable: true
+        aiModel:
+          type: string
+          nullable: true
+        infrastructure:
+          type: string
+          nullable: true
+        language:
+          type: string
+          nullable: true
+        translateTo:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        translatedNotes:
+          type: string
+          nullable: true
+        failureCause:
+          type: string
+          nullable: true
+      type: object
+    EnrichmentVersionCreationRequestPayload2:
+      required:
+        - transcript
+        - enrichmentVersionMetadata
+        - multipleChoiceQuestions
+        - notes
+        - translatedNotes
+        - translate
+      properties:
+        transcript:
+          type: file
+        enrichmentVersionMetadata:
+          $ref: '#/components/schemas/EnrichmentVersionMetadata'
+        multipleChoiceQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion6'
+        notes:
+          type: string
+        translatedNotes:
+          type: string
+        translate:
+          type: boolean
+      type: object
+    EnrichmentCreationUrlRequestPayload2:
+      required:
+        - url
+        - enrichmentParameters
+      properties:
+        url:
+          description: A file URL
+          type: string
+        notificationWebhookUrl:
+          type: string
+          nullable: true
+        notificationLevel:
+          type: string
+          nullable: true
+        enrichmentParameters:
+          $ref: '#/components/schemas/EnrichmentParameters'
+        endUserIdentifier:
+          type: string
+          nullable: true
+      type: object
+    EnrichmentCreationFileUploadRequestPayload:
+      required:
+        - file
+        - enrichmentParameters
+      properties:
+        file:
+          description: A file
+          type: file
+        originalFileName:
+          type: string
+          nullable: true
+        notificationWebhookUrl:
+          type: string
+          nullable: true
+        notificationLevel:
+          type: string
+          nullable: true
+        enrichmentParameters:
+          $ref: '#/components/schemas/EnrichmentParameters'
+        endUserIdentifier:
+          type: string
+          nullable: true
+      type: object
+    EnrichmentCreationRequestPayload2:
+      required:
+        - notificationWebhookUrl
+        - enrichmentParameters
+        - endUserIdentifier
+      properties:
+        notificationWebhookUrl:
+          description: A webhook for receiving notifications about the status of enrichment generation
+          type: string
+        notificationLevel:
+          description: Choose to receive notifications only at the end of the enrichment or at each step of the process
+          type: string
+          enum:
+            - default
+            - task
+          nullable: true
+        enrichmentParameters:
+          $ref: '#/components/schemas/EnrichmentParameters'
+        endUserIdentifier:
+          description: A parameter to help filter enrichments
+          type: string
+      type: object
+    EnrichmentVersion2:
+      required:
+        - multipleChoiceQuestions
+      properties:
+        enrichmentVersionMetadata:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/EnrichmentVersionMetadata4'
+        multipleChoiceQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion7'
+      type: object
+    HealthCheck:
+      required:
+        - kernelStatus
+        - dbConnectionStatus
+      properties:
+        kernelStatus:
+          description: Status of the kernel.
+          type: boolean
+        dbConnectionStatus:
+          description: Status of the database connection.
+          type: boolean
+      type: object
+    EnrichmentTranscriptRequestPayload:
+      required:
+        - transcript
+        - taskId
+        - failureCause
+        - status
+      properties:
+        transcript:
+          type: file
+        taskId:
+          type: string
+        failureCause:
+          type: string
+        status:
+          type: string
+      type: object
+    TranscriptionJobResponse:
+      required:
+        - enrichmentId
+        - mediaTemporaryUrl
+        - language
+      properties:
+        enrichmentId:
+          type: string
+        mediaTemporaryUrl:
+          type: string
+        language:
+          type: string
+      type: object
+    TranslationRequestPayload:
+      required:
+        - enrichmentVersionMetadata
+        - multipleChoiceQuestions
+        - transcript
+        - notes
+        - taskId
+        - failureCause
+        - status
+      properties:
+        enrichmentVersionMetadata:
+          $ref: '#/components/schemas/EnrichmentVersionMetadata5'
+        multipleChoiceQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion8'
+        transcript:
+          $ref: '#/components/schemas/Transcript3'
+        notes:
+          type: string
+        taskId:
+          type: string
+        failureCause:
+          type: string
+        status:
+          type: string
+      type: object
+    TranslationRequestPayload2:
+      required:
+        - enrichmentVersionMetadata
+        - multipleChoiceQuestions
+        - transcriptFile
+        - notes
+        - taskId
+        - failureCause
+        - status
+      properties:
+        enrichmentVersionMetadata:
+          $ref: '#/components/schemas/EnrichmentVersionMetadata6'
+        multipleChoiceQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion9'
+        transcriptFile:
+          type: file
+        notes:
+          type: string
+        taskId:
+          type: string
+        failureCause:
+          type: string
+        status:
+          type: string
+      type: object
+    TranslationJobResponse:
+      required:
+        - enrichmentId
+        - enrichmentVersionId
+        - transcript
+        - multipleChoiceQuestions
+        - enrichmentVersionMetadata
+        - notes
+        - language
+        - translateTo
+      properties:
+        enrichmentId:
+          type: string
+        enrichmentVersionId:
+          type: string
+        transcript:
+          $ref: '#/components/schemas/Transcript4'
+        multipleChoiceQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleChoiceQuestion10'
+        enrichmentVersionMetadata:
+          $ref: '#/components/schemas/EnrichmentVersionMetadata7'
+        notes:
+          type: string
+        language:
+          type: string
+        translateTo:
+          type: string
+      type: object
+    EnrichmentWebhookPayload:
+      required:
+        - id
+        - status
+        - initialVersionId
+        - failureCause
+      properties:
+        id:
+          description: Enrichment ID
+          type: string
+        status:
+          type: string
+          enum:
+            - WAITING_MEIDA_UPLOAD
+            - UPLOADING_MEDIA
+            - WAITING_MEDIA_TRANSCRIPTION
+            - TRANSCRIBING_MEDIA
+            - WAITING_AI_ENRICHMENT
+            - AI_ENRICHING
+            - WAITING_TRANSLATION
+            - TRANSLATING
+            - WAITING_AI_EVALUATION
+            - AI_EVALUATING
             - SUCCESS
             - FAILURE
         initialVersionId:
+          description: Enrichment's intiail version ID
           type: string
-          format: uuid4
-          description: Initial version extracted from enrichment pipeline if status is SUCCESS, null otherwise
-          example: null
-        disciplines:
-          type: array
-          items:
-            type: string
-        mediaTypes:
-          type: array
-          items:
-            type: string
         failureCause:
+          description: Failure cause
           type: string
-        notificationStatus:
-          type: integer
-          format: int64
-        notifiedAt:
+        completedStep:
           type: string
-          format: date
-    VersionDetailResponse:
+          enum:
+            - TRANSCRIBING_MEDIA
+            - AI_ENRICHING
+            - TRANSLATING
+          nullable: true
       type: object
+    EnrichmentVersionMetadata:
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+        translatedTitle:
+          type: string
+          nullable: true
+        description:
+          type: string
+        translatedDescription:
+          type: string
+          nullable: true
+        topics:
+          description: Topics
+          type: array
+          items:
+            type: string
+          default: []
+        translatedTopics:
+          description: Translated topics
+          type: array
+          items:
+            type: string
+          default: []
+        discipline:
+          type: string
+          nullable: true
+        mediaType:
+          type: string
+          nullable: true
+        thumbUpTitle:
+          type: boolean
+          nullable: true
+        thumbUpDescription:
+          type: boolean
+          nullable: true
+        thumbUpTopics:
+          type: boolean
+          nullable: true
+        thumbUpDiscipline:
+          type: boolean
+          nullable: true
+        thumbUpMediaType:
+          type: boolean
+          nullable: true
+        userFeedback:
+          type: string
+          nullable: true
+      type: object
+    MultipleChoiceQuestion2:
+      required:
+        - question
+        - translatedQuestion
+        - explanation
+        - translatedExplanation
+        - choices
+      properties:
+        question:
+          type: string
+        translatedQuestion:
+          type: string
+        explanation:
+          type: string
+        translatedExplanation:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice2'
+        answerPointer:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/AnswerPointer'
+      type: object
+    Transcript:
+      required:
+        - originalFilename
+        - language
+        - sentences
+        - translatedSentences
+      properties:
+        originalFilename:
+          type: string
+        language:
+          type: string
+        text:
+          type: string
+          nullable: true
+        translatedText:
+          type: string
+          nullable: true
+        sentences:
+          description: Transcipt's sentences
+          type: array
+          items:
+            $ref: '#/components/schemas/Sentence'
+        translatedSentences:
+          description: Transcipt's translated sentences
+          type: array
+          items:
+            $ref: '#/components/schemas/Sentence'
+      type: object
+    MultipleChoiceQuestion3:
+      required:
+        - id
+        - evaluation
       properties:
         id:
+          description: Multiple Choice Question ID
           type: string
-          format: uuid4
-        createdAt:
-          type: string
-          format: date
-        updatedAt:
-          type: string
-          format: date
-        enrichmentVersionMetadata:
-          $ref: "#/components/schemas/enrichmentVersionMetadata"
-        transcript:
-          $ref: "#/components/schemas/transcript"
-        multipleChoiceQuestions:
-          $ref: "#/components/schemas/multipleChoiceQuestions"
-    enrichmentVersionMetadata:
+        evaluation:
+          description: MCQ's evaluation
+          properties:
+            criteria1:
+              description: Returns whether the criteria is verified for the MCQ
+              type: boolean
+            criteria2:
+              description: Returns whether the criteria is verified for the MCQ
+              type: boolean
+            criteria3:
+              description: Returns whether the criteria is verified for the MCQ
+              type: boolean
+          type: object
       type: object
+    MultipleChoiceQuestion4:
+      required:
+        - id
+        - question
+        - translatedQuestion
+        - explanation
+        - translatedExplanation
+        - choices
+      properties:
+        id:
+          description: Multiple Choice Question ID
+          type: string
+        question:
+          type: string
+        translatedQuestion:
+          type: string
+        explanation:
+          type: string
+        translatedExplanation:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice3'
+      type: object
+    EnrichmentVersionMetadata2:
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        translatedDescription:
+          type: string
+          nullable: true
+        topics:
+          description: Topics
+          type: array
+          items:
+            type: string
+          default: []
+        translatedTopics:
+          description: Translated topics
+          type: array
+          items:
+            type: string
+          default: []
+      type: object
+    Media:
+      properties:
+        originalFileName:
+          type: string
+          nullable: true
+        mimeType:
+          type: string
+          nullable: true
+      type: object
+    Media2:
+      properties:
+        originalFileName:
+          type: string
+          nullable: true
+        mimeType:
+          type: string
+          nullable: true
+      type: object
+    EnrichmentVersionMetadata3:
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+        translatedTitle:
+          type: string
+          nullable: true
+        description:
+          type: string
+        translatedDescription:
+          type: string
+          nullable: true
+        topics:
+          description: Topics
+          type: array
+          items:
+            type: string
+          default: []
+        translatedTopics:
+          description: Translated topics
+          type: array
+          items:
+            type: string
+          default: []
+        discipline:
+          type: string
+          nullable: true
+        mediaType:
+          type: string
+          nullable: true
+        thumbUpTitle:
+          type: boolean
+          nullable: true
+        thumbUpDescription:
+          type: boolean
+          nullable: true
+        thumbUpTopics:
+          type: boolean
+          nullable: true
+        thumbUpDiscipline:
+          type: boolean
+          nullable: true
+        thumbUpMediaType:
+          type: boolean
+          nullable: true
+        userFeedback:
+          type: string
+          nullable: true
+      type: object
+    Transcript2:
+      required:
+        - originalFilename
+        - language
+        - sentences
+        - translatedSentences
+      properties:
+        originalFilename:
+          type: string
+        language:
+          type: string
+        text:
+          type: string
+          nullable: true
+        translatedText:
+          type: string
+          nullable: true
+        sentences:
+          description: Transcipt's sentences
+          type: array
+          items:
+            $ref: '#/components/schemas/Sentence2'
+        translatedSentences:
+          description: Transcipt's translated sentences
+          type: array
+          items:
+            $ref: '#/components/schemas/Sentence2'
+      type: object
+    MultipleChoiceQuestion5:
+      required:
+        - id
+        - question
+        - translatedQuestion
+        - explanation
+        - translatedExplanation
+        - choices
+        - evaluation
+      properties:
+        id:
+          description: Multiple Choice Question ID
+          type: string
+        question:
+          type: string
+        translatedQuestion:
+          type: string
+        explanation:
+          type: string
+        translatedExplanation:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice4'
+        answerPointer:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/AnswerPointer2'
+        evaluation:
+          description: MCQ's evaluation
+          properties:
+            criteria1:
+              description: Returns whether the criteria is verified for the MCQ
+              type: boolean
+            criteria2:
+              description: Returns whether the criteria is verified for the MCQ
+              type: boolean
+            criteria3:
+              description: Returns whether the criteria is verified for the MCQ
+              type: boolean
+          type: object
+        thumbUp:
+          type: boolean
+          nullable: true
+        userFeedback:
+          type: string
+          nullable: true
+      type: object
+    MultipleChoiceQuestion6:
+      required:
+        - question
+        - translatedQuestion
+        - explanation
+        - translatedExplanation
+        - choices
+      properties:
+        question:
+          type: string
+        translatedQuestion:
+          type: string
+        explanation:
+          type: string
+        translatedExplanation:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice5'
+        answerPointer:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/AnswerPointer3'
+      type: object
+    EnrichmentParameters:
+      properties:
+        mediaTypes:
+          description: List of media types (required only if generateMetada is true)
+          type: array
+          items:
+            type: string
+          default: []
+          minItems: 1
+          nullable: true
+        disciplines:
+          description: List of disciplines (required only if generateMetada is true)
+          type: array
+          items:
+            type: string
+          default: []
+          minItems: 1
+        aiEvaluation:
+          description: The name of the AI to evaluate the MCQs
+          type: string
+          enum:
+            - ChatGPT
+          nullable: true
+        aiModel:
+          description: AI Model to be used for enrichment (list available with ai_model_infrastructure_combinations endpoint)
+          type: string
+          nullable: true
+        infrastructure:
+          description: Infrastructure to be used for enrichment (list available with ai_model_infrastructure_combinations endpoint)
+          type: string
+          nullable: true
+        language:
+          description: Language of the quizzes
+          type: string
+          enum:
+            - fr
+            - en
+          nullable: true
+        translateTo:
+          description: Translate to this language
+          type: string
+          enum:
+            - fr
+            - en
+          nullable: true
+        generateMetadata:
+          description: Request metadata generation
+          type: boolean
+          default: true
+        generateQuiz:
+          description: Request quiz generation
+          type: boolean
+          default: true
+        generateNotes:
+          description: Request notes generation
+          type: boolean
+          default: false
+      type: object
+    EnrichmentVersionMetadata4:
+      properties:
+        thumbUpTitle:
+          type: boolean
+          nullable: true
+        thumbUpDescription:
+          type: boolean
+          nullable: true
+        thumbUpTopics:
+          type: boolean
+          nullable: true
+        thumbUpDiscipline:
+          type: boolean
+          nullable: true
+        thumbUpMediaType:
+          type: boolean
+          nullable: true
+        userFeedback:
+          type: string
+          nullable: true
+      type: object
+    MultipleChoiceQuestion7:
+      required:
+        - id
+        - choices
+      properties:
+        id:
+          description: Multiple Choice Question ID
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice6'
+        thumbUp:
+          type: boolean
+          nullable: true
+        userFeedback:
+          type: string
+          nullable: true
+      type: object
+    EnrichmentVersionMetadata5:
+      required:
+        - title
+        - description
       properties:
         title:
           type: string
         description:
           type: string
         topics:
+          description: Topics
           type: array
           items:
             type: string
-        discipline:
-          type: string
-        mediaType:
-          type: string
-    transcript:
+          default: []
       type: object
+    MultipleChoiceQuestion8:
+      required:
+        - id
+        - question
+        - explanation
+        - choices
       properties:
-        originalFilename:
+        id:
+          description: Multiple Choice Question ID
           type: string
-        language:
+        question:
           type: string
-        sentences:
+        explanation:
+          type: string
+        choices:
           type: array
           items:
-            type: object
-            properties:
-              is_transient:
-                type: boolean
-              no_speech_prob:
-                type: number
-              start:
-                type: number
-              end:
-                type: number
-              text:
-                type: string
+            $ref: '#/components/schemas/Choice7'
+      type: object
+    Transcript3:
+      required:
+        - sentences
+      properties:
         text:
           type: string
-    multipleChoiceQuestions:
-      type: array
-      items:
-        type: object
-        properties:
-          question:
-            type: string
-          explanation:
-            type: string
-          choices:
-            type: object
-            properties:
-              optionText:
-                type: string
-              isCorrectAnswer:
-                type: boolean
-    VersionUpsertRequest:
-          type: object
-          properties:
-            enrichmentVersionMetadata:
-              $ref: "#/components/schemas/enrichmentVersionMetadata"
-            transcript:
-              $ref: "#/components/schemas/transcript"
-            multipleChoiceQuestions:
-              $ref: "#/components/schemas/multipleChoiceQuestions"
-    EnrichmentPaginationResponse:
+          nullable: true
+        sentences:
+          description: Transcipt's sentences
+          type: array
+          items:
+            $ref: '#/components/schemas/Sentence3'
       type: object
+    EnrichmentVersionMetadata6:
+      required:
+        - title
+        - description
       properties:
-        content:
-          type: array
-          items:
-            $ref: '#/components/schemas/VersionDetailResponse'
-        totalElements:
-          type: integer
-          format: int64
-          example: 25
-        currentPage:
-          type: integer
-          format: int64
-          example: 1
-        isLastPage:
-          type: boolean
-          example: false
-    EnrichmentCreationParams:
-      type: object
-      properties: 
-        disciplines: 
-          type: array
-          items:
-            type: string
-          description: discipline list in which the media must be indexed
-        videoTypes: 
-          type: array
-          items: 
-            type: string
-          description: video type list in which the media must be indexed (course, conference, ...)
-    ErrorResponse:
-      type: object
-      properties: 
-        status: 
+        title:
           type: string
-          description: KO
-        errors: 
+        description:
+          type: string
+        topics:
+          description: Topics
           type: array
-          items: 
+          items:
             type: string
-          description: Error messages
+          default: []
+      type: object
+    MultipleChoiceQuestion9:
+      required:
+        - id
+        - question
+        - explanation
+        - choices
+      properties:
+        id:
+          description: Multiple Choice Question ID
+          type: string
+        question:
+          type: string
+        explanation:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice8'
+      type: object
+    Transcript4:
+      required:
+        - sentences
+      properties:
+        text:
+          type: string
+          nullable: true
+        sentences:
+          description: Transcipt's sentences
+          type: array
+          items:
+            $ref: '#/components/schemas/Sentence4'
+      type: object
+    MultipleChoiceQuestion10:
+      required:
+        - id
+        - question
+        - explanation
+        - choices
+      properties:
+        id:
+          description: Multiple Choice Question ID
+          type: string
+        question:
+          type: string
+        explanation:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice9'
+      type: object
+    EnrichmentVersionMetadata7:
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        topics:
+          description: Topics
+          type: array
+          items:
+            type: string
+          default: []
+      type: object
+    Choice2:
+      required:
+        - optionText
+      properties:
+        optionText:
+          type: string
+        correctAnswer:
+          type: boolean
+          default: false
+      type: object
+    AnswerPointer:
+      properties:
+        startAnswerPointer:
+          type: string
+          nullable: true
+        stopAnswerPointer:
+          type: string
+          nullable: true
+      type: object
+    Sentence:
+      required:
+        - is_transient
+        - no_speech_prob
+        - start
+        - end
+        - text
+      properties:
+        is_transient:
+          type: boolean
+        no_speech_prob:
+          type: integer
+        start:
+          type: integer
+        end:
+          type: integer
+        text:
+          type: string
+      type: object
+    Choice3:
+      required:
+        - id
+        - optionText
+      properties:
+        id:
+          description: Choice ID
+          type: string
+        optionText:
+          type: string
+        correctAnswer:
+          type: boolean
+          default: false
+      type: object
+    Sentence2:
+      required:
+        - is_transient
+        - no_speech_prob
+        - start
+        - end
+        - text
+      properties:
+        is_transient:
+          type: boolean
+        no_speech_prob:
+          type: integer
+        start:
+          type: integer
+        end:
+          type: integer
+        text:
+          type: string
+      type: object
+    Choice4:
+      required:
+        - id
+        - optionText
+      properties:
+        id:
+          description: Choice ID
+          type: string
+        optionText:
+          type: string
+        translatedOptionText:
+          type: string
+          nullable: true
+        correctAnswer:
+          type: boolean
+          default: false
+        thumbUp:
+          type: boolean
+          nullable: true
+      type: object
+    AnswerPointer2:
+      properties:
+        startAnswerPointer:
+          type: string
+          nullable: true
+        stopAnswerPointer:
+          type: string
+          nullable: true
+      type: object
+    Choice5:
+      required:
+        - optionText
+      properties:
+        optionText:
+          type: string
+        correctAnswer:
+          type: boolean
+          default: false
+      type: object
+    AnswerPointer3:
+      properties:
+        startAnswerPointer:
+          type: string
+          nullable: true
+        stopAnswerPointer:
+          type: string
+          nullable: true
+      type: object
+    Choice6:
+      required:
+        - id
+      properties:
+        id:
+          description: Choice ID
+          type: string
+        thumbUp:
+          type: boolean
+          nullable: true
+      type: object
+    Choice7:
+      required:
+        - id
+        - optionText
+      properties:
+        id:
+          description: Choice ID
+          type: string
+        optionText:
+          type: string
+      type: object
+    Sentence3:
+      required:
+        - start
+        - end
+        - text
+      properties:
+        start:
+          type: integer
+        end:
+          type: integer
+        text:
+          type: string
+      type: object
+    Choice8:
+      required:
+        - id
+        - optionText
+      properties:
+        id:
+          description: Choice ID
+          type: string
+        optionText:
+          type: string
+      type: object
+    Sentence4:
+      required:
+        - start
+        - end
+        - text
+      properties:
+        start:
+          type: integer
+        end:
+          type: integer
+        text:
+          type: string
+      type: object
+    Choice9:
+      required:
+        - id
+        - optionText
+      properties:
+        id:
+          description: Choice ID
+          type: string
+        optionText:
+          type: string
+      type: object
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /api/token
+          scopes:
+            scope_default: Default scope
+            scope_client: Client scope
+            scope_processing_worker: Processing worker scope
+            scope_transcription_worker: Transcription worker scope
+            scope_evaluation_worker: Evaluation worker scope
+            scope_translation_worker: Translation worker scope
 security:
-  - bearerAuth: []
+  - oauth2: []
+tags:
+  - name: AI Enrichment - Worker
+  - name: AI Evaluation - Worker
+  - name: Enrichments
+  - name: Health Check
+  - name: Transcribing Media - Worker
+  - name: Translation - Worker
+  - name: Webhook
